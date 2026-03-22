@@ -239,7 +239,7 @@ These trade-offs are acceptable within the coursework constraints.
 
 This project is completed as part of a group coursework submission for **EBU6304 – Software Engineering Group Project**.
 
-### Member Xinling Guo Responsibilities
+### Member Responsibilities
 
 * Admin dashboard
 * Data overview
