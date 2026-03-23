@@ -250,18 +250,6 @@ This project is completed as part of a group coursework submission for **EBU6304
 
 ---
 
-## Submission Checklist
-
-The final coursework submission should include:
-
-* source code
-* test programs
-* code documentation
-* user manual with screenshots
-* README with setup and running instructions 
-
----
-
 ## License
 
 This project is developed for academic coursework use.
