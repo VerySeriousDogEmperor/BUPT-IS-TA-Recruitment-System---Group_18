@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人空间 - BUPT TA招聘平台</title>
+    <link rel="stylesheet" href="../static/css/common.css">
+    <link rel="stylesheet" href="../static/css/components.css">
+    <link rel="stylesheet" href="../static/css/dashboard.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">🎓</span>
+                    <span class="logo-text">BUPT TA招聘</span>
+                </a>
+                <nav class="nav">
+                    <a href="../index.html">首页</a>
+                    <a href="../apply.html">职位申请</a>
+                    <a href="../announcements.html">公告</a>
+                    <a href="../about.html">关于我们</a>
+                    <a href="../guide.html">新手指南</a>
+                    <a href="dashboard.html" class="active">个人空间</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="logoutBtn">退出登录</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Header -->
+    <section class="profile-header">
+        <div class="container">
+            <div class="profile-header-content">
+                <div class="profile-avatar">
+                    <div class="avatar-placeholder" id="userAvatar">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-name" id="userName">加载中...</h1>
+                    <p class="profile-subtitle" id="userSubtitle">学生</p>
+                    <div class="profile-badges">
+                        <span class="badge badge-light" id="gpaB badge">GPA: N/A</span>
+                        <span class="badge badge-light" id="studentIdBadge">ID: N/A</span>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-outline-light" id="editProfileBtn">编辑资料</button>
+                    <button class="btn btn-danger" id="logoutBtnHeader">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        退出登录
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container dashboard-container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tabs-list">
+                <button class="tab-trigger active" data-tab="overview">概览</button>
+                <button class="tab-trigger" data-tab="info">基本信息</button>
+                <button class="tab-trigger" data-tab="resume">简历</button>
+                <button class="tab-trigger" data-tab="applications">申请记录</button>
+                <button class="tab-trigger" data-tab="schedule">课程表</button>
+                <button class="tab-trigger" data-tab="ai-assistant">AI助手</button>
+                <button class="tab-trigger" data-tab="favorites">收藏</button>
+                <button class="tab-trigger" data-tab="security">安全设置</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tabs-content">
+                <!-- Overview Tab -->
+                <div class="tab-content active" id="overview-tab">
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">资料完成度</h3>
+                                <p class="card-description">完善资料以提高职位匹配度</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="completion-item">
+                                    <span>基本信息</span>
+                                    <span class="badge" id="basicInfoStatus">未完成</span>
+                                </div>
+                                <div class="completion-item">
+                                    <span>简历上传</span>
+                                    <span class="badge badge-secondary">待上传</span>
+                                </div>
+                                <div class="completion-item">
+                                    <span>学术记录</span>
+                                    <span class="badge" id="academicStatus">未完成</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">快速统计</h3>
+                                <p class="card-description">您的申请概览</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="stat-item">
+                                    <span class="stat-label">总申请数</span>
+                                    <span class="stat-value">3</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">审核中</span>
+                                    <span class="stat-value stat-warning">2</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">已安排面试</span>
+                                    <span class="stat-value stat-success">1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">技能评估</h3>
+                                <p class="card-description">基于学术表现和TA评价的能力</p>
+                            </div>
+                            <div class="card-content">
+                                <canvas id="skillRadarChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card" id="applicationTrackerCard">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Info Tab -->
+                <div class="tab-content" id="info-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">基本信息</h3>
+                            <p class="card-description">管理您的个人信息和学术详情</p>
+                        </div>
+                        <div class="card-content">
+                            <form id="profileForm" class="form-grid">
+                                <div class="form-group">
+                                    <label for="name">姓名</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <input type="text" id="name" name="name" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">邮箱</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
+                                        <input type="email" id="email" name="email" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">电话</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                        </svg>
+                                        <input type="tel" id="phone" name="phone" placeholder="138xxxxxxxx" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentId">学号</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                        </svg>
+                                        <input type="text" id="studentId" name="studentId" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="major">专业</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                        </svg>
+                                        <input type="text" id="major" name="major" placeholder="计算机科学" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="year">年级</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        <input type="text" id="year" name="year" placeholder="2023" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gpa">GPA</label>
+                                    <input type="text" id="gpa" name="gpa" placeholder="3.8" disabled>
+                                </div>
+                                <div class="form-group form-group-full">
+                                    <label for="bio">个人简介</label>
+                                    <textarea id="bio" name="bio" rows="4" placeholder="介绍一下您自己..." disabled></textarea>
+                                </div>
+                                <div class="form-actions" id="formActions" style="display: none;">
+                                    <button type="button" class="btn btn-outline" id="cancelEditBtn">取消</button>
+                                    <button type="submit" class="btn btn-primary">保存更改</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
