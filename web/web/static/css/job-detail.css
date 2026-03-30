@@ -1,0 +1,341 @@
+/* ============================================================================
+   Job Detail Page - 完全复刻原版
+   ============================================================================ */
+
+.job-detail-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* Layout */
+.job-detail-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* Main Content */
+.job-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.job-image {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.job-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.job-content {
+  padding: 24px;
+}
+
+.job-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.job-header-text {
+  flex: 1;
+}
+
+.job-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.job-department {
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+.favorite-btn-large {
+  padding: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  color: #9ca3af;
+}
+
+.favorite-btn-large:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.favorite-btn-large.active {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.job-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.job-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meta-item svg {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.meta-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.meta-value {
+  font-weight: 500;
+  color: #111827;
+}
+
+.meta-salary {
+  color: #10b981;
+}
+
+.job-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.section-text {
+  color: #374151;
+  line-height: 1.75;
+}
+
+.requirements-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+
+.requirement-item svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.requirement-item span {
+  color: #374151;
+  line-height: 1.5;
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.schedule-item svg {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.schedule-day {
+  font-weight: 500;
+  color: #111827;
+}
+
+.schedule-time {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Sidebar */
+.job-detail-sidebar {
+  position: sticky;
+  top: 96px;
+  height: fit-content;
+}
+
+.sidebar-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.alert {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid;
+}
+
+.alert svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alert-danger {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.alert-danger svg {
+  color: #ef4444;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.alert-success svg {
+  color: #10b981;
+}
+
+.alert-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.alert-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.alert-danger .alert-title {
+  color: #7f1d1d;
+}
+
+.alert-danger .alert-text {
+  color: #991b1b;
+}
+
+.alert-success .alert-title {
+  color: #14532d;
+}
+
+.alert-success .alert-text {
+  color: #166534;
+}
+
+.btn-lg {
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.deadline-info {
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.deadline-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.deadline-date {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.deadline-remaining {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .job-detail-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .job-detail-sidebar {
+    position: static;
+  }
+  
+  .job-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}

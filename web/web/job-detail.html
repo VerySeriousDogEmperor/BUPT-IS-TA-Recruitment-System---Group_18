@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Details - BUPT</title>
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/student.css">
+    <link rel="stylesheet" href="/static/css/job-detail.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header-main" id="mainHeader">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="/" class="header-logo">BUPT IS TA Recruitment</a>
+                </div>
+
+                <nav class="header-nav">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/apply.html" class="nav-link active">Apply</a>
+                    <a href="/announcements.html" class="nav-link">Announcements</a>
+                    <a href="/about.html" class="nav-link">About Us</a>
+                    <a href="/guide.html" class="nav-link">Guide</a>
+                </nav>
+
+                <div class="header-right">
+                    <!-- Notification Bell -->
+                    <button class="header-icon-btn" id="notificationBtn" style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <!-- User Avatar Dropdown -->
+                    <div class="header-user-menu" style="display: none;">
+                        <button class="user-avatar-btn" id="userMenuBtn">
+                            <div class="user-avatar">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-info">
+                                <p class="user-name">Guest User</p>
+                                <p class="user-email">guest@bupt.edu.cn</p>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="/student/dashboard.html" class="dropdown-item">Personal Center</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/login.html" class="dropdown-item">Logout</a>
+                        </div>
+                    </div>
+
+                    <!-- Login Buttons (when not authenticated) -->
+                    <div class="header-auth-buttons">
+                        <a href="/login.html" class="btn btn-outline btn-sm">Student Login</a>
+                        <a href="/login.html?mode=staff" class="btn btn-primary btn-sm">Staff Entrance</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-main">
+        <div class="job-detail-container">
+            <button class="back-button" onclick="window.location.href='/apply.html'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Listings
+            </button>
+
+            <div class="job-detail-layout" id="jobDetailContent">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-main">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Column 1: About -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">BUPT IS TA Recruitment</h3>
+                    <p class="footer-text">
+                        Beijing University of Posts and Telecommunications International School Teaching Assistant Recruitment Platform
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                <rect x="2" y="9" width="4" height="12"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/apply.html">Browse Positions</a></li>
+                        <li><a href="/guide.html">Application Guide</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: For Applicants -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">For Applicants</h4>
+                    <ul class="footer-links">
+                        <li><a href="/student/dashboard.html">My Profile</a></li>
+                        <li><a href="/student/dashboard.html">Application Status</a></li>
+                        <li><a href="/guide.html">AI Assistant</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Access -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Access</h4>
+                    <div class="footer-buttons">
+                        <a href="/login.html" class="footer-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                            Student Login
+                        </a>
+                        <a href="/login.html" class="footer-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <polyline points="17 11 19 13 23 9"></polyline>
+                            </svg>
+                            Staff Entrance
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 BUPT International School. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/utils/auth.js"></script>
+    <script src="/static/js/components/toast.js"></script>
+    <script>
+        let isFavorite = false;
+        
+        async function loadJobDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const jobId = params.get('id');
+            
+            if (!jobId) {
+                window.location.href = '/apply.html';
+                return;
+            }
+            
+            try {
+                const job = await API.jobs.getById(jobId);
+                renderJobDetail(job);
+            } catch (error) {
+                console.error('Failed to load job:', error);
+                document.getElementById('jobDetailContent').innerHTML = `
+                    <div style="text-align: center; padding: 64px 24px;">
+                        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 16px;">Job Not Found</h1>
+                        <button class="btn btn-primary" onclick="window.location.href='/apply.html'">
+                            Back to Job Listings
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderJobDetail(job) {
+            const daysRemaining = Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('jobDetailContent').innerHTML = `
+                <!-- Main Content -->
+                <div class="job-detail-main">
+                    <div class="card">
+                        <div class="job-image">
+                            <img src="${job.image}" alt="${job.title}">
+                        </div>
+                        <div class="job-content">
+                            <div class="job-header">
+                                <div class="job-header-text">
+                                    <h1 class="job-title">${job.title}</h1>
+                                    <p class="job-department">${job.department}</p>
+                                </div>
+                                <button class="favorite-btn-large ${isFavorite ? 'active' : ''}" onclick="toggleFavorite()">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="job-badges">
+                                <span class="badge badge-secondary">${job.type}</span>
+                                <span class="badge badge-outline">${job.category}</span>
+                                ${job.tags.map(tag => `<span class="badge badge-outline">${tag}</span>`).join('')}
+                            </div>
+                            
+                            <div class="job-meta-grid">
+                                <div class="meta-item">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <div>
+                                        <p class="meta-label">Location</p>
+                                        <p class="meta-value">${job.location}</p>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <div>
+                                        <p class="meta-label">Work Hours</p>
+                                        <p class="meta-value">${job.hoursPerWeek} hrs/week</p>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="meta-label">Salary</p>
+                                        <p class="meta-value meta-salary">${job.salary}</p>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    <div>
+                                        <p class="meta-label">Deadline</p>
+                                        <p class="meta-value">${new Date(job.deadline).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="job-section">
+                                <h2 class="section-title">Job Description</h2>
+                                <p class="section-text">${job.description}</p>
+                            </div>
+                            
+                            <div class="job-section">
+                                <h2 class="section-title">Requirements</h2>
+                                <ul class="requirements-list">
+                                    ${job.requirements.map(req => `
+                                        <li class="requirement-item">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                            <span>${req}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            
+                            <div class="job-section">
+                                <h2 class="section-title">Work Schedule</h2>
+                                <div class="schedule-list">
+                                    ${job.schedule.map(slot => `
+                                        <div class="schedule-item">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                            <div>
+                                                <p class="schedule-day">${slot.day}</p>
+                                                <p class="schedule-time">${slot.startTime} - ${slot.endTime}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sidebar -->
+                <div class="job-detail-sidebar">
+                    <div class="card sidebar-card">
+                        <h3 class="sidebar-title">Apply for this Position</h3>
+                        
+                        ${job.hasConflict ? `
+                            <div class="alert alert-danger">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                                <div>
+                                    <p class="alert-title">Time Conflict</p>
+                                    <p class="alert-text">This position conflicts with your course schedule</p>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="alert alert-success">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <div>
+                                    <p class="alert-title">No Conflicts</p>
+                                    <p class="alert-text">This schedule works with your classes</p>
+                                </div>
+                            </div>
+                        `}
+                        
+                        <button class="btn btn-primary btn-lg" style="width: 100%;" ${job.hasConflict ? 'disabled' : ''} onclick="applyJob()">
+                            ${job.hasConflict ? 'Cannot Apply - Time Conflict' : 'Apply Now'}
+                        </button>
+                        
+                        <button class="btn btn-outline" style="width: 100%;" onclick="toggleFavorite()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            ${isFavorite ? 'Remove from Favorites' : 'Save for Later'}
+                        </button>
+                        
+                        <div class="deadline-info">
+                            <p class="deadline-label">Application Deadline</p>
+                            <p class="deadline-date">${new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                            <p class="deadline-remaining">${daysRemaining} days remaining</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleFavorite() {
+            isFavorite = !isFavorite;
+            showToast(isFavorite ? 'Added to favorites' : 'Removed from favorites', 'success');
+            loadJobDetail();
+        }
+        
+        async function applyJob() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const jobId = params.get('id');
+                await API.student.applyJob(jobId);
+                showToast('Application submitted successfully!', 'success');
+                setTimeout(() => window.location.href = '/student/dashboard', 1500);
+            } catch (error) {
+                if (error.message.includes('未登录')) {
+                    if (confirm('Please login first to apply')) {
+                        window.location.href = '/login.html';
+                    }
+                } else {
+                    showToast(error.message, 'error');
+                }
+            }
+        }
+        
+        // Header scroll
+        let lastScrollY = 0;
+        let ticking = false;
+        
+        function updateHeader() {
+            const header = document.getElementById('mainHeader');
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > 10) {
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                header.style.borderBottom = '1px solid rgba(229, 231, 235, 0.5)';
+            } else {
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+                header.style.borderBottom = '1px solid rgba(229, 231, 235, 0.8)';
+            }
+            
+            if (currentScrollY < lastScrollY || currentScrollY < 10) {
+                header.style.transform = 'translateY(0)';
+            } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                header.style.transform = 'translateY(-100%)';
+            }
+            
+            lastScrollY = currentScrollY;
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(updateHeader);
+                ticking = true;
+            }
+        });
+        
+        // User dropdown
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userMenuBtn && userDropdown) {
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+            
+            document.addEventListener('click', () => {
+                userDropdown.classList.remove('show');
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadJobDetail);
+    </script>
+</body>
+</html>
