@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *Authored by Guang Yang *
 
 ## Overview
@@ -87,3 +88,6 @@ A tabular view for detailed data analysis and bulk operations:
 * All data is synced in real-time with the backend, ensuring all MOs see the latest candidate status.
 * AI matching scores and interview questions are generated via the system’s integrated NLP model, based on candidate resumes and module requirements.
 * Conflict detection is automated, flagging overlaps in class schedules or eligibility criteria.
+=======
+该分支为测试分支，测试完成后再推送至main
+>>>>>>> 984061e821cf3e7e27a315a63d97bb94158351e7
