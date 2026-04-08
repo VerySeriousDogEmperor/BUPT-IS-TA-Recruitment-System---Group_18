@@ -1,235 +1,524 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - BUPT TA招聘平台</title>
-    <link rel="stylesheet" href="../static/css/common.css">
-    <link rel="stylesheet" href="../static/css/components.css">
-    <link rel="stylesheet" href="../static/css/dashboard.css">
+    <title>Dashboard - BUPT TA Recruitment</title>
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
 </head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <a href="../index.html" class="logo">
-                    <span class="logo-icon">🎓</span>
-                    <span class="logo-text">BUPT TA招聘</span>
-                </a>
-                <nav class="nav">
-                    <a href="../index.html">首页</a>
-                    <a href="../apply.html">职位申请</a>
-                    <a href="../announcements.html">公告</a>
-                    <a href="../about.html">关于我们</a>
-                    <a href="../guide.html">新手指南</a>
-                    <a href="dashboard.html" class="active">个人空间</a>
-                </nav>
-                <div class="header-actions">
-                    <button class="btn btn-outline" id="logoutBtn">退出登录</button>
-                </div>
-            </div>
-        </div>
-    </header>
-
+<body class="dashboard-body">
     <!-- Profile Header -->
-    <section class="profile-header">
-        <div class="container">
-            <div class="profile-header-content">
-                <div class="profile-avatar">
-                    <div class="avatar-placeholder" id="userAvatar">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
+    <section class="dashboard-header">
+        <div class="header-container">
+            <div class="profile-section">
+                <div class="profile-avatar" id="profileAvatarContainer">
+                    <img id="profileAvatarImg" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    <svg id="profileAvatarIcon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <div class="avatar-upload-overlay" id="avatarUploadOverlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
                         </svg>
+                        <span>Upload</span>
                     </div>
+                    <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
                 </div>
                 <div class="profile-info">
-                    <h1 class="profile-name" id="userName">加载中...</h1>
-                    <p class="profile-subtitle" id="userSubtitle">学生</p>
+                    <h1 class="profile-name" id="userName">Loading...</h1>
+                    <p class="profile-meta" id="userMeta">Student</p>
                     <div class="profile-badges">
-                        <span class="badge badge-light" id="gpaB badge">GPA: N/A</span>
-                        <span class="badge badge-light" id="studentIdBadge">ID: N/A</span>
+                        <span class="profile-badge" id="gpaBadge">GPA: N/A</span>
+                        <span class="profile-badge" id="idBadge">ID: N/A</span>
                     </div>
                 </div>
-                <div class="profile-actions">
-                    <button class="btn btn-outline-light" id="editProfileBtn">编辑资料</button>
-                    <button class="btn btn-danger" id="logoutBtnHeader">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        退出登录
-                    </button>
-                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" id="editProfileBtn">Edit Profile</button>
+                <button class="btn btn-danger" id="logoutBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
             </div>
         </div>
     </section>
 
     <!-- Main Content -->
-    <div class="container dashboard-container">
+    <div class="dashboard-main">
         <!-- Tabs -->
-        <div class="tabs">
+        <div class="tabs-container">
             <div class="tabs-list">
-                <button class="tab-trigger active" data-tab="overview">概览</button>
-                <button class="tab-trigger" data-tab="info">基本信息</button>
-                <button class="tab-trigger" data-tab="resume">简历</button>
-                <button class="tab-trigger" data-tab="applications">申请记录</button>
-                <button class="tab-trigger" data-tab="schedule">课程表</button>
-                <button class="tab-trigger" data-tab="ai-assistant">AI助手</button>
-                <button class="tab-trigger" data-tab="favorites">收藏</button>
-                <button class="tab-trigger" data-tab="security">安全设置</button>
+                <button class="tab-btn active" data-tab="overview">Overview</button>
+                <button class="tab-btn" data-tab="info">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    Basic Info
+                </button>
+                <button class="tab-btn" data-tab="resume">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Resume
+                </button>
+                <button class="tab-btn" data-tab="applications">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    Applications
+                </button>
+                <button class="tab-btn" data-tab="schedule">Schedule</button>
+                <button class="tab-btn" data-tab="ai-assistant">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    AI Assistant
+                </button>
+                <button class="tab-btn" data-tab="favorites">Favorites</button>
+                <button class="tab-btn" data-tab="security">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Security
+                </button>
             </div>
 
             <!-- Tab Contents -->
             <div class="tabs-content">
                 <!-- Overview Tab -->
-                <div class="tab-content active" id="overview-tab">
-                    <div class="grid grid-2">
+                <div class="tab-content active" id="tab-overview">
+                    <div class="overview-grid">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">资料完成度</h3>
-                                <p class="card-description">完善资料以提高职位匹配度</p>
+                                <h3 class="card-title">Profile Completion</h3>
+                                <p class="card-description">Complete your profile to improve job matching</p>
                             </div>
-                            <div class="card-content">
+                            <div class="card-body">
                                 <div class="completion-item">
-                                    <span>基本信息</span>
-                                    <span class="badge" id="basicInfoStatus">未完成</span>
+                                    <span>Basic Information</span>
+                                    <span class="badge badge-success">Complete</span>
                                 </div>
                                 <div class="completion-item">
-                                    <span>简历上传</span>
-                                    <span class="badge badge-secondary">待上传</span>
+                                    <span>Resume Uploaded</span>
+                                    <span class="badge badge-secondary">Pending</span>
                                 </div>
                                 <div class="completion-item">
-                                    <span>学术记录</span>
-                                    <span class="badge" id="academicStatus">未完成</span>
+                                    <span>Academic Records</span>
+                                    <span class="badge badge-success">Complete</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">快速统计</h3>
-                                <p class="card-description">您的申请概览</p>
+                                <h3 class="card-title">Quick Stats</h3>
+                                <p class="card-description">Your application overview</p>
                             </div>
-                            <div class="card-content">
+                            <div class="card-body">
                                 <div class="stat-item">
-                                    <span class="stat-label">总申请数</span>
+                                    <span class="stat-label">Total Applications</span>
                                     <span class="stat-value">3</span>
                                 </div>
                                 <div class="stat-item">
-                                    <span class="stat-label">审核中</span>
+                                    <span class="stat-label">Under Review</span>
                                     <span class="stat-value stat-warning">2</span>
                                 </div>
                                 <div class="stat-item">
-                                    <span class="stat-label">已安排面试</span>
+                                    <span class="stat-label">Interviews Scheduled</span>
                                     <span class="stat-value stat-success">1</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-2">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">技能评估</h3>
-                                <p class="card-description">基于学术表现和TA评价的能力</p>
-                            </div>
-                            <div class="card-content">
-                                <canvas id="skillRadarChart" width="400" height="300"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="card" id="applicationTrackerCard">
-                            <!-- Will be populated by JS -->
+                    <div class="overview-section">
+                        <h3 class="section-title">Application Timeline</h3>
+                        <div class="timeline" id="applicationTimeline">
+                            <!-- Dynamic content -->
                         </div>
                     </div>
                 </div>
 
                 <!-- Basic Info Tab -->
-                <div class="tab-content" id="info-tab">
+                <div class="tab-content" id="tab-info">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">基本信息</h3>
-                            <p class="card-description">管理您的个人信息和学术详情</p>
+                            <h3 class="card-title">Basic Information</h3>
+                            <p class="card-description">Manage your personal information and academic details</p>
                         </div>
-                        <div class="card-content">
-                            <form id="profileForm" class="form-grid">
-                                <div class="form-group">
-                                    <label for="name">姓名</label>
-                                    <div class="input-with-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                        <input type="text" id="name" name="name" disabled>
+                        <div class="card-body">
+                            <form id="profileForm" class="profile-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" name="name" class="form-input" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-input" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phone Number</label>
+                                        <input type="tel" name="phone" class="form-input" placeholder="138xxxxxxxx" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Student ID</label>
+                                        <input type="text" name="studentId" class="form-input" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Major</label>
+                                        <input type="text" name="major" class="form-input" placeholder="Computer Science" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Academic Year</label>
+                                        <input type="text" name="year" class="form-input" placeholder="2023" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">GPA</label>
+                                        <input type="text" name="gpa" class="form-input" placeholder="3.8" disabled>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="email">邮箱</label>
-                                    <div class="input-with-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                            <polyline points="22,6 12,13 2,6"></polyline>
-                                        </svg>
-                                        <input type="email" id="email" name="email" disabled>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">电话</label>
-                                    <div class="input-with-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                                        </svg>
-                                        <input type="tel" id="phone" name="phone" placeholder="138xxxxxxxx" disabled>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="studentId">学号</label>
-                                    <div class="input-with-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                                        </svg>
-                                        <input type="text" id="studentId" name="studentId" disabled>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="major">专业</label>
-                                    <div class="input-with-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                                        </svg>
-                                        <input type="text" id="major" name="major" placeholder="计算机科学" disabled>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="year">年级</label>
-                                    <div class="input-with-icon">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                                        </svg>
-                                        <input type="text" id="year" name="year" placeholder="2023" disabled>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="gpa">GPA</label>
-                                    <input type="text" id="gpa" name="gpa" placeholder="3.8" disabled>
-                                </div>
-                                <div class="form-group form-group-full">
-                                    <label for="bio">个人简介</label>
-                                    <textarea id="bio" name="bio" rows="4" placeholder="介绍一下您自己..." disabled></textarea>
+                                    <label class="form-label">Bio / Personal Statement</label>
+                                    <textarea name="bio" class="form-textarea" rows="4" placeholder="Tell us about yourself..." disabled></textarea>
                                 </div>
                                 <div class="form-actions" id="formActions" style="display: none;">
-                                    <button type="button" class="btn btn-outline" id="cancelEditBtn">取消</button>
-                                    <button type="submit" class="btn btn-primary">保存更改</button>
+                                    <button type="button" class="btn btn-outline" id="cancelEditBtn">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
+
+                <!-- Resume Tab -->
+                <div class="tab-content" id="tab-resume">
+                    <div class="resume-tabs">
+                        <div class="resume-tabs-list">
+                            <button class="resume-tab-btn active" data-resume-tab="upload">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                Upload PDF
+                            </button>
+                            <button class="resume-tab-btn" data-resume-tab="standard">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                Standard Form
+                            </button>
+                            <button class="resume-tab-btn" data-resume-tab="ai-polish">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                                AI Polish
+                            </button>
+                        </div>
+
+                        <!-- Upload PDF Tab -->
+                        <div class="resume-tab-content active" id="resume-tab-upload">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Upload Resume PDF</h3>
+                                    <p class="card-description">Upload your resume in PDF format for MO review</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="upload-area" id="pdfUploadArea">
+                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <h4>Click to upload or drag and drop</h4>
+                                        <p>PDF (max 5MB)</p>
+                                        <input type="file" id="resumeUpload" accept=".pdf" style="display: none;">
+                                    </div>
+                                    <div id="uploadedFileInfo" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Standard Form Tab -->
+                        <div class="resume-tab-content" id="resume-tab-standard">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Standard Resume Form</h3>
+                                    <p class="card-description">Fill out this form to generate a BUPT-standard web resume</p>
+                                </div>
+                                <div class="card-body">
+                                    <form id="standardResumeForm" class="resume-form">
+                                        <div class="form-grid">
+                                            <div class="form-group">
+                                                <label class="form-label">Full Name</label>
+                                                <input type="text" class="form-input" placeholder="Zhang Wei">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Student ID</label>
+                                                <input type="text" class="form-input" placeholder="2021211000">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-input" placeholder="your.email@bupt.edu.cn">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Major</label>
+                                            <input type="text" class="form-input" placeholder="Computer Science">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">GPA</label>
+                                            <input type="number" step="0.01" class="form-input" placeholder="3.75">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Technical Skills</label>
+                                            <textarea class="form-textarea" rows="3" placeholder="Java, Python, React, SQL, etc."></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Relevant Experience</label>
+                                            <textarea class="form-textarea" rows="5" placeholder="Describe your teaching or tutoring experience..."></textarea>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn btn-primary">Generate Resume</button>
+                                            <button type="button" class="btn btn-outline">Preview</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Polish Tab -->
+                        <div class="resume-tab-content" id="resume-tab-ai-polish">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">AI Resume Polish</h3>
+                                    <p class="card-description">Use AI to optimize your experience descriptions with professional language</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Your Original Experience</label>
+                                        <textarea id="originalText" class="form-textarea" rows="5" placeholder="I helped students with their homework and answered questions..."></textarea>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="polishBtn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                        Polish with AI
+                                    </button>
+                                    <div class="form-group" style="margin-top: 1.5rem;">
+                                        <label class="form-label">AI-Polished Version</label>
+                                        <div class="polished-result">
+                                            <p>Provided comprehensive academic support to undergraduate students through one-on-one tutoring sessions and office hours. Facilitated student understanding of complex concepts through clear explanations and practical examples, resulting in improved academic performance and positive student feedback.</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-outline">Copy to Clipboard</button>
+                                        <button type="button" class="btn btn-outline">Regenerate</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applications Tab -->
+                <div class="tab-content" id="tab-applications">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">My Applications</h3>
+                            <p class="card-description">Track your application status</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="applicationsList">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Tab -->
+                <div class="tab-content" id="tab-schedule">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Course Schedule Management</h3>
+                            <p class="card-description">Import your course schedule to automatically detect conflicts with TA positions</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="schedule-import">
+                                <input type="file" id="scheduleUpload" accept=".csv,.txt" style="display: none;">
+                                <button class="btn btn-primary" onclick="document.getElementById('scheduleUpload').click()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    Import Schedule (.csv)
+                                </button>
+                                <p class="schedule-hint">Upload your course schedule in CSV format</p>
+                            </div>
+                            <div class="schedule-info">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <div>
+                                    <p class="schedule-info-title">Auto Conflict Detection</p>
+                                    <p class="schedule-info-text">When browsing jobs, positions with time conflicts will be automatically marked with a warning</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 1.5rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Your Weekly Schedule</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="schedule-table-wrapper">
+                                <table class="schedule-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Monday</th>
+                                            <th>Tuesday</th>
+                                            <th>Wednesday</th>
+                                            <th>Thursday</th>
+                                            <th>Friday</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scheduleTableBody">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="schedule-legend">
+                                <div class="legend-item">
+                                    <div class="legend-box legend-class"></div>
+                                    <span>Your Classes</span>
+                                </div>
+                                <div class="legend-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    <span>Conflict Warning</span>
+                                </div>
+                                <div class="legend-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                    <span>Available</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Assistant Tab -->
+                <div class="tab-content" id="tab-ai-assistant">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">AI Assistant</h3>
+                            <p class="card-description">Get personalized recommendations and practice interviews</p>
+                        </div>
+                        <div class="card-body">
+                            <p>AI Assistant features coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favorites Tab -->
+                <div class="tab-content" id="tab-favorites">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Saved Positions</h3>
+                            <p class="card-description">Jobs you've bookmarked for later review</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="favoritesList">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Tab -->
+                <div class="tab-content" id="tab-security">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Security Settings</h3>
+                            <p class="card-description">Manage your password and account security</p>
+                        </div>
+                        <div class="card-body">
+                            <form class="security-form">
+                                <div class="form-group">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" class="form-input" placeholder="••••••••">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" class="form-input" placeholder="••••••••">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-input" placeholder="••••••••">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Password</button>
+                            </form>
+
+                            <div class="security-actions">
+                                <h4>Account Actions</h4>
+                                <button class="btn btn-outline btn-danger-outline" id="signOutBtn">Sign Out</button>
+                                <button class="btn btn-outline btn-danger-outline">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPA Modal -->
+    <div id="gpaModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Complete Your Profile</h3>
+                <p>Please enter your GPA to continue</p>
+            </div>
+            <div class="modal-body">
+                <form id="gpaForm">
+                    <div class="form-group">
+                        <label class="form-label">GPA (0.0 - 4.0)</label>
+                        <input type="number" id="gpaInput" class="form-input" min="0" max="4" step="0.01" placeholder="3.75" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save GPA</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/utils/api.js?v=2.5"></script>
+    <script src="/static/js/components/toast.js?v=2.5"></script>
+    <script src="/static/js/pages/student/dashboard.js?v=2.5"></script>
+</body>
+</html>
