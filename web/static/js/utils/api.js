@@ -2,7 +2,8 @@
  * API 工具类 - 统一封装所有后端接口调用
  */
 
-const API_BASE = '/api';
+// 自动检测部署路径（开发环境用 /api，生产环境用 /web/api）
+const API_BASE = window.location.pathname.startsWith('/web/') ? '/web/api' : '/api';
 
 /**
  * 通用请求函数
