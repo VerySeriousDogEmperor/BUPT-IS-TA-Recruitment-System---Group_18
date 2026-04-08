@@ -1,0 +1,172 @@
+/* ============================================================================
+   Announcements Page Styles - 完全复刻原版
+   ============================================================================ */
+
+/* Hero Section */
+.announcements-hero {
+  position: relative;
+  height: 256px;
+  background: #111827;
+  overflow: hidden;
+}
+
+.announcements-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1736066330610-c102cab4e942?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwY2xhc3Nyb29tJTIwdGVhY2hpbmd8ZW58MXx8fHwxNzczODI3ODEzfDA&ixlib=rb-4.1.0&q=80&w=1080');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+}
+
+.hero-content {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+}
+
+.hero-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #d1d5db;
+}
+
+/* Announcements Container */
+.announcements-container {
+  max-width: 896px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.announcements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Announcement Card */
+.announcement-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: box-shadow 0.3s;
+}
+
+.announcement-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.announcement-content {
+  display: flex;
+  align-items: start;
+  gap: 16px;
+}
+
+.pin-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.pin-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #dc2626;
+}
+
+.announcement-body {
+  flex: 1;
+}
+
+.announcement-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.announcement-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.announcement-date svg {
+  width: 16px;
+  height: 16px;
+}
+
+.announcement-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.announcement-text {
+  color: #374151;
+  line-height: 1.75;
+}
+
+/* Category Badges */
+.badge-important {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-interview {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-training {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-policy {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.badge-recruitment {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 1.875rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .announcements-container {
+    padding: 32px 16px;
+  }
+  
+  .announcement-card {
+    padding: 16px;
+  }
+  
+  .announcement-title {
+    font-size: 1.125rem;
+  }
+}
