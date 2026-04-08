@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>诊断页面</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 系统诊断</h1>
+    
+    <div class="box">
+        <h2>1. 当前URL信息</h2>
+        <pre id="urlInfo"></pre>
+    </div>
+
+    <div class="box">
+        <h2>2. 测试CSS加载</h2>
+        <p id="cssTest">检测中...</p>
+        <link rel="stylesheet" href="static/css/common.css" onload="document.getElementById('cssTest').innerHTML='<span class=success>✅ CSS加载成功</span>'" onerror="document.getElementById('cssTest').innerHTML='<span class=error>❌ CSS加载失败</span>'">
+    </div>
+
+    <div class="box">
+        <h2>3. 测试API连接</h2>
+        <p id="apiTest">检测中...</p>
+    </div>
+
+    <div class="box">
+        <h2>4. 资源路径测试</h2>
+        <table border="1" cellpadding="5" style="border-collapse: collapse; width: 100%;">
+            <tr>
+                <th>资源类型</th>
+                <th>相对路径</th>
+                <th>完整URL</th>
+            </tr>
+            <tr>
+                <td>CSS</td>
+                <td>static/css/common.css</td>
+                <td id="cssUrl"></td>
+            </tr>
+            <tr>
+                <td>JS</td>
+                <td>static/js/utils/api.js</td>
+                <td id="jsUrl"></td>
+            </tr>
+            <tr>
+                <td>API</td>
+                <td>/web/api/jobs</td>
+                <td id="apiUrl"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="box">
+        <h2>5. 建议的修复方案</h2>
+        <div id="suggestions"></div>
+    </div>
+
+    <script>
+        // 显示URL信息
+        const urlInfo = `
+当前完整URL: ${window.location.href}
+协议: ${window.location.protocol}
+主机: ${window.location.host}
+路径: ${window.location.pathname}
+上下文路径: ${window.location.pathname.split('/')[1] || '(根路径)'}
+        `;
+        document.getElementById('urlInfo').textContent = urlInfo;
+
+        // 计算完整URL
+        const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        document.getElementById('cssUrl').textContent = baseUrl + 'static/css/common.css';
+        document.getElementById('jsUrl').textContent = baseUrl + 'static/js/utils/api.js';
+        document.getElementById('apiUrl').textContent = window.location.origin + '/web/api/jobs';
+
+        // 测试API
+        const apiBase = window.location.pathname.includes('/web/') ? '/web/api' : '/api';
+        fetch(apiBase + '/jobs')
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('apiTest').innerHTML = '<span class="success">✅ API连接成功</span>';
+                } else {
+                    document.getElementById('apiTest').innerHTML = '<span class="error">❌ API返回错误: ' + response.status + '</span>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('apiTest').innerHTML = '<span class="error">❌ API连接失败: ' + error.message + '</span>';
+            });
+
+        // 生成建议
+        setTimeout(() => {
+            const cssOk = document.getElementById('cssTest').textContent.includes('✅');
+            const apiOk = document.getElementById('apiTest').textContent.includes('✅');
+            
+            let suggestions = '';
+            
+            if (!cssOk) {
+                suggestions += '<p class="error">❌ CSS加载失败</p>';
+                suggestions += '<p>可能原因：</p>';
+                suggestions += '<ul>';
+                suggestions += '<li>WAR文件未正确部署</li>';
+                suggestions += '<li>静态资源路径配置错误</li>';
+                suggestions += '<li>需要清除浏览器缓存</li>';
+                suggestions += '</ul>';
+                suggestions += '<p><strong>解决方案：</strong></p>';
+                suggestions += '<ol>';
+                suggestions += '<li>在IntelliJ中完全停止Tomcat</li>';
+                suggestions += '<li>删除Tomcat的webapps/web目录</li>';
+                suggestions += '<li>重新部署</li>';
+                suggestions += '<li>清除浏览器缓存 (Ctrl+Shift+Delete)</li>';
+                suggestions += '</ol>';
+            }
+            
+            if (!apiOk) {
+                suggestions += '<p class="error">❌ API连接失败</p>';
+                suggestions += '<p>可能原因：</p>';
+                suggestions += '<ul>';
+                suggestions += '<li>后端Servlet未正确启动</li>';
+                suggestions += '<li>web.xml配置错误</li>';
+                suggestions += '<li>数据初始化失败</li>';
+                suggestions += '</ul>';
+                suggestions += '<p><strong>解决方案：</strong></p>';
+                suggestions += '<ol>';
+                suggestions += '<li>检查Tomcat日志中的错误信息</li>';
+                suggestions += '<li>确认所有Servlet都已注册</li>';
+                suggestions += '<li>检查resources/data/目录是否存在</li>';
+                suggestions += '</ol>';
+            }
+            
+            if (cssOk && apiOk) {
+                suggestions = '<p class="success">✅ 所有检测通过！系统应该可以正常工作。</p>';
+                suggestions += '<p>如果主页仍然显示不正常，请：</p>';
+                suggestions += '<ol>';
+                suggestions += '<li>清除浏览器缓存 (Ctrl+Shift+Delete)</li>';
+                suggestions += '<li>使用无痕模式访问 (Ctrl+Shift+N)</li>';
+                suggestions += '<li>检查浏览器控制台(F12)的具体错误信息</li>';
+                suggestions += '</ol>';
+            }
+            
+            document.getElementById('suggestions').innerHTML = suggestions;
+        }, 2000);
+    </script>
+</body>
+</html>
