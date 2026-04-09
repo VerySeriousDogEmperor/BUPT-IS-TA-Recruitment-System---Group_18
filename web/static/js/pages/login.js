@@ -149,9 +149,12 @@ async function handleSubmit(e) {
         return;
       }
       
-      // 模拟登录
+      // 调用登录 API
+      const userData = await API.auth.login(email, password, staffRole);
+      
       localStorage.setItem('userRole', staffRole);
       localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify(userData));
       
       showToast('Login successful!', 'success');
       
@@ -166,16 +169,18 @@ async function handleSubmit(e) {
       // Student登录/注册
       if (isLogin) {
         // 登录
-        const response = await API.auth.login(email, password);
+        const userData = await API.auth.login(email, password, 'student');
+        
+        console.log('Login response:', userData); // Debug log
         
         localStorage.setItem('userRole', 'student');
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem('user', JSON.stringify(userData));
         
         showToast('Login successful!', 'success');
         
         setTimeout(() => {
-          window.location.href = '/student/dashboard.html';
+          window.location.href = '/index.html';
         }, 1000);
       } else {
         // 注册
@@ -189,7 +194,7 @@ async function handleSubmit(e) {
           return;
         }
         
-        const response = await API.auth.register({
+        const userData = await API.auth.register({
           name,
           email,
           studentId,
@@ -198,14 +203,16 @@ async function handleSubmit(e) {
           password
         });
         
+        console.log('Register response:', userData); // Debug log
+        
         localStorage.setItem('userRole', 'student');
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem('user', JSON.stringify(userData));
         
         showToast('Registration successful!', 'success');
         
         setTimeout(() => {
-          window.location.href = '/student/dashboard.html';
+          window.location.href = '/index.html';
         }, 1000);
       }
     }
@@ -218,3 +225,43 @@ async function handleSubmit(e) {
  * 初始化
  */
 document.addEventListener('DOMContentLoaded', initPage);
+
+
+// Header scroll effect
+let lastScrollY = 0;
+let ticking = false;
+
+function updateHeader() {
+    const header = document.getElementById('mainHeader');
+    if (!header) return;
+    
+    const currentScrollY = window.scrollY;
+    
+    // Change background opacity based on scroll
+    if (currentScrollY > 10) {
+        header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        header.style.borderBottom = '1px solid rgba(229, 231, 235, 0.8)';
+        header.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+    } else {
+        header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        header.style.borderBottom = '1px solid rgba(229, 231, 235, 0.8)';
+        header.style.boxShadow = 'none';
+    }
+    
+    // Hide/show header based on scroll direction
+    if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        header.style.transform = 'translateY(0)';
+    } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        header.style.transform = 'translateY(-100%)';
+    }
+    
+    lastScrollY = currentScrollY;
+    ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+    if (!ticking) {
+        window.requestAnimationFrame(updateHeader);
+        ticking = true;
+    }
+});
