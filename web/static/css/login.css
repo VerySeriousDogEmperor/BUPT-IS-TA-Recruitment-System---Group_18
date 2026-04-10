@@ -3,19 +3,19 @@
    ============================================================================ */
 
 .login-page {
-  min-height: 100vh;
-  background: #f9fafb;
-  padding-top: 64px;
+    background: #f9fafb;
+    padding: 3rem 0;
+    min-height: calc(100vh - 64px - 200px); /* 减去header和footer高度 */
 }
 
 .login-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 48px 24px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
-  align-items: center;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    align-items: center;
 }
 
 /* Left Side - Image */

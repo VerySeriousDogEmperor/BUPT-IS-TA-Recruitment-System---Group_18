@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Applicants - MO Portal</title>
+    <link rel="stylesheet" href="../static/css/mo/applicants.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">MO Portal</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="jobs.html" class="nav-item">
+                <i data-lucide="briefcase"></i>
+                <span>My Modules</span>
+            </a>
+            <a href="post-job.html" class="nav-item">
+                <i data-lucide="plus-circle"></i>
+                <span>Post Job</span>
+            </a>
+            <a href="applicants.html" class="nav-item active">
+                <i data-lucide="users"></i>
+                <span>Applicants</span>
+            </a>
+            <a href="timesheets.html" class="nav-item">
+                <i data-lucide="clock"></i>
+                <span>Timesheets</span>
+            </a>
+            <a href="knowledge-base.html" class="nav-item">
+                <i data-lucide="book-open"></i>
+                <span>Knowledge Base</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">MO</div>
+                <div class="user-info">
+                    <div class="user-name">Module Owner</div>
+                    <div class="user-role">COMP101</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()" title="Logout">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1>All Applicants</h1>
+                    <p class="page-subtitle"><span id="candidateCount">0</span> candidates · Sem 1, 2026</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary">
+                        <i>⚙️</i>
+                        <span>Export</span>
+                    </button>
+                    <button class="btn-primary" id="aiRankBtn">
+                        <i>✨</i>
+                        <span>AI Rank All</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <!-- Search -->
+                <div class="search-box">
+                    <i class="search-icon">🔍</i>
+                    <input type="text" id="searchInput" placeholder="Search name, ID...">
+                    <i class="clear-search" id="clearSearch">✕</i>
+                </div>
+
+                <!-- Stage Filter -->
+                <div class="filter-select-wrapper">
+                    <select id="stageFilter" class="filter-select">
+                        <option value="all">All Stages</option>
+                        <option value="new">New Applicants</option>
+                        <option value="shortlisted">Shortlisted</option>
+                        <option value="interviewing">Interviewing</option>
+                        <option value="final_review">Pending Admin</option>
+                    </select>
+                </div>
+
+                <!-- Module Filter -->
+                <div class="filter-select-wrapper">
+                    <select id="moduleFilter" class="filter-select">
+                        <option value="all">All Modules</option>
+                    </select>
+                </div>
+
+                <!-- AI Match Filter -->
+                <div class="filter-select-wrapper">
+                    <select id="matchFilter" class="filter-select">
+                        <option value="all">All Match Scores</option>
+                        <option value="high">High Match (≥ 85%)</option>
+                        <option value="low">Low Match (< 75%)</option>
+                    </select>
+                </div>
+
+                <!-- Sort Buttons -->
+                <div class="sort-buttons">
+                    <span class="sort-label">Sort:</span>
+                    <button class="sort-btn active purple" data-sort="match">AI Match</button>
+                    <button class="sort-btn" data-sort="gpa">GPA</button>
+                    <button class="sort-btn" data-sort="date">Date</button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <table class="applicants-table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Module</th>
+                            <th>GPA</th>
+                            <th>AI Match</th>
+                            <th>Status</th>
+                            <th>Stage</th>
+                            <th>Applied</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicantsTableBody">
+                        <!-- Rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Drawer Overlay -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <!-- Drawer -->
+    <div class="drawer" id="candidateDrawer">
+        <div class="drawer-header">
+            <button class="drawer-close" id="drawerClose">
+                <i>✕</i>
+            </button>
+            <div id="drawerHeaderContent"></div>
+        </div>
+        <div class="drawer-body" id="drawerBody">
+            <!-- Content will be inserted here -->
+        </div>
+        <div class="drawer-footer" id="drawerFooter">
+            <!-- Buttons will be inserted here -->
+        </div>
+    </div>
+
+    <script src="../static/js/pages/mo/applicants.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

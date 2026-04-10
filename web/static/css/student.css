@@ -131,13 +131,15 @@
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.2s;
-  z-index: 100;
+  z-index: 1000;
+  pointer-events: none;
 }
 
 .user-dropdown.show {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  pointer-events: auto;
 }
 
 .user-info {
@@ -179,6 +181,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  visibility: hidden; /* Initially hidden to prevent flash */
+}
+
+/* Prevent header auth elements from flashing on page load */
+.header-user-menu,
+#notificationBtn {
+  visibility: hidden; /* Initially hidden to prevent flash */
 }
 
 .btn-sm {
