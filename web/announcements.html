@@ -27,7 +27,8 @@
                 </nav>
 
                 <div class="header-right">
-                    <button class="header-icon-btn" id="notificationBtn">
+                    <!-- Notification Bell -->
+                    <button class="header-icon-btn" id="notificationBtn" style="display: none;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -35,7 +36,8 @@
                         <span class="notification-badge">3</span>
                     </button>
 
-                    <div class="header-user-menu">
+                    <!-- User Avatar Dropdown -->
+                    <div class="header-user-menu" style="display: none;">
                         <button class="user-avatar-btn" id="userMenuBtn">
                             <div class="user-avatar">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -50,10 +52,16 @@
                                 <p class="user-email">guest@bupt.edu.cn</p>
                             </div>
                             <div class="dropdown-divider"></div>
-                            <a href="/student/dashboard" class="dropdown-item">Personal Center</a>
+                            <a href="/student/dashboard.html" class="dropdown-item">Personal Center</a>
                             <div class="dropdown-divider"></div>
                             <a href="/login.html" class="dropdown-item">Logout</a>
                         </div>
+                    </div>
+
+                    <!-- Login Buttons (when not authenticated) -->
+                    <div class="header-auth-buttons">
+                        <a href="/login.html" class="btn btn-outline btn-sm">Student Login</a>
+                        <a href="/login.html?mode=staff" class="btn btn-primary btn-sm">Staff Entrance</a>
                     </div>
                 </div>
             </div>
@@ -131,8 +139,8 @@
                 <div class="footer-column">
                     <h4 class="footer-heading">For Applicants</h4>
                     <ul class="footer-links">
-                        <li><a href="/student/dashboard">My Profile</a></li>
-                        <li><a href="/student/dashboard">Application Status</a></li>
+                        <li><a href="/student/dashboard.html">My Profile</a></li>
+                        <li><a href="/student/dashboard.html">Application Status</a></li>
                         <li><a href="/guide.html">AI Assistant</a></li>
                     </ul>
                 </div>
@@ -168,6 +176,7 @@
     </footer>
 
     <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/utils/auth.js"></script>
     <script src="/static/js/components/toast.js"></script>
     <script src="/static/js/pages/student/announcements.js"></script>
     <script>

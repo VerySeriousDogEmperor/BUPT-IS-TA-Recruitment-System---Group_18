@@ -1,0 +1,32 @@
+[
+  {
+    "id": "MOD001",
+    "name": "数据结构",
+    "code": "CS201",
+    "department": "计算机学院",
+    "semester": "2026春季",
+    "moId": "MO001",
+    "description": "数据结构基础课程",
+    "createdAt": "2026-04-08T13:05:38.3398832"
+  },
+  {
+    "id": "MOD002",
+    "name": "操作系统",
+    "code": "CS301",
+    "department": "计算机学院",
+    "semester": "2026春季",
+    "moId": "MO001",
+    "description": "操作系统原理",
+    "createdAt": "2026-04-08T13:05:38.3427256"
+  },
+  {
+    "id": "MOD003",
+    "name": "计算机网络",
+    "code": "CS302",
+    "department": "计算机学院",
+    "semester": "2026春季",
+    "moId": "MO002",
+    "description": "计算机网络基础",
+    "createdAt": "2026-04-08T13:05:38.3437352"
+  }
+]
