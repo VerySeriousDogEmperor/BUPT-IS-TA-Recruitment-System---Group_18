@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUPT IS Admin - Workload Control</title>
+    <link rel="stylesheet" href="../static/css/common.css">
+    <link rel="stylesheet" href="../static/css/admin/admin.css">
+    <link rel="stylesheet" href="../static/css/admin/workload.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="logo-text">
+                        <h1>BUPT IS Admin</h1>
+                        <p>Collections Platform</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="3" width="7" height="7" stroke-width="2"/>
+                        <rect x="14" y="3" width="7" height="7" stroke-width="2"/>
+                        <rect x="14" y="14" width="7" height="7" stroke-width="2"/>
+                        <rect x="3" y="14" width="7" height="7" stroke-width="2"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="recruitment.html" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" stroke-width="2"/>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke-width="2"/>
+                    </svg>
+                    <span>Recruitment Status</span>
+                </a>
+                <a href="workload.html" class="nav-item active">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-width="2"/>
+                        <line x1="12" y1="9" x2="12" y2="13" stroke-width="2"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2"/>
+                    </svg>
+                    <span>Workload Control</span>
+                </a>
+                <a href="users.html" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2"/>
+                        <circle cx="9" cy="7" r="4" stroke-width="2"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke-width="2"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke-width="2"/>
+                    </svg>
+                    <span>User Management</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="3" stroke-width="2"/>
+                        <path d="M12 1v6m0 6v6m8.66-15.66l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1m20.66 8.66l-4.24-4.24m-4.24-4.24l-4.24-4.24" stroke-width="2"/>
+                    </svg>
+                    <span>RAG Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div class="user-details">
+                        <p class="user-name">System Admin</p>
+                        <p class="user-email">admin@bupt.edu.cn</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Top Header -->
+            <header class="admin-header">
+                <div class="header-search">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8" stroke-width="2"/>
+                        <path d="m21 21-4.35-4.35" stroke-width="2"/>
+                    </svg>
+                    <input type="text" placeholder="Search resources..." class="search-input">
+                </div>
+
+                <div class="header-actions">
+                    <div class="system-status">
+                        <span class="status-pulse"></span>
+                        <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-width="2"/>
+                        </svg>
+                        <span class="status-text">System Status: <span class="status-value">5 Conflicts Detected</span></span>
+                    </div>
+
+                    <div class="semester-dropdown">
+                        <button class="semester-button" id="semesterButton">
+                            <span class="semester-indicator"></span>
+                            <span class="semester-label">Current Semester: 2026 Spring</span>
+                            <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="6 9 12 15 18 9" stroke-width="2"/>
+                            </svg>
+                        </button>
+                        <div class="semester-menu" id="semesterMenu">
+                            <button class="semester-option active" data-value="2026-spring">
+                                <span>2026 Spring</span>
+                                <span class="current-badge">Current</span>
+                            </button>
+                            <button class="semester-option" data-value="2025-fall">2025 Fall</button>
+                            <button class="semester-option" data-value="2025-spring">2025 Spring</button>
+                            <button class="semester-option" data-value="2024-fall">2024 Fall</button>
+                        </div>
+                    </div>
+
+                    <button class="notification-button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2"/>
+                        </svg>
+                        <span class="notification-badge"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="admin-content" id="adminContent">
+                <!-- Content will be loaded by JavaScript -->
+            </main>
+        </div>
+    </div>
+
+    <script src="../static/js/pages/admin/workload.js"></script>
+</body>
+</html>

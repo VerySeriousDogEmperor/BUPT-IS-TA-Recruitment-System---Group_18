@@ -1,0 +1,618 @@
+/* ============================================================================
+   首页专用样式 - 完全复刻原版设计
+   ============================================================================ */
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  height: 600px;
+  background: #111827;
+  overflow: hidden;
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.hero-content {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding: 0 24px;
+}
+
+.hero-title {
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.hero-title-main {
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+}
+
+.hero-title-highlight {
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  font-weight: 900;
+  font-style: italic;
+  background: linear-gradient(to right, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-bottom: 40px;
+}
+
+.hero-button {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  padding: 24px 32px;
+  border-radius: 9999px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.hero-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Recruitment Projects */
+.section-projects {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 64px 24px 96px;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  margin-bottom: 48px;
+}
+
+.carousel-container {
+  position: relative;
+  padding: 0 64px;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  background: white;
+  border-radius: 9999px;
+  padding: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.carousel-btn:hover {
+  background: #f3f4f6;
+}
+
+.carousel-btn-prev {
+  left: 0;
+}
+
+.carousel-btn-next {
+  right: 0;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card {
+  flex: 0 0 33.333%;
+  padding: 0 16px;
+  transition: all 0.5s ease;
+  transform: scale(0.85);
+  opacity: 0.6;
+}
+
+.project-card.active {
+  transform: scale(1);
+  opacity: 1;
+  z-index: 10;
+}
+
+.project-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.bg-blue { background: #3b82f6; }
+.bg-purple { background: #a855f7; }
+.bg-green { background: #10b981; }
+
+.project-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.project-desc {
+  color: #4b5563;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  max-width: 512px;
+  margin: 0 auto;
+}
+
+/* Recruitment Announcement */
+.section-announcement {
+  background: #f9fafb;
+  padding: 64px 0;
+}
+
+.announcement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  align-items: center;
+}
+
+.announcement-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.announcement-item {
+  margin-bottom: 24px;
+}
+
+.announcement-item h3 {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.announcement-item p {
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.announcement-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.announcement-image {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.announcement-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Recruitment Process */
+.section-process {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.process-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+}
+
+.process-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.process-icon-wrapper {
+  background: white;
+  border: 4px solid #3b82f6;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.process-badge {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  background: #3b82f6;
+  border-radius: 9999px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.process-date {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.process-label {
+  font-weight: 600;
+  text-align: center;
+}
+
+.process-arrow {
+  display: flex;
+  align-items: center;
+}
+
+/* Why Join Us */
+.section-why {
+  background: #f9fafb;
+  padding: 64px 0;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.why-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.why-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.why-icon {
+  margin-bottom: 24px;
+}
+
+.why-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.why-card p {
+  color: #4b5563;
+  line-height: 1.75;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .hero-title-main,
+  .hero-title-highlight {
+    font-size: 3rem;
+  }
+  
+  .project-card {
+    flex: 0 0 100%;
+  }
+  
+  .announcement-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .process-steps {
+    flex-direction: column;
+    gap: 32px;
+  }
+  
+  .process-arrow {
+    transform: rotate(90deg);
+  }
+  
+  .why-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Project Card Fix */
+.project-card-inner {
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  padding: 48px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.project-card:hover .project-card-inner {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Senior TAs' Stories */
+.section-testimonials {
+  background: #f9fafb;
+  padding: 64px 0;
+}
+
+.testimonial-container {
+  position: relative;
+  overflow: hidden;
+  padding: 0 64px;
+}
+
+.testimonial-track {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.testimonial-slide {
+  flex: 0 0 100%;
+  padding: 0 16px;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+}
+
+.testimonial-content {
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.testimonial-star {
+  margin-bottom: 24px;
+}
+
+.testimonial-quote {
+  color: #111827;
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: 32px;
+  font-weight: 500;
+}
+
+.testimonial-author {
+  margin-top: auto;
+}
+
+.testimonial-name {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+  color: #111827;
+}
+
+.testimonial-info {
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.testimonial-image {
+  height: 384px;
+  position: relative;
+  background: black;
+}
+
+.testimonial-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testimonial-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding: 0 16px;
+}
+
+.testimonial-footer .btn {
+  border-radius: 9999px;
+  padding: 8px 24px;
+  background: #3b82f6;
+  color: white;
+  border: 2px solid #3b82f6;
+  font-weight: 600;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式 - Testimonials */
+@media (max-width: 768px) {
+  .testimonial-card {
+    grid-template-columns: 1fr;
+  }
+  
+  .testimonial-image {
+    height: 320px;
+  }
+  
+  .testimonial-content {
+    padding: 32px;
+  }
+}
+
+
+/* Footer */
+.footer-main {
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+}
+
+.footer-main .container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-heading {
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 1rem;
+}
+
+.footer-text {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.footer-social {
+  display: flex;
+  gap: 16px;
+}
+
+.social-icon {
+  color: #4b5563;
+  transition: color 0.2s;
+}
+
+.social-icon:hover {
+  color: #111827;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-links a {
+  font-size: 0.875rem;
+  color: #4b5563;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #111827;
+}
+
+.footer-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.footer-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.footer-bottom {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.footer-bottom p {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* 响应式 - Footer */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}

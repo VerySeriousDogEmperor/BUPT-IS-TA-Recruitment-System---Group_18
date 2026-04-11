@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Modules - MO Portal</title>
+    <link rel="stylesheet" href="/static/css/mo/jobs.css">
+    <link rel="stylesheet" href="/static/css/mo/theme.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">MO Portal</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="jobs.html" class="nav-item active">
+                <i data-lucide="briefcase"></i>
+                <span>My Modules</span>
+            </a>
+            <a href="post-job.html" class="nav-item">
+                <i data-lucide="plus-circle"></i>
+                <span>Post Job</span>
+            </a>
+            <a href="applicants.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Applicants</span>
+            </a>
+            <a href="timesheets.html" class="nav-item">
+                <i data-lucide="clock"></i>
+                <span>Timesheets</span>
+            </a>
+            <a href="knowledge-base.html" class="nav-item">
+                <i data-lucide="book-open"></i>
+                <span>Knowledge Base</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">MO</div>
+                <div class="user-info">
+                    <div class="user-name">Module Owner</div>
+                    <div class="user-role">COMP101</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()" title="Logout">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <div>
+                    <h1>My Modules</h1>
+                    <p class="page-subtitle" id="pageSubtitle">Loading...</p>
+                </div>
+                <button class="btn-primary" id="btnRequestNew">
+                    <i data-lucide="plus-circle"></i>
+                    <span>Create Job Post</span>
+                </button>
+            </div>
+
+            <div class="workflow-banner">
+                <div class="workflow-header">
+                    <div class="workflow-icon">
+                        <i data-lucide="waypoints"></i>
+                    </div>
+                    <div class="workflow-copy">
+                        <span class="workflow-title">Module Ownership Flow</span>
+                        <span class="workflow-subtitle">Move from module overview to live job tracking and applicant follow-up from one MO-owned workspace.</span>
+                    </div>
+                </div>
+                <div class="workflow-steps">
+                    <div class="workflow-step-wrapper">
+                        <div class="workflow-step">
+                            <div class="step-icon done">
+                                <i data-lucide="book-open"></i>
+                            </div>
+                            <div class="step-label done">Review Modules</div>
+                            <div class="step-desc">See every course currently assigned to your MO account.</div>
+                        </div>
+                    </div>
+                    <div class="workflow-connector done"></div>
+                    <div class="workflow-step-wrapper">
+                        <div class="workflow-step">
+                            <div class="step-icon active">
+                                <i data-lucide="clipboard-list"></i>
+                            </div>
+                            <div class="step-label active">Track Job Posts</div>
+                            <div class="step-desc">Compare draft and published roles across your modules.</div>
+                        </div>
+                    </div>
+                    <div class="workflow-connector active"></div>
+                    <div class="workflow-step-wrapper">
+                        <div class="workflow-step">
+                            <div class="step-icon">
+                                <i data-lucide="user-search"></i>
+                            </div>
+                            <div class="step-label">Follow Applicants</div>
+                            <div class="step-desc">Jump into applicant review once a module starts receiving interest.</div>
+                        </div>
+                    </div>
+                    <div class="workflow-connector"></div>
+                    <div class="workflow-step-wrapper">
+                        <div class="workflow-step">
+                            <div class="step-icon">
+                                <i data-lucide="arrow-right-left"></i>
+                            </div>
+                            <div class="step-label">Take Action</div>
+                            <div class="step-desc">Open editing or applicant pages directly from each module card.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="modules" id="tabModules">
+                    <span>My Modules</span>
+                    <span id="modulesCount">0</span>
+                </button>
+                <button class="tab-btn" data-tab="requests" id="tabRequests">
+                    <span>Job Posts</span>
+                    <span id="requestsCount">0</span>
+                    <span class="tab-badge" id="requestsBadge" style="display: none;">0</span>
+                </button>
+            </div>
+
+            <div id="modulesContent" class="modules-grid"></div>
+            <div id="requestsContent" class="requests-list" style="display: none;"></div>
+        </div>
+    </main>
+
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <div class="form-drawer" id="formDrawer">
+        <div class="form-header">
+            <div class="form-header-content">
+                <div class="form-header-icon">
+                    <i data-lucide="square-pen"></i>
+                </div>
+                <div>
+                    <div class="form-header-title">Submit Module Request</div>
+                    <div class="form-header-subtitle">Requests are reviewed and approved by Admin before taking effect</div>
+                </div>
+            </div>
+            <button class="btn-close" id="btnCloseDrawer">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="form-body">
+            <div class="form-group">
+                <label class="form-label">Request Type *</label>
+                <div class="type-buttons">
+                    <button class="type-btn active" data-type="new_module">
+                        <i data-lucide="plus-circle"></i>
+                        <span>New Module</span>
+                    </button>
+                    <button class="type-btn" data-type="edit_module">
+                        <i data-lucide="square-pen"></i>
+                        <span>Edit Existing</span>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Module Code *</label>
+                <input type="text" class="form-input" id="inputModuleCode" placeholder="e.g. COMP402">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Module Title *</label>
+                <input type="text" class="form-input" id="inputModuleTitle" placeholder="e.g. Advanced Machine Learning">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Semester *</label>
+                <input type="text" class="form-input" id="inputSemester" placeholder="e.g. Sem 1, 2026" value="Sem 1, 2026">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">TA Slots *</label>
+                    <div class="number-input">
+                        <button class="number-btn" id="btnSlotsDown">-</button>
+                        <div class="number-value" id="slotsValue">2</div>
+                        <button class="number-btn" id="btnSlotsUp">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Budget Hours *</label>
+                    <div class="number-input">
+                        <button class="number-btn" id="btnBudgetDown">-</button>
+                        <div class="number-value" id="budgetValue">80h</div>
+                        <button class="number-btn" id="btnBudgetUp">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Reason for Request *</label>
+                <textarea class="form-textarea" id="inputReason" rows="4" placeholder="Explain why this module needs to be added or changed, including any supporting context..."></textarea>
+            </div>
+            <div class="form-info">
+                <i data-lucide="info"></i>
+                <div class="form-info-text">
+                    Once submitted, this request enters the <strong>Admin approval</strong> workflow. The module will only appear in My Modules after approval.
+                </div>
+            </div>
+        </div>
+        <div class="form-footer">
+            <button class="btn-cancel" id="btnCancel">Cancel</button>
+            <div class="form-actions">
+                <button class="btn-draft" id="btnSaveDraft">
+                    <i data-lucide="file-text"></i>
+                    <span>Save Draft</span>
+                </button>
+                <button class="btn-submit-form" id="btnSubmitForm">
+                    <i data-lucide="send"></i>
+                    <span>Submit for Review</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/pages/mo/common.js"></script>
+    <script src="/static/js/pages/mo/jobs.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

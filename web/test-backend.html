@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 0; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover { background: #2563eb; }
+        .result {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { border-color: #10b981; background: #f0fdf4; }
+        .error { border-color: #ef4444; background: #fef2f2; }
+        input {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Backend API Test Tool</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Login (测试登录)</h2>
+        <input type="email" id="loginEmail" value="zhangsan@bupt.edu.cn" placeholder="Email">
+        <input type="password" id="loginPassword" value="123456" placeholder="Password">
+        <button onclick="testLogin()">Login</button>
+        <div id="loginResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Get Current User (测试获取当前用户)</h2>
+        <button onclick="testGetMe()">Get Me</button>
+        <div id="meResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Get Jobs (测试获取职位列表)</h2>
+        <button onclick="testGetJobs()">Get Jobs</button>
+        <div id="jobsResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Test Get Applications (测试获取申请列表)</h2>
+        <button onclick="testGetApplications()">Get Applications</button>
+        <div id="appsResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Test Logout (测试登出)</h2>
+        <button onclick="testLogout()">Logout</button>
+        <div id="logoutResult" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.pathname.includes('/web/') ? '/web/api' : '/api';
+
+        async function request(url, options = {}) {
+            try {
+                const response = await fetch(API_BASE + url, {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function showResult(elementId, result) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'block';
+            el.className = 'result ' + (result.success ? 'success' : 'error');
+            el.textContent = JSON.stringify(result, null, 2);
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const result = await request('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password, role: 'student' })
+            });
+            
+            showResult('loginResult', result);
+        }
+
+        async function testGetMe() {
+            const result = await request('/auth/me');
+            showResult('meResult', result);
+        }
+
+        async function testGetJobs() {
+            const result = await request('/jobs');
+            showResult('jobsResult', result);
+        }
+
+        async function testGetApplications() {
+            const result = await request('/student/applications');
+            showResult('appsResult', result);
+        }
+
+        async function testLogout() {
+            const result = await request('/auth/logout', { method: 'POST' });
+            showResult('logoutResult', result);
+        }
+    </script>
+</body>
+</html>
