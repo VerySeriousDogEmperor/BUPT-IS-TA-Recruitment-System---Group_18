@@ -17,26 +17,26 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * 认证接口
- * POST /api/auth/login - 登录
- * POST /api/auth/register - 注册
- * POST /api/auth/logout - 登出
- * GET /api/auth/me - 获取当前用户信息
+ * Authentication endpoints.
+ * POST /api/auth/login
+ * POST /api/auth/register
+ * POST /api/auth/logout
+ * GET /api/auth/me
  */
 @WebServlet("/api/auth/*")
 public class AuthServlet extends BaseServlet {
     private final StudentRepository studentRepo = new StudentRepository();
     private final UserRepository userRepo = new UserRepository();
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pathInfo = request.getPathInfo();
-        
+
         if (pathInfo == null) {
-            ResponseUtil.sendError(response, 404, "接口不存在");
+            ResponseUtil.sendError(response, 404, "Endpoint not found");
             return;
         }
-        
+
         switch (pathInfo) {
             case "/login":
                 handleLogin(request, response);
@@ -48,185 +48,153 @@ public class AuthServlet extends BaseServlet {
                 handleLogout(request, response);
                 break;
             default:
-                ResponseUtil.sendError(response, 404, "接口不存在");
+                ResponseUtil.sendError(response, 404, "Endpoint not found");
         }
     }
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pathInfo = request.getPathInfo();
-        
+
         if ("/me".equals(pathInfo)) {
             handleGetCurrentUser(request, response);
         } else {
-            ResponseUtil.sendError(response, 404, "接口不存在");
+            ResponseUtil.sendError(response, 404, "Endpoint not found");
         }
     }
 
-    
-    /**
-     * 处理登录
-     */
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             LoginRequest loginReq = readRequestBody(request, LoginRequest.class);
-            
-            // 验证参数
-            if (loginReq.email == null || loginReq.password == null) {
-                ResponseUtil.sendError(response, 400, "邮箱和密码不能为空");
+
+            if (loginReq.email == null || loginReq.password == null || loginReq.role == null) {
+                ResponseUtil.sendError(response, 400, "Email, password, and role are required");
                 return;
             }
-            
-            // 根据角色查找用户
+
             if ("student".equals(loginReq.role)) {
-                // 学生登录
                 Optional<Student> studentOpt = studentRepo.findByEmail(loginReq.email);
                 if (!studentOpt.isPresent()) {
-                    ResponseUtil.sendError(response, 400, "邮箱或密码错误");
+                    ResponseUtil.sendError(response, 400, "Invalid email or password");
                     return;
                 }
-                
+
                 Student student = studentOpt.get();
                 if (!student.getPassword().equals(loginReq.password)) {
-                    ResponseUtil.sendError(response, 400, "邮箱或密码错误");
+                    ResponseUtil.sendError(response, 400, "Invalid email or password");
                     return;
                 }
-                
-                // 更新最后登录时间
+
                 student.setLastLoginAt(LocalDateTime.now());
                 studentRepo.save(student);
-                
-                // 设置 Session
                 SessionUtil.setCurrentStudent(request, student);
-                
-                // 返回完整的用户信息（不包含密码）
                 student.setPassword(null);
-                
-                ResponseUtil.sendSuccess(response, "登录成功", student);
-                
-            } else {
-                // MO/Admin 登录
-                Optional<User> userOpt = userRepo.findByEmail(loginReq.email);
-                if (!userOpt.isPresent()) {
-                    ResponseUtil.sendError(response, 400, "邮箱或密码错误");
-                    return;
-                }
-                
-                User user = userOpt.get();
-                if (!user.getPassword().equals(loginReq.password)) {
-                    ResponseUtil.sendError(response, 400, "邮箱或密码错误");
-                    return;
-                }
-                
-                if (!user.getRole().equals(loginReq.role)) {
-                    ResponseUtil.sendError(response, 400, "角色不匹配");
-                    return;
-                }
-                
-                // 更新最后登录时间
-                user.setLastLoginAt(LocalDateTime.now());
-                userRepo.save(user);
-                
-                // 设置 Session
-                SessionUtil.setCurrentUser(request, user);
-                
-                // 返回用户信息
-                Map<String, Object> userData = new HashMap<>();
-                userData.put("id", user.getId());
-                userData.put("name", user.getName());
-                userData.put("email", user.getEmail());
-                userData.put("role", user.getRole());
-                
-                ResponseUtil.sendSuccess(response, "登录成功", userData);
+                ResponseUtil.sendSuccess(response, "Login successful", student);
+                return;
             }
-            
+
+            Optional<User> userOpt = userRepo.findByEmail(loginReq.email);
+            if (!userOpt.isPresent()) {
+                ResponseUtil.sendError(response, 400, "Invalid email or password");
+                return;
+            }
+
+            User user = userOpt.get();
+            if (!user.getPassword().equals(loginReq.password)) {
+                ResponseUtil.sendError(response, 400, "Invalid email or password");
+                return;
+            }
+
+            if (!user.getRole().equals(loginReq.role)) {
+                ResponseUtil.sendError(response, 400, "Role does not match this account");
+                return;
+            }
+
+            user.setLastLoginAt(LocalDateTime.now());
+            userRepo.save(user);
+            SessionUtil.setCurrentUser(request, user);
+
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("id", user.getId());
+            userData.put("name", user.getName());
+            userData.put("email", user.getEmail());
+            userData.put("role", user.getRole());
+
+            ResponseUtil.sendSuccess(response, "Login successful", userData);
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
+            ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
     }
 
-    
-    /**
-     * 处理注册
-     */
     private void handleRegister(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            RegisterRequest regReq = readRequestBody(request, RegisterRequest.class);
-            
-            // 验证参数
-            if (regReq.name == null || regReq.email == null || regReq.password == null ||
-                regReq.studentId == null || regReq.phone == null || regReq.major == null) {
-                ResponseUtil.sendError(response, 400, "所有字段都不能为空");
+            RegisterRequest registerReq = readRequestBody(request, RegisterRequest.class);
+
+            if (registerReq == null
+                    || isBlank(registerReq.name)
+                    || isBlank(registerReq.email)
+                    || isBlank(registerReq.password)
+                    || isBlank(registerReq.studentId)) {
+                ResponseUtil.sendError(response, 400, "Name, email, password, and student ID are required");
                 return;
             }
-            
-            // 验证邮箱格式
-            if (!regReq.email.endsWith("@bupt.edu.cn")) {
-                ResponseUtil.sendError(response, 400, "邮箱必须是 @bupt.edu.cn 结尾");
+
+            if (registerReq.password.length() < 6) {
+                ResponseUtil.sendError(response, 400, "Password must be at least 6 characters");
                 return;
             }
-            
-            // 检查邮箱是否已存在
-            if (studentRepo.findByEmail(regReq.email).isPresent()) {
-                ResponseUtil.sendError(response, 409, "该邮箱已被注册");
+
+            if (studentRepo.findByEmail(registerReq.email).isPresent()) {
+                ResponseUtil.sendError(response, 409, "This email is already registered");
                 return;
             }
-            
-            // 检查学号是否已存在
-            if (studentRepo.findByStudentId(regReq.studentId).isPresent()) {
-                ResponseUtil.sendError(response, 409, "该学号已被注册");
+
+            if (studentRepo.findByStudentId(registerReq.studentId).isPresent()) {
+                ResponseUtil.sendError(response, 409, "This student ID is already registered");
                 return;
             }
-            
-            // 创建学生
+
             Student student = new Student();
             student.setId(studentRepo.generateId());
-            student.setName(regReq.name);
-            student.setEmail(regReq.email);
-            student.setPassword(regReq.password);
-            student.setStudentId(regReq.studentId);
-            student.setPhone(regReq.phone);
-            student.setMajor(regReq.major);
-            
+            student.setName(registerReq.name.trim());
+            student.setEmail(registerReq.email.trim());
+            student.setPassword(registerReq.password);
+            student.setStudentId(registerReq.studentId.trim());
+            student.setMajor(registerReq.major != null ? registerReq.major.trim() : "");
+            student.setGrade(registerReq.grade != null ? registerReq.grade.trim() : "");
+            student.setPhone(registerReq.phone != null ? registerReq.phone.trim() : "");
+            student.setBio("");
+            student.setCreatedAt(LocalDateTime.now());
+            student.setLastLoginAt(LocalDateTime.now());
+
             studentRepo.save(student);
-            
-            // 自动登录
             SessionUtil.setCurrentStudent(request, student);
-            
-            // 返回完整的用户信息（不包含密码）
+
             student.setPassword(null);
-            
-            ResponseUtil.sendSuccess(response, "注册成功", student);
-            
+            ResponseUtil.sendSuccess(response, "Registration successful", student);
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
+            ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
     }
-    
-    /**
-     * 处理登出
-     */
+
     private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         SessionUtil.logout(request);
-        ResponseUtil.sendSuccess(response, "登出成功", null);
+        ResponseUtil.sendSuccess(response, "Logout successful", null);
     }
-    
-    /**
-     * 获取当前用户信息
-     */
+
     private void handleGetCurrentUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!requireLogin(request, response)) {
             return;
         }
-        
+
         String userId = getCurrentUserId(request);
         String role = SessionUtil.getCurrentUserRole(request);
-        
+
         try {
             Map<String, Object> userData = new HashMap<>();
-            
+
             if ("student".equals(role)) {
                 Optional<Student> studentOpt = studentRepo.findById(userId);
                 if (studentOpt.isPresent()) {
@@ -247,28 +215,31 @@ public class AuthServlet extends BaseServlet {
                     return;
                 }
             }
-            
-            ResponseUtil.sendError(response, 404, "用户不存在");
-            
+
+            ResponseUtil.sendError(response, 404, "User not found");
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
+            ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
     }
-    
-    // 请求对象
+
     private static class LoginRequest {
         String email;
         String password;
         String role;
     }
-    
+
     private static class RegisterRequest {
         String name;
         String email;
         String password;
         String studentId;
-        String phone;
         String major;
+        String grade;
+        String phone;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }
