@@ -446,7 +446,7 @@
                     <h4 class="footer-heading">Access</h4>
                     <div class="footer-buttons" id="accessButtons">
                         <!-- 未登录状态 -->
-                        <div id="guestButtons">
+                        <div id="guestButtons" class="footer-button-group">
                             <a href="login.html" class="footer-btn">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -466,7 +466,7 @@
                         </div>
                         
                         <!-- 已登录状态 -->
-                        <div id="userButtons" style="display: none;">
+                        <div id="userButtons" class="footer-button-group" style="display: none;">
                             <a href="/student/dashboard.html" class="footer-btn">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -539,6 +539,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateAccessButtons();
         });
+        document.addEventListener('auth-state-changed', updateAccessButtons);
         
         // Project Carousel - Center Mode
         let currentSlide = 1; // Start with middle card active

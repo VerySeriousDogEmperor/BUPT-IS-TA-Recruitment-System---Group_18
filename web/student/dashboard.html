@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../static/css/components.css">
     <link rel="stylesheet" href="../static/css/dashboard.css">
 </head>
+<<<<<<< Updated upstream
 <body>
     <!-- Header -->
     <header class="header">
@@ -63,10 +64,39 @@
                         退出登录
                     </button>
                 </div>
+=======
+<body class="dashboard-body">
+    <section class="dashboard-header">
+        <div class="header-container">
+            <div class="profile-section">
+                <div class="profile-avatar" id="profileAvatarContainer">
+                    <img id="profileAvatarImg" src="" alt="Avatar" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                    <svg id="profileAvatarIcon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <div class="avatar-upload-overlay" id="avatarUploadOverlay"><span>Upload</span></div>
+                    <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-name" id="userName">Loading...</h1>
+                    <p class="profile-meta" id="userMeta">Student</p>
+                    <div class="profile-badges">
+                        <span class="profile-badge" id="gpaBadge">GPA: N/A</span>
+                        <span class="profile-badge" id="idBadge">ID: N/A</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a class="btn btn-outline" href="/index.html">Back to Student Site</a>
+                <button class="btn btn-outline" id="editProfileBtn">Edit Profile</button>
+                <button class="btn btn-danger" id="logoutBtn">Logout</button>
+>>>>>>> Stashed changes
             </div>
         </div>
     </section>
 
+<<<<<<< Updated upstream
     <!-- Main Content -->
     <div class="container dashboard-container">
         <!-- Tabs -->
@@ -80,18 +110,37 @@
                 <button class="tab-trigger" data-tab="ai-assistant">AI助手</button>
                 <button class="tab-trigger" data-tab="favorites">收藏</button>
                 <button class="tab-trigger" data-tab="security">安全设置</button>
+=======
+    <div class="dashboard-main">
+        <div class="tabs-container">
+            <div class="tabs-list">
+                <button class="tab-btn active" data-tab="overview">Overview</button>
+                <button class="tab-btn" data-tab="info">Basic Info</button>
+                <button class="tab-btn" data-tab="resume">Resume</button>
+                <button class="tab-btn" data-tab="applications">Applications</button>
+                <button class="tab-btn" data-tab="timesheets">Timesheets</button>
+                <button class="tab-btn" data-tab="schedule">Schedule</button>
+                <button class="tab-btn" data-tab="ai-assistant">AI Assistant</button>
+                <button class="tab-btn" data-tab="favorites">Favorites</button>
+                <button class="tab-btn" data-tab="security">Security</button>
+>>>>>>> Stashed changes
             </div>
 
-            <!-- Tab Contents -->
             <div class="tabs-content">
+<<<<<<< Updated upstream
                 <!-- Overview Tab -->
                 <div class="tab-content active" id="overview-tab">
                     <div class="grid grid-2">
+=======
+                <div class="tab-content active" id="tab-overview">
+                    <div class="overview-grid">
+>>>>>>> Stashed changes
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">资料完成度</h3>
                                 <p class="card-description">完善资料以提高职位匹配度</p>
                             </div>
+<<<<<<< Updated upstream
                             <div class="card-content">
                                 <div class="completion-item">
                                     <span>基本信息</span>
@@ -105,14 +154,20 @@
                                     <span>学术记录</span>
                                     <span class="badge" id="academicStatus">未完成</span>
                                 </div>
+=======
+                            <div class="card-body">
+                                <div class="completion-item"><span>Basic Information</span><span class="badge badge-success">Complete</span></div>
+                                <div class="completion-item"><span id="resumeCompletionLabel">Resume Ready</span><span class="badge badge-secondary">Pending</span></div>
+                                <div class="completion-item"><span>Academic Records</span><span class="badge badge-success">Complete</span></div>
+>>>>>>> Stashed changes
                             </div>
                         </div>
-
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">快速统计</h3>
                                 <p class="card-description">您的申请概览</p>
                             </div>
+<<<<<<< Updated upstream
                             <div class="card-content">
                                 <div class="stat-item">
                                     <span class="stat-label">总申请数</span>
@@ -149,11 +204,28 @@
 
                 <!-- Basic Info Tab -->
                 <div class="tab-content" id="info-tab">
+=======
+                            <div class="card-body">
+                                <div class="stat-item"><span class="stat-label">Total Applications</span><span class="stat-value">0</span></div>
+                                <div class="stat-item"><span class="stat-label">Under Review</span><span class="stat-value stat-warning">0</span></div>
+                                <div class="stat-item"><span class="stat-label">Approved Offers</span><span class="stat-value stat-success">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-section">
+                        <h3 class="section-title">Application Timeline</h3>
+                        <div class="timeline" id="applicationTimeline"></div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-info">
+>>>>>>> Stashed changes
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">基本信息</h3>
                             <p class="card-description">管理您的个人信息和学术详情</p>
                         </div>
+<<<<<<< Updated upstream
                         <div class="card-content">
                             <form id="profileForm" class="form-grid">
                                 <div class="form-group">
@@ -228,8 +300,298 @@
                                 <div class="form-actions" id="formActions" style="display: none;">
                                     <button type="button" class="btn btn-outline" id="cancelEditBtn">取消</button>
                                     <button type="submit" class="btn btn-primary">保存更改</button>
+=======
+                        <div class="card-body">
+                            <form id="profileForm" class="profile-form">
+                                <div class="form-grid">
+                                    <div class="form-group"><label class="form-label">Full Name</label><input type="text" name="name" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" name="phone" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Student ID</label><input type="text" name="studentId" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Major</label><input type="text" name="major" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Academic Year</label><input type="text" name="year" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">GPA</label><input type="text" name="gpa" class="form-input" disabled></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Bio / Personal Statement</label>
+                                    <textarea name="bio" class="form-textarea" rows="4" disabled></textarea>
+                                </div>
+                                <div class="form-actions" id="formActions" style="display:none;">
+                                    <button type="button" class="btn btn-outline" id="cancelEditBtn">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+>>>>>>> Stashed changes
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
+<<<<<<< Updated upstream
+=======
+
+                <div class="tab-content" id="tab-resume">
+                    <div class="resume-tabs">
+                        <div class="resume-tabs-list">
+                            <button class="resume-tab-btn active" data-resume-tab="upload">Upload PDF</button>
+                            <button class="resume-tab-btn" data-resume-tab="standard">Standard Form</button>
+                            <button class="resume-tab-btn" data-resume-tab="ai-polish">AI Polish</button>
+                        </div>
+                        <div class="resume-tab-content active" id="resume-tab-upload">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Upload Resume PDF</h3>
+                                    <p class="card-description">Upload your resume in PDF format and it will be saved to your profile immediately</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="upload-area" id="pdfUploadArea">
+                                        <h4>Click to upload</h4>
+                                        <p>PDF (max 5MB)</p>
+                                        <input type="file" id="resumeUpload" accept=".pdf" style="display:none;">
+                                    </div>
+                                    <p class="schedule-hint" style="margin-top:1rem;">Uploaded resumes appear here right away. No approval is required.</p>
+                                    <div id="resumeStorageInfo" class="schedule-info" style="margin-top:1rem;">
+                                        <div>
+                                            <p class="schedule-info-title">Current Resume Status</p>
+                                            <p class="schedule-info-text">No resume saved yet.</p>
+                                        </div>
+                                    </div>
+                                    <div id="uploadedFileInfo" style="display:none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="resume-tab-content" id="resume-tab-standard">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Standard Resume Form</h3>
+                                    <p class="card-description">Generate a web resume from structured fields</p>
+                                </div>
+                                <div class="card-body">
+                                    <form id="standardResumeForm" class="resume-form">
+                                        <div class="form-grid">
+                                            <div class="form-group"><label class="form-label">Full Name</label><input type="text" name="resumeName" class="form-input" readonly></div>
+                                            <div class="form-group"><label class="form-label">Student ID</label><input type="text" name="resumeStudentId" class="form-input" readonly></div>
+                                        </div>
+                                        <div class="form-group"><label class="form-label">Email</label><input type="email" name="resumeEmail" class="form-input" readonly></div>
+                                        <div class="form-group"><label class="form-label">Major</label><input type="text" name="resumeMajor" class="form-input"></div>
+                                        <div class="form-group"><label class="form-label">GPA</label><input type="number" step="0.01" name="resumeGpa" class="form-input"></div>
+                                        <div class="form-group"><label class="form-label">Technical Skills</label><textarea name="resumeSkills" class="form-textarea" rows="3"></textarea></div>
+                                        <div class="form-group"><label class="form-label">Relevant Experience</label><textarea name="resumeExperience" class="form-textarea" rows="5"></textarea></div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn btn-primary">Generate Resume</button>
+                                            <button type="button" class="btn btn-outline" id="previewResumeBtn">Preview</button>
+                                        </div>
+                                    </form>
+                                    <div id="standardResumeStatus" class="schedule-info" style="margin-top:1rem;">
+                                        <div>
+                                            <p class="schedule-info-title">Standard Resume</p>
+                                            <p class="schedule-info-text">Not generated yet.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="resume-tab-content" id="resume-tab-ai-polish">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">AI Resume Polish</h3>
+                                    <p class="card-description">Feature placeholder</p>
+                                </div>
+                                <div class="card-body">
+                                    <textarea id="originalText" class="form-textarea" rows="5"></textarea>
+                                    <button type="button" class="btn btn-primary" id="polishBtn">Polish with AI</button>
+                                    <div class="form-group" style="margin-top:1.5rem;">
+                                        <label class="form-label">AI-Polished Version</label>
+                                        <div class="polished-result"><p>Provided comprehensive academic support to undergraduate students through one-on-one tutoring sessions and office hours.</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-applications">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">My Applications</h3>
+                            <p class="card-description">Track your application status</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="applicationsList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-timesheets">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Submit Weekly Hours</h3>
+                            <p class="card-description">Log hours for approved positions so your MO can review them</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="timesheetForm" class="profile-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Approved Position</label>
+                                        <select id="timesheetJobId" name="jobId" class="form-input" required></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Work Date</label>
+                                        <input type="date" id="timesheetDate" name="date" class="form-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Hours Worked</label>
+                                        <input type="number" id="timesheetHours" name="hours" class="form-input" min="0.5" step="0.5" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Task Summary</label>
+                                    <textarea id="timesheetDescription" name="description" class="form-textarea" rows="4" placeholder="What did you work on this week?" required></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Submit Timesheet</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:1.5rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Submitted Timesheets</h3>
+                            <p class="card-description">Track pending, approved, and rejected hour logs</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="timesheetsList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-schedule">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Course Schedule Management</h3>
+                            <p class="card-description">Import your course schedule to detect time conflicts</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="schedule-import">
+                                <input type="file" id="scheduleUpload" accept=".csv,.txt" style="display:none;">
+                                <button class="btn btn-primary" onclick="document.getElementById('scheduleUpload').click()">Import Schedule (.csv)</button>
+                                <p class="schedule-hint">Use CSV columns: day,start,end,course</p>
+                            </div>
+                            <div class="schedule-info">
+                                <div>
+                                    <p class="schedule-info-title">Auto Conflict Detection</p>
+                                    <p class="schedule-info-text">Conflicting TA jobs can be highlighted against your class timetable.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:1.5rem;">
+                        <div class="card-header"><h3 class="card-title">Your Weekly Schedule</h3></div>
+                        <div class="card-body">
+                            <div class="schedule-table-wrapper">
+                                <table class="schedule-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Monday</th>
+                                            <th>Tuesday</th>
+                                            <th>Wednesday</th>
+                                            <th>Thursday</th>
+                                            <th>Friday</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scheduleTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-ai-assistant">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">AI Assistant</h3>
+                            <p class="card-description">Get personalized recommendations and practice interviews</p>
+                        </div>
+                        <div class="card-body">
+                            <p>AI Assistant features coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-favorites">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Saved Positions</h3>
+                            <p class="card-description">Jobs you've bookmarked for later review</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="favoritesList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-security">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Security Settings</h3>
+                            <p class="card-description">Manage your password and account security</p>
+                        </div>
+                        <div class="card-body">
+                            <form class="security-form" id="securityForm">
+                                <div class="form-group"><label class="form-label">Current Password</label><input type="password" name="currentPassword" class="form-input" placeholder="Enter current password"></div>
+                                <div class="form-group"><label class="form-label">New Password</label><input type="password" name="newPassword" class="form-input" placeholder="Enter new password"></div>
+                                <div class="form-group"><label class="form-label">Confirm New Password</label><input type="password" name="confirmPassword" class="form-input" placeholder="Confirm new password"></div>
+                                <button type="submit" class="btn btn-primary">Update Password</button>
+                            </form>
+                            <div class="security-actions">
+                                <h4>Account Actions</h4>
+                                <button class="btn btn-outline btn-danger-outline" id="signOutBtn">Sign Out</button>
+                                <button class="btn btn-outline btn-danger-outline" id="deleteAccountBtn">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gpaModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Complete Your Profile</h3>
+                <p>Please enter your GPA to continue</p>
+            </div>
+            <div class="modal-body">
+                <form id="gpaForm">
+                    <div class="form-group">
+                        <label class="form-label">GPA (0.0 - 4.0)</label>
+                        <input type="number" id="gpaInput" class="form-input" min="0" max="4" step="0.01" placeholder="3.75" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save GPA</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="resumePreviewModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:720px;">
+            <div class="modal-header">
+                <h3>Resume Preview</h3>
+                <p>Preview your standard-form resume before saving</p>
+            </div>
+            <div class="modal-body">
+                <div id="resumePreviewContent"></div>
+                <div class="form-actions" style="margin-top:1.5rem;">
+                    <button type="button" class="btn btn-outline" id="closeResumePreviewBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/utils/api.js?v=2.5"></script>
+    <script src="/static/js/components/toast.js?v=2.5"></script>
+    <script src="/static/js/pages/student/dashboard.js?v=2.5"></script>
+</body>
+</html>
+>>>>>>> Stashed changes

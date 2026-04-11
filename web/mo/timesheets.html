@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheets & Approval - MO Portal</title>
+    <link rel="stylesheet" href="/static/css/mo/timesheets.css">
+    <link rel="stylesheet" href="/static/css/mo/theme.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">MO Portal</div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="/mo/index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/mo/jobs.html" class="nav-item">
+                <i data-lucide="briefcase"></i>
+                <span>My Modules</span>
+            </a>
+            <a href="/mo/post-job.html" class="nav-item">
+                <i data-lucide="plus-circle"></i>
+                <span>Post Job</span>
+            </a>
+            <a href="/mo/applicants.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Applicants</span>
+            </a>
+            <a href="/mo/timesheets.html" class="nav-item active">
+                <i data-lucide="clock"></i>
+                <span>Timesheets</span>
+            </a>
+            <a href="/mo/knowledge-base.html" class="nav-item">
+                <i data-lucide="book-open"></i>
+                <span>Knowledge Base</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">MO</div>
+                <div class="user-info">
+                    <div class="user-name">Module Organiser</div>
+                    <div class="user-role">MO Account</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()" title="Logout">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div>
+                    <h1>Timesheets & Approval</h1>
+                    <p class="page-subtitle">Week 8 · Sem 1, 2026</p>
+                </div>
+                <button class="btn-secondary" id="exportTimesheetsBtn">
+                    <i data-lucide="download"></i>
+                    Export Timesheets
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-amber">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Pending Approval</div>
+                        <div class="stat-value" id="pendingCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-amber">
+                        <i data-lucide="clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Pending Hours</div>
+                        <div class="stat-value" id="pendingHours">0h</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-green">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Approved This Week</div>
+                        <div class="stat-value" id="approvedHours">0h</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-blue">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Active TAs</div>
+                        <div class="stat-value" id="activeTAs">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="pending">
+                    Pending
+                    <span class="tab-badge" id="pendingBadge">0</span>
+                </button>
+                <button class="tab-btn" data-tab="approved">Approved</button>
+                <button class="tab-btn" data-tab="all">All</button>
+            </div>
+
+            <!-- Timesheets List -->
+            <div id="timesheetsList" class="timesheets-list"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <p>No timesheets in this category.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/pages/mo/common.js"></script>
+    <script src="/static/js/pages/mo/timesheets.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

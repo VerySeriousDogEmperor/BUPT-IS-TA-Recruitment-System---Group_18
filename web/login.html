@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="/static/css/common.css">
     <link rel="stylesheet" href="/static/css/components.css">
     <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="stylesheet" href="/static/css/home.css">
 </head>
 <body>
+<<<<<<< Updated upstream
     <div class="login-page">
         <div class="login-container">
             <!-- Left Side - Image & Info -->
@@ -21,6 +23,38 @@
                                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
                                     <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+=======
+    <header class="header-main" id="mainHeader">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="/" class="header-logo">BUPT IS TA Recruitment</a>
+                </div>
+
+                <nav class="header-nav">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/apply.html" class="nav-link">Apply</a>
+                    <a href="/announcements.html" class="nav-link">Announcements</a>
+                    <a href="/about.html" class="nav-link">About Us</a>
+                    <a href="/guide.html" class="nav-link">Guide</a>
+                </nav>
+
+                <div class="header-right">
+                    <button class="header-icon-btn" id="notificationBtn" style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <div class="header-user-menu" style="display: none;">
+                        <button class="user-avatar-btn" id="userMenuBtn">
+                            <div class="user-avatar">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+>>>>>>> Stashed changes
                                 </svg>
                             </div>
                             <div>
@@ -42,10 +76,19 @@
                                 <p>Flexible schedule with smart conflict detection</p>
                             </div>
                         </div>
+<<<<<<< Updated upstream
+=======
+                    </div>
+
+                    <div class="header-auth-buttons">
+                        <a href="/login.html" class="btn btn-outline btn-sm">Student Login</a>
+                        <a href="/login.html?mode=staff" class="btn btn-primary btn-sm">Staff Entrance</a>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
 
+<<<<<<< Updated upstream
             <!-- Right Side - Auth Form -->
             <div class="login-form-section">
                 <div class="login-form-container">
@@ -119,10 +162,40 @@
                                         <polyline points="9 22 9 12 15 12 15 22"></polyline>
                                     </svg>
                                     <input type="text" id="major" name="major" class="form-input" placeholder="Computer Science">
+=======
+    <main class="page-main">
+        <div class="login-page">
+            <div class="login-container">
+                <div class="login-image-section">
+                    <div class="login-visual-backdrop"></div>
+                    <div class="login-orbit login-orbit-one"></div>
+                    <div class="login-orbit login-orbit-two"></div>
+                    <div class="login-image-overlay">
+                        <div class="login-image-content">
+                            <div class="login-brand">
+                                <div class="brand-icon" id="visualRoleIcon"></div>
+                                <div>
+                                    <p class="role-chip" id="visualRoleChip">Student Portal</p>
+                                    <h2 class="brand-title" id="visualTitle">Build Your Teaching Profile</h2>
+                                    <p class="brand-subtitle" id="visualSubtitle">Show your strengths, manage applications, and join the TA community with confidence.</p>
                                 </div>
                             </div>
+                            <div class="visual-stage">
+                                <div class="visual-card visual-card-main">
+                                    <div class="visual-card-icon" id="visualCardIcon"></div>
+                                    <div>
+                                        <p class="visual-card-label" id="visualCardLabel">Student Workspace</p>
+                                        <p class="visual-card-text" id="visualCardText">Track GPA, schedule fit, resume versions, and live application progress in one place.</p>
+                                    </div>
+>>>>>>> Stashed changes
+                                </div>
+                                <div class="visual-pill visual-pill-top" id="visualPillTop">Resume Ready</div>
+                                <div class="visual-pill visual-pill-bottom" id="visualPillBottom">Conflict Checked</div>
+                            </div>
+                            <div class="feature-list" id="visualFeatureList"></div>
                         </div>
 
+<<<<<<< Updated upstream
                         <!-- Email -->
                         <div class="form-group">
                             <label for="email" class="form-label">Email</label>
@@ -145,6 +218,115 @@
                                 </svg>
                                 <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required>
                             </div>
+=======
+                <div class="login-form-section">
+                    <div class="login-card">
+                        <div class="login-card-header">
+                            <h1 class="form-title" id="formTitle">Student Login</h1>
+                            <p class="form-subtitle" id="formSubtitle">Sign in to access your account</p>
+                            <div class="auth-note" id="demoAccountNote">Demo student account: student@bupt.edu.cn / 123456</div>
+                        </div>
+                        <div class="login-card-body">
+                            <form id="authForm">
+                                <div class="form-group auth-extra-field" id="nameField" style="display: none;">
+                                    <label class="form-label">Full Name</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <input type="text" name="name" class="form-input" placeholder="Your full name">
+                                    </div>
+                                </div>
+
+                                <div class="role-selection" id="roleSelection" style="display: none;">
+                                    <label class="form-label">Select Role</label>
+                                    <p class="role-selection-hint">Choose the staff workspace you want to enter before signing in.</p>
+                                    <div class="role-buttons">
+                                        <button type="button" class="role-btn" data-role="admin">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                            </svg>
+                                            <span>Admin</span>
+                                        </button>
+                                        <button type="button" class="role-btn" data-role="mo">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                            </svg>
+                                            <span>Module Organiser</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
+                                        <input type="email" name="email" class="form-input" placeholder="student@bupt.edu.cn" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group auth-extra-field" id="studentIdField" style="display: none;">
+                                    <label class="form-label">Student ID</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                        </svg>
+                                        <input type="text" name="studentId" class="form-input" placeholder="2023xxxxxx">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Password</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                        <input type="password" name="password" class="form-input" placeholder="Enter your password" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group auth-extra-field" id="confirmPasswordField" style="display: none;">
+                                    <label class="form-label">Confirm Password</label>
+                                    <div class="input-with-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                        <input type="password" name="confirmPassword" class="form-input" placeholder="Repeat your password">
+                                    </div>
+                                </div>
+
+                                <div class="login-options" id="loginOptions">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox">
+                                        <span>Remember me</span>
+                                    </label>
+                                    <a href="#" class="forgot-link">Forgot password?</a>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">Sign In</button>
+
+                                <div class="toggle-section" id="toggleSection" style="display: none;">
+                                    <div class="divider">
+                                        <span id="toggleText">New here?</span>
+                                    </div>
+                                    <button type="button" class="btn btn-outline btn-block" id="toggleBtn">Create Student Account</button>
+                                </div>
+
+                                <div class="back-section" id="backToStudent" style="display: none;">
+                                    <button type="button" class="btn btn-ghost" onclick="window.location.href='/login.html'">
+                                        Back to Student Login
+                                    </button>
+                                </div>
+                            </form>
+>>>>>>> Stashed changes
                         </div>
 
                         <!-- Remember Me & Forgot Password -->
@@ -177,10 +359,98 @@
                 </div>
             </div>
         </div>
+<<<<<<< Updated upstream
     </div>
+=======
+    </main>
+
+    <footer class="footer-main">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3 class="footer-heading">BUPT IS TA Recruitment</h3>
+                    <p class="footer-text">
+                        Beijing University of Posts and Telecommunications International School Teaching Assistant Recruitment Platform
+                    </p>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-heading">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/apply.html">Browse Positions</a></li>
+                        <li><a href="/guide.html">Application Guide</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-heading">For Applicants</h4>
+                    <ul class="footer-links">
+                        <li><a href="/student/dashboard.html">My Profile</a></li>
+                        <li><a href="/student/dashboard.html">Application Status</a></li>
+                        <li><a href="/guide.html">AI Assistant</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-heading">Access</h4>
+                    <div class="footer-buttons" id="accessButtons">
+                        <div id="guestButtons" class="footer-button-group">
+                            <a href="/login.html" class="footer-btn">Student Login</a>
+                            <a href="/login.html?mode=staff" class="footer-btn">Staff Entrance</a>
+                        </div>
+                        <div id="userButtons" class="footer-button-group" style="display: none;">
+                            <a href="/student/dashboard.html" class="footer-btn">My Dashboard</a>
+                            <a href="#" class="footer-btn" onclick="handleFooterLogout(event)">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>漏 2026 BUPT International School. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+>>>>>>> Stashed changes
 
     <script src="/static/js/utils/api.js"></script>
     <script src="/static/js/components/toast.js"></script>
     <script src="/static/js/pages/login.js"></script>
+    <script>
+        function updateAccessButtons() {
+            const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+            const userRole = localStorage.getItem('userRole');
+            const guestButtons = document.getElementById('guestButtons');
+            const userButtons = document.getElementById('userButtons');
+            if (!guestButtons || !userButtons) return;
+            if (isAuthenticated && userRole === 'student') {
+                guestButtons.style.display = 'none';
+                userButtons.style.display = 'flex';
+            } else {
+                guestButtons.style.display = 'flex';
+                userButtons.style.display = 'none';
+            }
+        }
+
+        async function handleFooterLogout(event) {
+            event.preventDefault();
+            try {
+                await API.auth.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                localStorage.removeItem('isAuthenticated');
+                localStorage.removeItem('userRole');
+                updateAccessButtons();
+                window.location.href = '/index.html';
+            }
+        }
+
+        updateAccessButtons();
+        document.addEventListener('auth-state-changed', updateAccessButtons);
+    </script>
 </body>
 </html>

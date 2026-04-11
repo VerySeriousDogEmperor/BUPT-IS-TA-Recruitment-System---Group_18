@@ -1,0 +1,69 @@
+[
+  {
+    "studentId": "2023213073",
+    "phone": "15310016916",
+    "major": "Computer Science",
+    "grade": "Junior",
+    "bio": "Demo student account for the TA recruitment workflow.",
+    "gpa": 3.75,
+    "skills": [
+      "Java",
+      "Python",
+      "Data Structures",
+      "SQL"
+    ],
+    "resume": {
+      "education": [
+        {
+          "school": "BUPT International School",
+          "degree": "Bachelor",
+          "major": "Computer Science",
+          "startDate": "2023-09",
+          "endDate": "2027-06",
+          "gpa": 3.75
+        }
+      ],
+      "experience": [
+        {
+          "company": "Programming Lab",
+          "position": "Peer Tutor",
+          "startDate": "2025-09",
+          "endDate": "2026-01",
+          "description": "Supported weekly coding clinics and assignment feedback."
+        }
+      ],
+      "awards": [
+        {
+          "name": "Dean\u0027s List",
+          "date": "2025-12",
+          "description": "Recognised for strong academic performance."
+        }
+      ]
+    },
+    "schedule": {
+      "monday": [
+        "10:00-12:00"
+      ],
+      "tuesday": [
+        "14:00-16:00"
+      ],
+      "wednesday": [],
+      "thursday": [
+        "10:00-12:00"
+      ],
+      "friday": [
+        "14:00-16:00"
+      ],
+      "saturday": [],
+      "sunday": []
+    },
+    "id": "S004",
+    "name": "Demo Student",
+    "email": "student@bupt.edu.cn",
+    "password": "123456",
+    "role": "student",
+    "status": "active",
+    "createdAt": "2026-04-10T22:40:00",
+    "lastLoginAt": "2026-04-11T00:18:35.4550486"
+  }
+]

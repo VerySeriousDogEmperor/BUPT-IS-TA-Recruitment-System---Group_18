@@ -4,8 +4,52 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true" id="25943275-8274-46a5-bd6c-6fdd4540faf3" name="更改" comment="111">
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+=======
+    <list default="true" id="25943275-8274-46a5-bd6c-6fdd4540faf3" name="更改" comment="feat: 添加服务器基础和首页&#10;&#10;- 实现嵌入式 HTTP 服务器&#10;- 实现 Servlet 适配器&#10;- 添加首页 HTML/CSS&#10;- 添加通用样式和组件&#10;- 添加 API 和认证工具类">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/applications.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/applications.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/jobs.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/jobs.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/modules.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/modules.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/students.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/students.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/timesheets.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/timesheets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/users.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/HttpServletRequestAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HttpServletRequestAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/HttpServletResponseAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HttpServletResponseAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/HttpSessionAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HttpSessionAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOApplicantServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOApplicantServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOModuleServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOModuleServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/shared/interfaces/AuthServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/shared/interfaces/AuthServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/student/domain/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/student/domain/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentProfileServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentProfileServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentTimesheetServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentTimesheetServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/announcements.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/announcements.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/apply.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/apply.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/guide.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/guide.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/job-detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/job-detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/applicants.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/applicants.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/jobs.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/jobs.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/post-job.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/post-job.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/timesheets.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/timesheets.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/css/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/css/home.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/css/login.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/applicants.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/applicants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/jobs.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/jobs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/post-job.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/post-job.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/timesheets.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/timesheets.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/student/apply.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/student/apply.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/student/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/student/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/utils/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/utils/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/student/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/student/dashboard.html" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +141,25 @@
       <updated>1774010860262</updated>
       <workItem from="1774010861578" duration="4491000" />
       <workItem from="1774168357052" duration="1156000" />
+<<<<<<< Updated upstream
       <workItem from="1774169532754" duration="306000" />
+=======
+      <workItem from="1774169532754" duration="3018000" />
+      <workItem from="1774255123634" duration="3275000" />
+      <workItem from="1774258444296" duration="179000" />
+      <workItem from="1774258678243" duration="3082000" />
+      <workItem from="1774516063235" duration="7000" />
+      <workItem from="1774516089517" duration="4000" />
+      <workItem from="1774516325166" duration="1700000" />
+      <workItem from="1774529493639" duration="363000" />
+      <workItem from="1775626971826" duration="1413000" />
+      <workItem from="1775630086137" duration="541000" />
+      <workItem from="1775630641306" duration="2977000" />
+      <workItem from="1775648820803" duration="129000" />
+      <workItem from="1775651322447" duration="2050000" />
+      <workItem from="1775744038088" duration="348000" />
+      <workItem from="1775833312536" duration="2835000" />
+>>>>>>> Stashed changes
     </task>
     <task id="LOCAL-00001" summary="111">
       <option name="closed" value="true" />
