@@ -573,6 +573,12 @@
   gap: 12px;
 }
 
+.footer-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .footer-btn {
   display: flex;
   align-items: center;
