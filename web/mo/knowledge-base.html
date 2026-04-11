@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base - MO Portal</title>
+    <link rel="stylesheet" href="/static/css/mo/knowledge-base.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">MO Portal</div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="/mo/index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/mo/jobs.html" class="nav-item">
+                <i data-lucide="briefcase"></i>
+                <span>My Modules</span>
+            </a>
+            <a href="/mo/post-job.html" class="nav-item">
+                <i data-lucide="plus-circle"></i>
+                <span>Post Job</span>
+            </a>
+            <a href="/mo/applicants.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Applicants</span>
+            </a>
+            <a href="/mo/timesheets.html" class="nav-item">
+                <i data-lucide="clock"></i>
+                <span>Timesheets</span>
+            </a>
+            <a href="/mo/knowledge-base.html" class="nav-item active">
+                <i data-lucide="book-open"></i>
+                <span>Knowledge Base</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">MO</div>
+                <div class="user-info">
+                    <div class="user-name">Module Organiser</div>
+                    <div class="user-role">MO Account</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()" title="Logout">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div>
+                    <h1>Knowledge Base</h1>
+                    <p class="page-subtitle">Browse internal policy · Chat with AI · Manage TA resources</p>
+                </div>
+                <div class="rag-badge">
+                    <i data-lucide="sparkles"></i>
+                    RAG-powered · <span id="indexedCount">0</span> docs indexed
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #FEF3C7;">
+                        <i data-lucide="lock" style="color: #D97706;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="internalValue">0</div>
+                        <div class="stat-label">Internal Documents</div>
+                        <div class="stat-sublabel" style="color: #D97706;">MO reference only</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #EFF6FF;">
+                        <i data-lucide="users" style="color: #3B82F6;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="publicValue">0</div>
+                        <div class="stat-label">Public Documents</div>
+                        <div class="stat-sublabel" style="color: #3B82F6;">Visible to TAs</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #F5F3FF;">
+                        <i data-lucide="database" style="color: #8B5CF6;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="vectorizedValue">0</div>
+                        <div class="stat-label">Vectorized</div>
+                        <div class="stat-sublabel" style="color: #8B5CF6;">Indexed & searchable</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-box">
+                <i data-lucide="search"></i>
+                <input type="text" id="searchInput" placeholder="Search documents…">
+            </div>
+
+            <!-- Tab Buttons -->
+            <div class="tab-buttons">
+                <button class="tab-button internal active" data-tab="internal">
+                    <div class="tab-button-icon internal">
+                        <i data-lucide="lock"></i>
+                    </div>
+                    <div class="tab-button-content">
+                        <div class="tab-button-title">Internal DB</div>
+                        <div class="tab-button-subtitle">MO Only · <span id="internalCountTab">0</span> files</div>
+                    </div>
+                    <i data-lucide="chevron-right" class="tab-button-arrow"></i>
+                </button>
+                <button class="tab-button public" data-tab="public">
+                    <div class="tab-button-icon public">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div class="tab-button-content">
+                        <div class="tab-button-title">Public DB</div>
+                        <div class="tab-button-subtitle">Visible to TAs · <span id="publicCountTab">0</span> files</div>
+                    </div>
+                    <i data-lucide="chevron-right" class="tab-button-arrow"></i>
+                </button>
+            </div>
+
+            <!-- Internal DB Panel -->
+            <div id="internalPanel" class="internal-panel">
+                <!-- Left: Document List -->
+                <div class="internal-left">
+                    <div class="internal-left-header">
+                        <div class="internal-left-title">
+                            <i data-lucide="lock"></i>
+                            <span>Internal Documents</span>
+                            <span class="internal-badge">MO Only</span>
+                        </div>
+                        <span class="internal-count"><span id="internalListCount">0</span> files</span>
+                    </div>
+                    <div class="internal-info">
+                        <i data-lucide="alert-circle"></i>
+                        <p>Read-only — maintained by Admin. Use the AI assistant to query document content.</p>
+                    </div>
+                    <div class="internal-docs-list" id="internalDocsList"></div>
+                </div>
+
+                <!-- Right: Chat -->
+                <div class="internal-right">
+                    <div class="chat-panel">
+                        <div class="chat-header">
+                            <div class="chat-header-left">
+                                <div class="chat-avatar">
+                                    <i data-lucide="sparkles"></i>
+                                </div>
+                                <div>
+                                    <div class="chat-title">Internal Knowledge Assistant</div>
+                                    <div class="chat-status">
+                                        <span class="status-dot"></span>
+                                        <span>RAG · <span id="vectorizedCountChat">0</span> docs indexed</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-clear" id="clearChat" style="display: none;">Clear</button>
+                        </div>
+
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="empty-chat">
+                                <div class="empty-icon">
+                                    <i data-lucide="sparkles"></i>
+                                </div>
+                                <p>Ask me anything about internal policies</p>
+                                <p class="subtitle">I'll search across all indexed internal documents</p>
+                                <div class="suggested-questions" id="suggestedQuestions"></div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <div class="chat-input-wrapper">
+                                <textarea 
+                                    id="chatInput" 
+                                    class="chat-input" 
+                                    placeholder="Ask about budget rules, approval SOP, timelines…"
+                                    rows="1"
+                                ></textarea>
+                                <button class="btn-send" id="sendBtn" disabled>
+                                    <i data-lucide="send"></i>
+                                </button>
+                            </div>
+                            <p class="input-hint">Shift+Enter for new line · Answers grounded in internal documents</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public DB Panel -->
+            <div id="publicPanel" class="public-panel" style="display: none;">
+                <div class="public-header">
+                    <div class="public-header-left">
+                        <i data-lucide="users"></i>
+                        <span class="public-header-title">Public DB</span>
+                        <span class="public-badge">Visible to TAs</span>
+                    </div>
+                    <div class="public-header-right">
+                        <i data-lucide="file-plus"></i>
+                        MOs can upload here
+                    </div>
+                </div>
+                <div class="public-upload-section">
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt" style="display: none;">
+                        <i data-lucide="upload"></i>
+                        <p><span>Click or drag PDF</span> to upload</p>
+                        <p class="file-types">PDF · DOCX · TXT</p>
+                    </div>
+                </div>
+                <div class="public-docs-section" id="publicDocsList"></div>
+                <div class="public-info">
+                    <i data-lucide="sparkles"></i>
+                    <p>Documents uploaded here are indexed into the <strong>TA-facing RAG knowledge base</strong>. TAs can query this content via AI assistant.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-icon">
+                        <i data-lucide="file-text"></i>
+                    </div>
+                    <div>
+                        <div class="modal-title" id="modalTitle"></div>
+                        <div class="modal-subtitle" id="modalSubtitle"></div>
+                    </div>
+                </div>
+                <div class="modal-header-right">
+                    <div id="modalStatus"></div>
+                    <button class="btn-close" onclick="closePreview()">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-banner">
+                <i data-lucide="sparkles"></i>
+                <span>Indexed in Internal RAG DB — queryable via the AI assistant</span>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn-modal secondary" onclick="closePreview()">Close</button>
+                <button class="btn-modal primary">
+                    <i data-lucide="download"></i>
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast" style="display: none;">
+        <div class="toast-icon">
+            <i data-lucide="check-circle-2"></i>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">Upload Queued</div>
+            <div class="toast-message" id="toastMessage"></div>
+        </div>
+        <button class="toast-close" onclick="closeToast()">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <script src="/static/js/pages/mo/knowledge-base.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Test Page</h1>
+    
+    <div class="section">
+        <h2>Current Auth Status</h2>
+        <div id="authStatus"></div>
+    </div>
+    
+    <div class="section">
+        <h2>LocalStorage Data</h2>
+        <pre id="localStorageData"></pre>
+    </div>
+    
+    <div class="section">
+        <h2>Actions</h2>
+        <button onclick="testLogin()">Test Login</button>
+        <button onclick="clearAuth()">Clear Auth</button>
+        <button onclick="goToDashboard()">Go to Dashboard</button>
+        <button onclick="goToHome()">Go to Home</button>
+        <button onclick="refreshStatus()">Refresh Status</button>
+        <button onclick="testDropdown()">Test Dropdown</button>
+    </div>
+    
+    <div class="section">
+        <h2>Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/utils/auth.js"></script>
+    <script>
+        function refreshStatus() {
+            const isLoggedIn = isAuthenticated();
+            const user = getCurrentUser();
+            
+            document.getElementById('authStatus').innerHTML = `
+                <p><strong>Is Authenticated:</strong> <span class="${isLoggedIn ? 'success' : 'error'}">${isLoggedIn}</span></p>
+                <p><strong>User Data:</strong></p>
+                <pre>${JSON.stringify(user, null, 2)}</pre>
+            `;
+            
+            const localStorageData = {
+                user: localStorage.getItem('user'),
+                userRole: localStorage.getItem('userRole'),
+                isAuthenticated: localStorage.getItem('isAuthenticated'),
+                token: localStorage.getItem('token')
+            };
+            
+            document.getElementById('localStorageData').textContent = JSON.stringify(localStorageData, null, 2);
+        }
+        
+        async function testLogin() {
+            try {
+                const userData = await API.auth.login('test@bupt.edu.cn', 'password');
+                
+                localStorage.setItem('userRole', 'student');
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('user', JSON.stringify(userData));
+                
+                document.getElementById('testResults').innerHTML = `
+                    <p class="success">✓ Login successful!</p>
+                    <pre>${JSON.stringify(userData, null, 2)}</pre>
+                `;
+                
+                refreshStatus();
+            } catch (error) {
+                document.getElementById('testResults').innerHTML = `
+                    <p class="error">✗ Login failed: ${error.message}</p>
+                `;
+            }
+        }
+        
+        function clearAuth() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('token');
+            
+            document.getElementById('testResults').innerHTML = `
+                <p class="success">✓ Auth data cleared</p>
+            `;
+            
+            refreshStatus();
+        }
+        
+        function goToDashboard() {
+            window.location.href = '/student/dashboard.html';
+        }
+        
+        function goToHome() {
+            window.location.href = '/index.html';
+        }
+        
+        function testDropdown() {
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            const result = {
+                userMenuBtn: userMenuBtn ? 'Found' : 'Not found',
+                userDropdown: userDropdown ? 'Found' : 'Not found',
+                dropdownClasses: userDropdown ? userDropdown.className : 'N/A',
+                dropdownStyle: userDropdown ? {
+                    display: userDropdown.style.display,
+                    visibility: userDropdown.style.visibility,
+                    opacity: userDropdown.style.opacity
+                } : 'N/A'
+            };
+            
+            document.getElementById('testResults').innerHTML = `
+                <p><strong>Dropdown Test Results:</strong></p>
+                <pre>${JSON.stringify(result, null, 2)}</pre>
+            `;
+            
+            if (userDropdown) {
+                userDropdown.classList.toggle('show');
+                document.getElementById('testResults').innerHTML += `
+                    <p class="success">✓ Toggled dropdown class. Current classes: ${userDropdown.className}</p>
+                `;
+            }
+        }
+        
+        // Initial load
+        refreshStatus();
+    </script>
+</body>
+</html>

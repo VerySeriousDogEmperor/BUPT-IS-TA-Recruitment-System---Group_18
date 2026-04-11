@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+    
+    <display-name>BUPT TA Recruitment System</display-name>
+    
+    <!-- Session 配置 -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
+    </session-config>
+    
+    <!-- 欢迎页面 -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    
+    <!-- 认证 Servlet -->
+    <servlet>
+        <servlet-name>AuthServlet</servlet-name>
+        <servlet-class>com.bupt.ta.shared.interfaces.AuthServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthServlet</servlet-name>
+        <url-pattern>/api/auth/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- 职位 Servlet（公开） -->
+    <servlet>
+        <servlet-name>JobServlet</servlet-name>
+        <servlet-class>com.bupt.ta.shared.interfaces.JobServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JobServlet</servlet-name>
+        <url-pattern>/api/jobs/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- 学生个人信息 Servlet -->
+    <servlet>
+        <servlet-name>StudentProfileServlet</servlet-name>
+        <servlet-class>com.bupt.ta.student.interfaces.StudentProfileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentProfileServlet</servlet-name>
+        <url-pattern>/api/student/profile</url-pattern>
+    </servlet-mapping>
+    
+    <!-- 学生申请 Servlet -->
+    <servlet>
+        <servlet-name>StudentApplicationServlet</servlet-name>
+        <servlet-class>com.bupt.ta.student.interfaces.StudentApplicationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentApplicationServlet</servlet-name>
+        <url-pattern>/api/student/applications/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- 学生工时 Servlet -->
+    <servlet>
+        <servlet-name>StudentTimesheetServlet</servlet-name>
+        <servlet-class>com.bupt.ta.student.interfaces.StudentTimesheetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentTimesheetServlet</servlet-name>
+        <url-pattern>/api/student/timesheets</url-pattern>
+    </servlet-mapping>
+    
+    <!-- 字符编码过滤器已移除，使用 Servlet 内置处理 -->
+    <!-- CORS 过滤器已移除，使用 Servlet 内置处理 -->
+    
+</web-app>

@@ -1,0 +1,247 @@
+/* ============================================================================
+   About Page Styles - 完全复刻原版
+   ============================================================================ */
+
+/* Hero Section */
+.about-hero {
+  position: relative;
+  height: 384px;
+  background: #111827;
+  overflow: hidden;
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1760131556605-7f2e63d00385?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBjYW1wdXMlMjBidWlsZGluZ3xlbnwxfHx8fDE3NzM4Mjc4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+}
+
+.hero-content {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #d1d5db;
+  max-width: 672px;
+}
+
+/* Mission Section */
+.mission-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+
+.mission-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.mission-paragraph {
+  color: #374151;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+.mission-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.mission-image {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.mission-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Values Section */
+.values-section {
+  background: white;
+  padding: 64px 0;
+}
+
+.values-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-title-center {
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.value-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 32px 24px 24px;
+  text-align: center;
+  transition: box-shadow 0.3s;
+}
+
+.value-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.value-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: #2563eb;
+}
+
+.value-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.value-description {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/* FAQs Section */
+.faqs-section {
+  max-width: 896px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.faqs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.faq-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.faq-question {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.faq-answer {
+  color: #374151;
+}
+
+/* Contact Section */
+.contact-section {
+  background: #2563eb;
+  color: white;
+  padding: 64px 0;
+}
+
+.contact-container {
+  max-width: 896px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.contact-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.contact-subtitle {
+  font-size: 1.25rem;
+  color: #bfdbfe;
+  margin-bottom: 32px;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-info p {
+  font-size: 1.125rem;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .mission-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.25rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .mission-section,
+  .values-section,
+  .faqs-section,
+  .contact-section {
+    padding: 48px 16px;
+  }
+}

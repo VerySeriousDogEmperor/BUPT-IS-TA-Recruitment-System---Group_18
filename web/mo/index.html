@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruitment Pipeline - MO Portal</title>
+    <link rel="stylesheet" href="/static/css/mo/dashboard.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">MO Portal</div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="/mo/index.html" class="nav-item active">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/mo/jobs.html" class="nav-item">
+                <i data-lucide="briefcase"></i>
+                <span>My Modules</span>
+            </a>
+            <a href="/mo/post-job.html" class="nav-item">
+                <i data-lucide="plus-circle"></i>
+                <span>Post Job</span>
+            </a>
+            <a href="/mo/applicants.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Applicants</span>
+            </a>
+            <a href="/mo/timesheets.html" class="nav-item">
+                <i data-lucide="clock"></i>
+                <span>Timesheets</span>
+            </a>
+            <a href="/mo/knowledge-base.html" class="nav-item">
+                <i data-lucide="book-open"></i>
+                <span>Knowledge Base</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">MO</div>
+                <div class="user-info">
+                    <div class="user-name">Module Organiser</div>
+                    <div class="user-role">MO Account</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()" title="Logout">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <div class="page-header">
+                <div>
+                    <h1>Recruitment Pipeline</h1>
+                    <p class="page-subtitle">Sem 1, 2026 · All Modules</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary">
+                        <i data-lucide="sliders-horizontal"></i>
+                        Filters
+                    </button>
+                    <button class="btn-primary">
+                        Export Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1);">
+                        <i data-lucide="users" style="color: #3B82F6;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Applicants</div>
+                        <div class="stat-value" id="totalApplicants">0</div>
+                        <div class="stat-sublabel">This semester</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1);">
+                        <i data-lucide="sparkles" style="color: #8B5CF6;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">AI Match ≥ 80%</div>
+                        <div class="stat-value" id="highMatchCount">0</div>
+                        <div class="stat-sublabel" id="highMatchPercent">0% of pool</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1);">
+                        <i data-lucide="alert-triangle" style="color: #EF4444;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Schedule Conflicts</div>
+                        <div class="stat-value" id="conflictCount">0</div>
+                        <div class="stat-sublabel">Require review</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1);">
+                        <i data-lucide="trending-up" style="color: #22C55E;"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Pending Admin Review</div>
+                        <div class="stat-value" id="finalCount">0</div>
+                        <div class="stat-sublabel">Ready for offer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <span class="filter-label">Quick Filter:</span>
+                <button class="filter-btn" id="filterHighMatch">
+                    <i data-lucide="sparkles"></i>
+                    AI Match > 80%
+                </button>
+                <button class="filter-btn" id="filterNoConflict">
+                    <i data-lucide="check-circle-2"></i>
+                    No Conflict
+                </button>
+                <select class="filter-select" id="filterModule">
+                    <option value="all">All Modules</option>
+                </select>
+                <button class="filter-clear" id="clearFilters" style="display: none;">
+                    <i data-lucide="x"></i>
+                    Clear
+                </button>
+                <span class="filter-count" id="filterCount">Showing 0 of 0 candidates</span>
+            </div>
+
+            <!-- Kanban Board -->
+            <div class="kanban-board" id="kanbanBoard"></div>
+        </div>
+    </main>
+
+    <!-- Candidate Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <button class="drawer-close" onclick="closeDrawer()">
+                <i data-lucide="x"></i>
+            </button>
+            <div id="drawerHeaderContent"></div>
+        </div>
+        <div class="drawer-body" id="drawerBody"></div>
+        <div class="drawer-footer" id="drawerFooter"></div>
+    </div>
+
+    <script src="/static/js/pages/mo/dashboard.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
