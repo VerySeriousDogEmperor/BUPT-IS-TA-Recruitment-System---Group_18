@@ -6,49 +6,58 @@ import java.security.Principal;
 import java.util.*;
 
 public class HttpServletRequestAdapter implements HttpServletRequest {
+    private static final String SESSION_COOKIE_NAME = "JSESSIONID";
+
     private HttpExchange exchange;
     private Map<String, Object> attributes = new HashMap<>();
-    private HttpSession session;
-    private String contextPath = ""; // 上下文路径，如 /api/auth
-    
+    private HttpSessionAdapter session;
+    private String contextPath = "";
+    private Cookie[] cookies;
+    private String requestedSessionId;
+
     public HttpServletRequestAdapter(HttpExchange exchange) {
         this(exchange, "");
     }
-    
+
     public HttpServletRequestAdapter(HttpExchange exchange, String contextPath) {
         this.exchange = exchange;
         this.contextPath = contextPath;
+        this.cookies = parseCookies();
+        this.requestedSessionId = extractSessionId(cookies);
+        this.session = HttpSessionAdapter.find(requestedSessionId);
     }
-    
+
     @Override
     public String getMethod() {
         return exchange.getRequestMethod();
     }
-    
+
     @Override
     public String getRequestURI() {
         return exchange.getRequestURI().getPath();
     }
-    
+
     @Override
     public StringBuffer getRequestURL() {
         return new StringBuffer("http://localhost:9191" + getRequestURI());
     }
-    
+
     @Override
     public String getQueryString() {
         return exchange.getRequestURI().getQuery();
     }
-    
+
     @Override
     public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "UTF-8"));
     }
-    
+
     @Override
     public String getParameter(String name) {
         String query = getQueryString();
-        if (query == null) return null;
+        if (query == null) {
+            return null;
+        }
         for (String param : query.split("&")) {
             String[] pair = param.split("=");
             if (pair.length == 2 && pair[0].equals(name)) {
@@ -57,44 +66,74 @@ public class HttpServletRequestAdapter implements HttpServletRequest {
         }
         return null;
     }
-    
+
     @Override
     public HttpSession getSession(boolean create) {
         if (session == null && create) {
-            session = new HttpSessionAdapter();
+            session = HttpSessionAdapter.create();
+            requestedSessionId = session.getId();
+            exchange.getResponseHeaders().add("Set-Cookie", buildSessionCookie(requestedSessionId));
         }
         return session;
     }
-    
+
     @Override
     public HttpSession getSession() {
         return getSession(true);
     }
-    
+
     @Override
     public void setAttribute(String name, Object value) {
         attributes.put(name, value);
     }
-    
+
     @Override
     public Object getAttribute(String name) {
         return attributes.get(name);
     }
-    
+
     @Override
     public String getHeader(String name) {
         List<String> headers = exchange.getRequestHeaders().get(name);
         return headers != null && !headers.isEmpty() ? headers.get(0) : null;
     }
-    
-    // 未实现的方法返回默认值
+
+    private Cookie[] parseCookies() {
+        String cookieHeader = getHeader("Cookie");
+        if (cookieHeader == null || cookieHeader.isBlank()) {
+            return new Cookie[0];
+        }
+
+        List<Cookie> parsedCookies = new ArrayList<>();
+        for (String cookiePart : cookieHeader.split(";")) {
+            String[] pair = cookiePart.trim().split("=", 2);
+            if (pair.length == 2) {
+                parsedCookies.add(new Cookie(pair[0].trim(), pair[1].trim()));
+            }
+        }
+        return parsedCookies.toArray(new Cookie[0]);
+    }
+
+    private String extractSessionId(Cookie[] parsedCookies) {
+        for (Cookie cookie : parsedCookies) {
+            if (SESSION_COOKIE_NAME.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    private String buildSessionCookie(String sessionId) {
+        return SESSION_COOKIE_NAME + "=" + sessionId + "; Path=/; HttpOnly; SameSite=Lax";
+    }
+
     @Override public String getAuthType() { return null; }
-    @Override public Cookie[] getCookies() { return new Cookie[0]; }
+    @Override public Cookie[] getCookies() { return cookies.length == 0 ? null : cookies.clone(); }
     @Override public long getDateHeader(String name) { return -1; }
     @Override public Enumeration<String> getHeaders(String name) { return Collections.emptyEnumeration(); }
-    @Override public Enumeration<String> getHeaderNames() { return Collections.emptyEnumeration(); }
+    @Override public Enumeration<String> getHeaderNames() { return Collections.enumeration(exchange.getRequestHeaders().keySet()); }
     @Override public int getIntHeader(String name) { return -1; }
-    @Override public String getPathInfo() { 
+    @Override public String getPathInfo() {
         String uri = getRequestURI();
         if (contextPath.isEmpty() || !uri.startsWith(contextPath)) {
             return uri;
@@ -107,10 +146,10 @@ public class HttpServletRequestAdapter implements HttpServletRequest {
     @Override public String getRemoteUser() { return null; }
     @Override public boolean isUserInRole(String role) { return false; }
     @Override public Principal getUserPrincipal() { return null; }
-    @Override public String getRequestedSessionId() { return null; }
+    @Override public String getRequestedSessionId() { return requestedSessionId; }
     @Override public String getServletPath() { return contextPath; }
-    @Override public boolean isRequestedSessionIdValid() { return false; }
-    @Override public boolean isRequestedSessionIdFromCookie() { return false; }
+    @Override public boolean isRequestedSessionIdValid() { return requestedSessionId != null && session != null; }
+    @Override public boolean isRequestedSessionIdFromCookie() { return requestedSessionId != null; }
     @Override public boolean isRequestedSessionIdFromURL() { return false; }
     @Override public boolean authenticate(HttpServletResponse response) { return false; }
     @Override public void login(String username, String password) {}
@@ -153,5 +192,12 @@ public class HttpServletRequestAdapter implements HttpServletRequest {
     @Override public String getRequestId() { return null; }
     @Override public String getProtocolRequestId() { return null; }
     @Override public ServletConnection getServletConnection() { return null; }
-    @Override public String changeSessionId() { return null; }
+    @Override public String changeSessionId() {
+        if (session == null) {
+            session = HttpSessionAdapter.create();
+        }
+        requestedSessionId = session.getId();
+        exchange.getResponseHeaders().set("Set-Cookie", buildSessionCookie(requestedSessionId));
+        return requestedSessionId;
+    }
 }
