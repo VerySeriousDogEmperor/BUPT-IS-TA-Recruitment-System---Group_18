@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /* ============================================================================
    Login Page Styles - 完全复刻原版
    ============================================================================= */
@@ -9,11 +10,17 @@
   padding-top: 64px;
 =======
 .login-page {
+=======
+.login-page {
+>>>>>>> Stashed changes
   min-height: calc(100vh - 64px - 220px);
   padding: 3.5rem 0;
   background:
     radial-gradient(circle at top left, rgba(33, 150, 243, 0.10), transparent 30%),
     linear-gradient(180deg, #f7fafc 0%, #edf4ff 100%);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 
@@ -21,17 +28,23 @@
   max-width: 1280px;
   margin: 0 auto;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   padding: 48px 24px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 32px;
   align-items: center;
 =======
+=======
+>>>>>>> Stashed changes
   padding: 0 24px;
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(420px, 0.9fr);
   gap: 32px;
   align-items: stretch;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 

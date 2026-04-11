@@ -220,17 +220,21 @@ async function handleSubmit(event) {
         return;
       }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       
       // 模拟登录
       localStorage.setItem('userRole', staffRole);
       localStorage.setItem('isAuthenticated', 'true');
       
 =======
+=======
+>>>>>>> Stashed changes
 
       const userData = await API.auth.login(email, password, staffRole);
       localStorage.setItem('userRole', staffRole);
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('user', JSON.stringify(userData));
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes
       showToast('Login successful!', 'success');
       setTimeout(() => {
@@ -292,6 +296,13 @@ async function handleSubmit(event) {
       }, 800);
       return;
 >>>>>>> Stashed changes
+=======
+      showToast('Login successful!', 'success');
+      setTimeout(() => {
+        window.location.href = staffRole === 'admin' ? '/admin/index.html' : '/mo/index.html';
+      }, 800);
+      return;
+>>>>>>> Stashed changes
     }
 
     if (studentAuthView === 'register') {
@@ -339,10 +350,13 @@ async function handleSubmit(event) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /**
  * 初始化
  */
 =======
+=======
+>>>>>>> Stashed changes
 function bindEvents() {
   document.querySelectorAll('.role-btn').forEach((btn) => {
     btn.addEventListener('click', () => selectRole(btn.dataset.role));
@@ -371,5 +385,8 @@ function initPage() {
   updateUI();
 }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 document.addEventListener('DOMContentLoaded', initPage);
