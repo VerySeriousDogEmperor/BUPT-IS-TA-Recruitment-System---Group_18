@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post a Job - MO Portal</title>
-    <link rel="stylesheet" href="../static/css/mo/post-job.css">
+    <link rel="stylesheet" href="/static/css/mo/post-job.css">
+    <link rel="stylesheet" href="/static/css/mo/theme.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo">MO Portal</div>
@@ -53,136 +53,126 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="content-wrapper">
-            <!-- Page Header -->
             <div class="page-header">
                 <div>
                     <h1>Post a Job</h1>
-                    <p class="page-subtitle">Manage TA recruitment postings and track approval status</p>
+                    <p class="page-subtitle">Create, update, publish, and monitor your recruitment postings</p>
                 </div>
                 <button class="btn-primary" id="btnNewPosting">
-                    <i>➕</i>
+                    <i data-lucide="plus-circle"></i>
                     <span>New Posting</span>
                 </button>
             </div>
 
-            <!-- Workflow Banner -->
             <div class="workflow-banner">
                 <div class="workflow-header">
                     <div class="workflow-icon">
-                        <i>⚠️</i>
+                        <i data-lucide="waypoints"></i>
                     </div>
-                    <span class="workflow-title">Recruitment Approval Workflow</span>
-                    <span class="workflow-subtitle">· Postings require Admin approval before becoming visible to students</span>
+                    <div class="workflow-copy">
+                        <span class="workflow-title">Job Publishing Flow</span>
+                        <span class="workflow-subtitle">Build a draft, publish it to students, then monitor how the role moves into review and closure.</span>
+                    </div>
                 </div>
                 <div class="workflow-steps">
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon done">
-                                <i>✓</i>
+                                <i data-lucide="file-text"></i>
                             </div>
-                            <div class="step-label done">MO Drafts</div>
-                            <div class="step-desc">Fill in job details</div>
+                            <div class="step-label done">Draft Role</div>
+                            <div class="step-desc">Define scope, workload, deadline, and requirements.</div>
                         </div>
                     </div>
                     <div class="workflow-connector done"></div>
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon done">
-                                <i>✓</i>
+                                <i data-lucide="send"></i>
                             </div>
-                            <div class="step-label done">Submit</div>
-                            <div class="step-desc">Send to Admin</div>
+                            <div class="step-label done">Publish</div>
+                            <div class="step-desc">Make the post visible on the student-facing site.</div>
                         </div>
                     </div>
                     <div class="workflow-connector partial"></div>
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon active">
-                                <i>⏰</i>
+                                <i data-lucide="inbox"></i>
                             </div>
-                            <div class="step-label active">Admin Review</div>
-                            <div class="step-desc">Awaiting approval</div>
+                            <div class="step-label active">Collect Applications</div>
+                            <div class="step-desc">Track applicant flow and keep the posting updated.</div>
                         </div>
                     </div>
                     <div class="workflow-connector"></div>
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon">
-                                <i>📢</i>
+                                <i data-lucide="user-search"></i>
                             </div>
-                            <div class="step-label">Published</div>
-                            <div class="step-desc">Visible to students</div>
+                            <div class="step-label">Review Candidates</div>
+                            <div class="step-desc">Approve or reject applicants from the MO review pages.</div>
                         </div>
                     </div>
                     <div class="workflow-connector"></div>
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon">
-                                <i>📦</i>
+                                <i data-lucide="archive"></i>
                             </div>
-                            <div class="step-label">Completed</div>
-                            <div class="step-desc">Archived</div>
+                            <div class="step-label">Close Cycle</div>
+                            <div class="step-desc">Archive the role once staffing is complete.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid" id="statsGrid">
-                <!-- Stats will be inserted here -->
-            </div>
+            <div class="stats-grid" id="statsGrid"></div>
 
-            <!-- Tabs -->
             <div class="tabs-container">
                 <button class="tab-btn" data-tab="draft" id="tabDraft">
-                    <i>📄</i>
+                    <i data-lucide="file-text"></i>
                     <span>Drafts</span>
                     <span class="tab-count" id="draftCount">0</span>
                 </button>
-                <button class="tab-btn active" data-tab="pending" id="tabPending">
-                    <i>⏰</i>
-                    <span>Pending Review</span>
+                <button class="tab-btn active" data-tab="all" id="tabPending">
+                    <i data-lucide="briefcase-business"></i>
+                    <span>All Posts</span>
                     <span class="tab-count" id="pendingCount">0</span>
                 </button>
                 <button class="tab-btn" data-tab="published" id="tabPublished">
-                    <i>📢</i>
+                    <i data-lucide="badge-check"></i>
                     <span>Published</span>
                     <span class="tab-count" id="publishedCount">0</span>
                 </button>
                 <button class="tab-btn" data-tab="completed" id="tabCompleted">
-                    <i>📦</i>
+                    <i data-lucide="archive"></i>
                     <span>Completed</span>
                     <span class="tab-count" id="completedCount">0</span>
                 </button>
             </div>
 
-            <!-- Postings List -->
-            <div class="postings-list" id="postingsList">
-                <!-- Posting cards will be inserted here -->
-            </div>
+            <div class="postings-list" id="postingsList"></div>
         </div>
     </main>
 
-    <!-- Drawer Overlay -->
     <div class="drawer-overlay" id="drawerOverlay"></div>
 
-    <!-- Form Drawer -->
     <div class="form-drawer" id="formDrawer">
         <div class="form-header">
             <div class="form-header-content">
                 <div class="form-header-icon">
-                    <i>💼</i>
+                    <i data-lucide="briefcase-business"></i>
                 </div>
                 <div>
                     <div class="form-header-title">Post a Job Opening</div>
-                    <div class="form-header-subtitle">Fill in the details, save as draft or submit for review</div>
+                    <div class="form-header-subtitle">Fill in the details, save as draft, or publish directly</div>
                 </div>
             </div>
             <button class="btn-close" id="btnCloseDrawer">
-                <i>✕</i>
+                <i data-lucide="x"></i>
             </button>
         </div>
         <div class="form-body">
@@ -190,10 +180,10 @@
                 <label class="form-label">Module *</label>
                 <select class="form-select" id="selectModule">
                     <option value="">Select a module...</option>
-                    <option value="COMP101">COMP101 — Introduction to Computer Science</option>
-                    <option value="DATA201">DATA201 — Data Analysis & Statistics</option>
-                    <option value="MATH201">MATH201 — Calculus & Linear Algebra</option>
-                    <option value="COMP305">COMP305 — Algorithm Design</option>
+                    <option value="COMP101">COMP101 - Introduction to Computer Science</option>
+                    <option value="DATA201">DATA201 - Data Analysis & Statistics</option>
+                    <option value="MATH201">MATH201 - Calculus & Linear Algebra</option>
+                    <option value="COMP305">COMP305 - Algorithm Design</option>
                 </select>
             </div>
             <div class="form-group">
@@ -204,7 +194,7 @@
                 <div class="form-group">
                     <label class="form-label">Positions *</label>
                     <div class="number-input">
-                        <button class="number-btn" id="btnPositionsDown">−</button>
+                        <button class="number-btn" id="btnPositionsDown">-</button>
                         <div class="number-value" id="positionsValue">1</div>
                         <button class="number-btn" id="btnPositionsUp">+</button>
                     </div>
@@ -212,7 +202,7 @@
                 <div class="form-group">
                     <label class="form-label">Hours / Week *</label>
                     <div class="number-input">
-                        <button class="number-btn" id="btnHoursDown">−</button>
+                        <button class="number-btn" id="btnHoursDown">-</button>
                         <div class="number-value" id="hoursValue">6h</div>
                         <button class="number-btn" id="btnHoursUp">+</button>
                     </div>
@@ -228,12 +218,12 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Requirements (one per line)</label>
-                <textarea class="form-textarea" id="inputRequirements" rows="3" placeholder="Python proficiency&#10;GPA ≥ 3.5&#10;No schedule conflicts on Tue/Thu"></textarea>
+                <textarea class="form-textarea" id="inputRequirements" rows="3" placeholder="Python proficiency&#10;GPA 3.5 or above&#10;No schedule conflicts on Tue/Thu"></textarea>
             </div>
             <div class="form-info">
-                <i>ℹ️</i>
+                <i data-lucide="info"></i>
                 <div class="form-info-text">
-                    Once submitted, this posting will enter the <strong>Admin approval</strong> workflow. It will only be visible to students after approval. You can save as a draft and submit later.
+                    Save a draft while you are still editing, or publish directly once the posting is ready for students.
                 </div>
             </div>
         </div>
@@ -241,32 +231,33 @@
             <button class="btn-cancel" id="btnCancel">Cancel</button>
             <div class="form-actions">
                 <button class="btn-draft" id="btnSaveDraft">
-                    <i>📄</i>
+                    <i data-lucide="file-text"></i>
                     <span>Save Draft</span>
                 </button>
                 <button class="btn-submit-form" id="btnSubmitForm">
-                    <i>📤</i>
-                    <span>Submit for Review</span>
+                    <i data-lucide="send"></i>
+                    <span>Publish Job</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Toast (hidden by default) -->
     <div class="toast" id="toast" style="display: none;">
         <div class="toast-icon">
-            <i>🔔</i>
+            <i data-lucide="bell-ring"></i>
         </div>
         <div class="toast-content">
-            <div class="toast-title">Reminder Sent</div>
-            <div class="toast-message" id="toastMessage">Review request has been pushed to Admin</div>
+            <div class="toast-title">Status Updated</div>
+            <div class="toast-message" id="toastMessage">Job post updated successfully.</div>
         </div>
         <button class="toast-close" id="toastClose">
-            <i>✕</i>
+            <i data-lucide="x"></i>
         </button>
     </div>
 
-    <script src="../static/js/pages/mo/post-job.js"></script>
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/pages/mo/common.js"></script>
+    <script src="/static/js/pages/mo/post-job.js"></script>
     <script>
         lucide.createIcons();
     </script>

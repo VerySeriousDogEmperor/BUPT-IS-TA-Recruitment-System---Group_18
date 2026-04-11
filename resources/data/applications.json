@@ -1,93 +1,88 @@
 [
   {
     "id": "APP001",
-    "studentId": "S001",
+    "studentId": "S004",
     "jobId": "JOB001",
     "status": "pending",
-    "coverLetter": "我对数据结构课程非常感兴趣，曾获得ACM竞赛奖项，希望能够担任助教。",
-    "appliedAt": "2026-04-06T13:05:38.3827443",
-    "updatedAt": "2026-04-06T13:05:38.3827443",
+    "coverLetter": "I am confident supporting Data Structures tutorials and grading.",
+    "appliedAt": "2026-04-10T22:49:15.6030259",
+    "updatedAt": "2026-04-10T22:49:15.6030259",
     "timeline": [
       {
         "status": "submitted",
-        "time": "2026-04-08T13:05:38.3812647",
-        "note": "申请已提交"
+        "time": "2026-04-10T22:49:15.6030259",
+        "note": "Application submitted"
       }
     ]
   },
   {
     "id": "APP002",
-    "studentId": "S001",
+    "studentId": "S004",
     "jobId": "JOB005",
     "status": "approved",
-    "coverLetter": "我有扎实的算法基础，希望能够帮助同学们学习算法。",
+    "coverLetter": "I can support project debugging and office hours for Operating Systems.",
     "appliedAt": "2026-04-05T13:05:38.386237",
     "updatedAt": "2026-04-07T13:05:38.386237",
-    "reviewNote": "算法基础扎实，录用",
+    "reviewNote": "Strong fit for the project support role.",
+    "reviewComment": "Strong fit for the project support role.",
+    "reviewedBy": "MO001",
+    "reviewedAt": "2026-04-07T13:05:38.386237",
     "timeline": [
       {
         "status": "submitted",
-        "time": "2026-04-08T13:05:38.386237",
-        "note": "申请已提交"
+        "time": "2026-04-05T13:05:38.386237",
+        "note": "Application submitted"
       },
       {
         "status": "approved",
         "time": "2026-04-07T13:05:38.386237",
-        "note": "申请已通过"
+        "note": "Application approved by MO"
       }
     ]
   },
   {
     "id": "APP003",
-    "studentId": "S002",
+    "studentId": "S004",
     "jobId": "JOB002",
-    "status": "pending",
-    "coverLetter": "我熟悉Linux系统，有实验经验，希望能够担任助教。",
+    "status": "withdrawn",
+    "coverLetter": "I have prior Linux lab experience and can support system experiments.",
     "appliedAt": "2026-04-07T13:05:38.3894774",
-    "updatedAt": "2026-04-07T13:05:38.3894774",
+    "updatedAt": "2026-04-09T09:00:00",
     "timeline": [
       {
         "status": "submitted",
-        "time": "2026-04-08T13:05:38.3894774",
-        "note": "申请已提交"
+        "time": "2026-04-07T13:05:38.3894774",
+        "note": "Application submitted"
+      },
+      {
+        "status": "withdrawn",
+        "time": "2026-04-09T09:00:00",
+        "note": "Application withdrawn by student"
       }
     ]
   },
   {
     "id": "APP004",
-    "studentId": "S002",
+    "studentId": "S004",
     "jobId": "JOB003",
     "status": "rejected",
-    "coverLetter": "我对网络协议有一定了解。",
+    "coverLetter": "I would like to help with network lab support and report review.",
     "appliedAt": "2026-04-04T13:05:38.3914984",
     "updatedAt": "2026-04-06T13:05:38.3914984",
-    "reviewNote": "网络基础不够扎实",
+    "reviewNote": "Need stronger networking lab background.",
+    "reviewComment": "Need stronger networking lab background.",
+    "reviewedBy": "MO001",
+    "reviewedAt": "2026-04-06T13:05:38.3914984",
     "timeline": [
       {
         "status": "submitted",
-        "time": "2026-04-08T13:05:38.3914984",
-        "note": "申请已提交"
+        "time": "2026-04-04T13:05:38.3914984",
+        "note": "Application submitted"
       },
       {
         "status": "rejected",
         "time": "2026-04-06T13:05:38.3914984",
-        "note": "申请未通过"
-      }
-    ]
-  },
-  {
-    "id": "APP005",
-    "studentId": "S003",
-    "jobId": "JOB001",
-    "status": "pending",
-    "coverLetter": "我是数据科学专业学生，数据结构成绩优秀，希望能够担任助教。",
-    "appliedAt": "2026-04-08T01:05:38.3946018",
-    "updatedAt": "2026-04-08T01:05:38.3946018",
-    "timeline": [
-      {
-        "status": "submitted",
-        "time": "2026-04-08T13:05:38.3946018",
-        "note": "申请已提交"
+        "note": "Application rejected by MO"
       }
     ]
   }

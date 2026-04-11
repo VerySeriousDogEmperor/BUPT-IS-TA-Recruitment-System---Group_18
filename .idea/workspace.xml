@@ -4,23 +4,43 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="25943275-8274-46a5-bd6c-6fdd4540faf3" name="更改" comment="feat: 添加服务器基础和首页&#10;&#10;- 实现嵌入式 HTTP 服务器&#10;- 实现 Servlet 适配器&#10;- 添加首页 HTML/CSS&#10;- 添加通用样式和组件&#10;- 添加 API 和认证工具类">
-      <change afterPath="$PROJECT_DIR$/lib/gson-2.13.2.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/bupt/ta/shared/util/JsonFileUtil.java" afterDir="false" />
+    <list default="true" id="25943275-8274-46a5-bd6c-6fdd4540faf3" name="更改" comment="feat(core): build server foundation, auth flow and shared infrastructure">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/1.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BUPT-IS-TA-Recruitment-System.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/BUPT-IS-TA-Recruitment-System.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/WEB-INF/1.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/web/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/applications.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/applications.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/jobs.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/jobs.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/modules.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/modules.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/students.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/students.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/timesheets.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/timesheets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/data/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/data/users.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOApplicantServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOApplicantServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOJobServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOJobServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOModuleServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOModuleServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOTimesheetServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/mo/interfaces/MOTimesheetServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/student/domain/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/student/domain/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentProfileServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentProfileServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentTimesheetServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/bupt/ta/student/interfaces/StudentTimesheetServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/about.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/announcements.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/announcements.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/apply.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/apply.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/guide.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/guide.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/job-detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/job-detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/applicants.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/applicants.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/jobs.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/jobs.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/post-job.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/post-job.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/mo/timesheets.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/mo/timesheets.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/css/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/css/home.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/static/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/css/login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/css/student.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/css/student.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/static/js/pages/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/applicants.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/applicants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/jobs.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/jobs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/post-job.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/post-job.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/mo/timesheets.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/mo/timesheets.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/student/apply.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/student/apply.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/pages/student/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/pages/student/dashboard.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/student/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/student/dashboard.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,6 +62,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -77,6 +98,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -84,31 +108,31 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Tomcat 服务器.Tomcat 11.0.9.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat 服务器.未命名.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Yifei-dev&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/23648/Desktop/BUPT-IS-TA-Recruitment-System&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;模块&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Tomcat 服务器.Tomcat 11.0.9.executor": "Run",
+    "Tomcat 服务器.未命名.executor": "Run",
+    "git-widget-placeholder": "Yifei-dev",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/23648/Desktop/BUPT-IS-TA-Recruitment-System",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "模块",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "http.proxy",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\23648\Desktop\BUPT-IS-TA-Recruitment-System\lib" />
@@ -242,6 +266,8 @@
       <workItem from="1775648820803" duration="129000" />
       <workItem from="1775651322447" duration="2050000" />
       <workItem from="1775744038088" duration="348000" />
+      <workItem from="1775833312536" duration="2835000" />
+      <workItem from="1775892967080" duration="1014000" />
     </task>
     <task id="LOCAL-00001" summary="111">
       <option name="closed" value="true" />
@@ -275,7 +301,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775651822763</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="feat(core): build server foundation, auth flow and shared infrastructure">
+      <option name="closed" value="true" />
+      <created>1775893351200</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1775893351200</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -323,6 +357,7 @@
     <MESSAGE value="111" />
     <MESSAGE value="docs: 完成个人分支 README，上传产品prototype" />
     <MESSAGE value="feat: 添加服务器基础和首页&#10;&#10;- 实现嵌入式 HTTP 服务器&#10;- 实现 Servlet 适配器&#10;- 添加首页 HTML/CSS&#10;- 添加通用样式和组件&#10;- 添加 API 和认证工具类" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: 添加服务器基础和首页&#10;&#10;- 实现嵌入式 HTTP 服务器&#10;- 实现 Servlet 适配器&#10;- 添加首页 HTML/CSS&#10;- 添加通用样式和组件&#10;- 添加 API 和认证工具类" />
+    <MESSAGE value="feat(core): build server foundation, auth flow and shared infrastructure" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(core): build server foundation, auth flow and shared infrastructure" />
   </component>
 </project>

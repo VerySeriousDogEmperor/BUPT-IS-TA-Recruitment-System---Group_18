@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Modules - MO Portal</title>
-    <link rel="stylesheet" href="../static/css/mo/jobs.css">
+    <link rel="stylesheet" href="/static/css/mo/jobs.css">
+    <link rel="stylesheet" href="/static/css/mo/theme.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo">MO Portal</div>
@@ -53,102 +53,98 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="content-wrapper">
-            <!-- Page Header -->
             <div class="page-header">
                 <div>
                     <h1>My Modules</h1>
                     <p class="page-subtitle" id="pageSubtitle">Loading...</p>
                 </div>
                 <button class="btn-primary" id="btnRequestNew">
-                    <i>➕</i>
-                    <span>Request New Module</span>
+                    <i data-lucide="plus-circle"></i>
+                    <span>Create Job Post</span>
                 </button>
             </div>
 
-            <!-- Workflow Banner -->
             <div class="workflow-banner">
                 <div class="workflow-header">
                     <div class="workflow-icon">
-                        <i>⚠️</i>
+                        <i data-lucide="waypoints"></i>
                     </div>
-                    <span class="workflow-title">Module Change Approval Workflow</span>
-                    <span class="workflow-subtitle">· All module additions and edits require Admin approval</span>
+                    <div class="workflow-copy">
+                        <span class="workflow-title">Module Ownership Flow</span>
+                        <span class="workflow-subtitle">Move from module overview to live job tracking and applicant follow-up from one MO-owned workspace.</span>
+                    </div>
                 </div>
                 <div class="workflow-steps">
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon done">
-                                <i>✓</i>
+                                <i data-lucide="book-open"></i>
                             </div>
-                            <div class="step-label done">MO Submits</div>
-                            <div class="step-desc">Fill in request form</div>
+                            <div class="step-label done">Review Modules</div>
+                            <div class="step-desc">See every course currently assigned to your MO account.</div>
                         </div>
                     </div>
                     <div class="workflow-connector done"></div>
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon active">
-                                <i>⏰</i>
+                                <i data-lucide="clipboard-list"></i>
                             </div>
-                            <div class="step-label active">Under Review</div>
-                            <div class="step-desc">Admin evaluating</div>
+                            <div class="step-label active">Track Job Posts</div>
+                            <div class="step-desc">Compare draft and published roles across your modules.</div>
+                        </div>
+                    </div>
+                    <div class="workflow-connector active"></div>
+                    <div class="workflow-step-wrapper">
+                        <div class="workflow-step">
+                            <div class="step-icon">
+                                <i data-lucide="user-search"></i>
+                            </div>
+                            <div class="step-label">Follow Applicants</div>
+                            <div class="step-desc">Jump into applicant review once a module starts receiving interest.</div>
                         </div>
                     </div>
                     <div class="workflow-connector"></div>
                     <div class="workflow-step-wrapper">
                         <div class="workflow-step">
                             <div class="step-icon">
-                                <i>✓</i>
+                                <i data-lucide="arrow-right-left"></i>
                             </div>
-                            <div class="step-label">Approved</div>
-                            <div class="step-desc">Module activated</div>
+                            <div class="step-label">Take Action</div>
+                            <div class="step-desc">Open editing or applicant pages directly from each module card.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Summary Stats -->
-            <div class="stats-grid" id="statsGrid">
-                <!-- Stats will be inserted here -->
-            </div>
+            <div class="stats-grid" id="statsGrid"></div>
 
-            <!-- Tabs -->
             <div class="tabs-container">
                 <button class="tab-btn active" data-tab="modules" id="tabModules">
-                    <span>Active Modules</span>
+                    <span>My Modules</span>
                     <span id="modulesCount">0</span>
                 </button>
                 <button class="tab-btn" data-tab="requests" id="tabRequests">
-                    <span>My Requests</span>
+                    <span>Job Posts</span>
                     <span id="requestsCount">0</span>
                     <span class="tab-badge" id="requestsBadge" style="display: none;">0</span>
                 </button>
             </div>
 
-            <!-- Modules Tab Content -->
-            <div id="modulesContent" class="modules-grid">
-                <!-- Module cards will be inserted here -->
-            </div>
-
-            <!-- Requests Tab Content -->
-            <div id="requestsContent" class="requests-list" style="display: none;">
-                <!-- Request cards will be inserted here -->
-            </div>
+            <div id="modulesContent" class="modules-grid"></div>
+            <div id="requestsContent" class="requests-list" style="display: none;"></div>
         </div>
     </main>
 
-    <!-- Drawer Overlay -->
     <div class="drawer-overlay" id="drawerOverlay"></div>
 
-    <!-- Form Drawer -->
     <div class="form-drawer" id="formDrawer">
         <div class="form-header">
             <div class="form-header-content">
                 <div class="form-header-icon">
-                    <i>📚</i>
+                    <i data-lucide="square-pen"></i>
                 </div>
                 <div>
                     <div class="form-header-title">Submit Module Request</div>
@@ -156,7 +152,7 @@
                 </div>
             </div>
             <button class="btn-close" id="btnCloseDrawer">
-                <i>✕</i>
+                <i data-lucide="x"></i>
             </button>
         </div>
         <div class="form-body">
@@ -164,11 +160,11 @@
                 <label class="form-label">Request Type *</label>
                 <div class="type-buttons">
                     <button class="type-btn active" data-type="new_module">
-                        <i>➕</i>
+                        <i data-lucide="plus-circle"></i>
                         <span>New Module</span>
                     </button>
                     <button class="type-btn" data-type="edit_module">
-                        <i>✏️</i>
+                        <i data-lucide="square-pen"></i>
                         <span>Edit Existing</span>
                     </button>
                 </div>
@@ -189,7 +185,7 @@
                 <div class="form-group">
                     <label class="form-label">TA Slots *</label>
                     <div class="number-input">
-                        <button class="number-btn" id="btnSlotsDown">−</button>
+                        <button class="number-btn" id="btnSlotsDown">-</button>
                         <div class="number-value" id="slotsValue">2</div>
                         <button class="number-btn" id="btnSlotsUp">+</button>
                     </div>
@@ -197,7 +193,7 @@
                 <div class="form-group">
                     <label class="form-label">Budget Hours *</label>
                     <div class="number-input">
-                        <button class="number-btn" id="btnBudgetDown">−</button>
+                        <button class="number-btn" id="btnBudgetDown">-</button>
                         <div class="number-value" id="budgetValue">80h</div>
                         <button class="number-btn" id="btnBudgetUp">+</button>
                     </div>
@@ -208,7 +204,7 @@
                 <textarea class="form-textarea" id="inputReason" rows="4" placeholder="Explain why this module needs to be added or changed, including any supporting context..."></textarea>
             </div>
             <div class="form-info">
-                <i>ℹ️</i>
+                <i data-lucide="info"></i>
                 <div class="form-info-text">
                     Once submitted, this request enters the <strong>Admin approval</strong> workflow. The module will only appear in My Modules after approval.
                 </div>
@@ -218,18 +214,20 @@
             <button class="btn-cancel" id="btnCancel">Cancel</button>
             <div class="form-actions">
                 <button class="btn-draft" id="btnSaveDraft">
-                    <i>📄</i>
+                    <i data-lucide="file-text"></i>
                     <span>Save Draft</span>
                 </button>
                 <button class="btn-submit-form" id="btnSubmitForm">
-                    <i>📤</i>
+                    <i data-lucide="send"></i>
                     <span>Submit for Review</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="../static/js/pages/mo/jobs.js"></script>
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/pages/mo/common.js"></script>
+    <script src="/static/js/pages/mo/jobs.js"></script>
     <script>
         lucide.createIcons();
     </script>

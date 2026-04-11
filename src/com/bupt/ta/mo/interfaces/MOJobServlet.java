@@ -179,6 +179,14 @@ public class MOJobServlet extends BaseServlet {
             
             // 设置创建信息
             job.setCreatedBy(currentUser.getId());
+            job.setMoId(currentUser.getId());
+            job.setMoName(currentUser.getName());
+            if (job.getSlots() != null && job.getPositions() == null) {
+                job.setPositions(job.getSlots());
+            }
+            if (job.getPositions() != null && job.getSlots() == null) {
+                job.setSlots(job.getPositions());
+            }
             job.setCreatedAt(LocalDateTime.now());
             job.setUpdatedAt(LocalDateTime.now());
             
@@ -226,15 +234,29 @@ public class MOJobServlet extends BaseServlet {
             // 更新字段
             if (updatedJob.getTitle() != null) existingJob.setTitle(updatedJob.getTitle());
             if (updatedJob.getDescription() != null) existingJob.setDescription(updatedJob.getDescription());
+            if (updatedJob.getModuleId() != null) existingJob.setModuleId(updatedJob.getModuleId());
             if (updatedJob.getModuleCode() != null) existingJob.setModuleCode(updatedJob.getModuleCode());
             if (updatedJob.getModuleName() != null) existingJob.setModuleName(updatedJob.getModuleName());
+            if (updatedJob.getDepartment() != null) existingJob.setDepartment(updatedJob.getDepartment());
+            if (updatedJob.getType() != null) existingJob.setType(updatedJob.getType());
             if (updatedJob.getRequirements() != null) existingJob.setRequirements(updatedJob.getRequirements());
             if (updatedJob.getResponsibilities() != null) existingJob.setResponsibilities(updatedJob.getResponsibilities());
+            if (updatedJob.getRequiredSkills() != null) existingJob.setRequiredSkills(updatedJob.getRequiredSkills());
             if (updatedJob.getHoursPerWeek() != null) existingJob.setHoursPerWeek(updatedJob.getHoursPerWeek());
+            if (updatedJob.getHourlyRate() != null) existingJob.setHourlyRate(updatedJob.getHourlyRate());
+            if (updatedJob.getSchedule() != null) existingJob.setSchedule(updatedJob.getSchedule());
             if (updatedJob.getDuration() != null) existingJob.setDuration(updatedJob.getDuration());
             if (updatedJob.getStartDate() != null) existingJob.setStartDate(updatedJob.getStartDate());
             if (updatedJob.getEndDate() != null) existingJob.setEndDate(updatedJob.getEndDate());
             if (updatedJob.getPositions() != null) existingJob.setPositions(updatedJob.getPositions());
+            if (updatedJob.getSlots() != null) existingJob.setSlots(updatedJob.getSlots());
+
+            if (updatedJob.getSlots() != null && updatedJob.getPositions() == null) {
+                existingJob.setPositions(updatedJob.getSlots());
+            }
+            if (updatedJob.getPositions() != null && updatedJob.getSlots() == null) {
+                existingJob.setSlots(updatedJob.getPositions());
+            }
             
             existingJob.setUpdatedAt(LocalDateTime.now());
             

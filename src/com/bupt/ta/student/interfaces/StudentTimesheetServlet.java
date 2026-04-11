@@ -131,8 +131,10 @@ public class StudentTimesheetServlet extends BaseServlet {
             timesheet.setId(timesheetRepo.generateId());
             timesheet.setStudentId(studentId);
             timesheet.setJobId(tsReq.jobId);
+            timesheet.setApplicationId(appOpt.get().getId());
             timesheet.setDate(tsReq.date);
             timesheet.setHours(tsReq.hours);
+            timesheet.setHoursWorked(tsReq.hours);
             timesheet.setDescription(tsReq.description);
             
             timesheetRepo.save(timesheet);

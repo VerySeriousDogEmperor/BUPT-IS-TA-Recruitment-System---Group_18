@@ -51,10 +51,10 @@ public class MOModuleServlet extends BaseServlet {
         try {
             List<CourseModule> modules = moduleRepo.findAll();
             
-            // 过滤：只显示当前 MO 负责的课程
-            // 假设 CourseModule 有 coordinatorId 字段
+            // 过滤：兼容旧数据里的 moId 和新数据里的 coordinatorId
             modules = modules.stream()
-                    .filter(module -> currentUser.getId().equals(module.getCoordinatorId()))
+                    .filter(module -> currentUser.getId().equals(module.getCoordinatorId())
+                            || currentUser.getId().equals(module.getMoId()))
                     .collect(Collectors.toList());
             
             ResponseUtil.sendSuccess(response, "获取成功", modules);
@@ -77,8 +77,9 @@ public class MOModuleServlet extends BaseServlet {
             
             CourseModule module = moduleOpt.get();
             
-            // 验证权限：只能查看自己负责的课程
-            if (!currentUser.getId().equals(module.getCoordinatorId())) {
+            // 验证权限：兼容旧字段
+            if (!currentUser.getId().equals(module.getCoordinatorId())
+                    && !currentUser.getId().equals(module.getMoId())) {
                 ResponseUtil.sendError(response, 403, "无权访问");
                 return;
             }

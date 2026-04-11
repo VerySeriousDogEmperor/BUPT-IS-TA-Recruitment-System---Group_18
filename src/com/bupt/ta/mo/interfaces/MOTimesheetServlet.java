@@ -18,14 +18,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * MO 工时审核接口
- * GET /api/mo/timesheets - 获取工时表列表
- * GET /api/mo/timesheets/{id} - 获取工时表详情
- * PUT /api/mo/timesheets/{id}/review - 审核工时表
+ * MO timesheet review endpoints.
+ * GET /api/mo/timesheets - list timesheets under current MO jobs
+ * GET /api/mo/timesheets/{id} - get timesheet detail
+ * PUT /api/mo/timesheets/{id}/review - approve or reject a timesheet
  */
 @WebServlet("/api/mo/timesheets/*")
 public class MOTimesheetServlet extends BaseServlet {
@@ -33,109 +38,98 @@ public class MOTimesheetServlet extends BaseServlet {
     private final ApplicationRepository applicationRepo = new ApplicationRepository();
     private final JobRepository jobRepo = new JobRepository();
     private final StudentRepository studentRepo = new StudentRepository();
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User currentUser = SessionUtil.getCurrentMOUser(request);
         if (currentUser == null || !"mo".equals(currentUser.getRole())) {
-            ResponseUtil.sendError(response, 401, "未授权");
+            ResponseUtil.sendError(response, 401, "Unauthorized");
             return;
         }
-        
+
         String pathInfo = request.getPathInfo();
-        
         if (pathInfo == null || "/".equals(pathInfo)) {
-            // 获取工时表列表
             handleGetTimesheets(request, response, currentUser);
-        } else {
-            // 获取工时表详情
-            String timesheetId = pathInfo.substring(1);
-            handleGetTimesheetDetail(response, timesheetId, currentUser);
+            return;
         }
+
+        String timesheetId = pathInfo.substring(1);
+        handleGetTimesheetDetail(response, timesheetId, currentUser);
     }
-    
+
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User currentUser = SessionUtil.getCurrentMOUser(request);
         if (currentUser == null || !"mo".equals(currentUser.getRole())) {
-            ResponseUtil.sendError(response, 401, "未授权");
+            ResponseUtil.sendError(response, 401, "Unauthorized");
             return;
         }
-        
+
         String pathInfo = request.getPathInfo();
         if (pathInfo == null || !pathInfo.contains("/review")) {
-            ResponseUtil.sendError(response, 400, "无效的请求路径");
+            ResponseUtil.sendError(response, 400, "Invalid request path");
             return;
         }
-        
+
         String timesheetId = pathInfo.substring(1, pathInfo.indexOf("/review"));
         handleReviewTimesheet(request, response, timesheetId, currentUser);
     }
-    
-    /**
-     * 获取工时表列表
-     */
-    private void handleGetTimesheets(HttpServletRequest request, HttpServletResponse response, User currentUser) throws IOException {
+
+    private void handleGetTimesheets(HttpServletRequest request, HttpServletResponse response, User currentUser)
+            throws IOException {
         try {
             String status = request.getParameter("status");
             String jobId = request.getParameter("jobId");
-            
+
             List<Timesheet> timesheets = timesheetRepo.findAll();
-            
-            // 过滤：只显示当前 MO 职位相关的工时表
+
             List<Job> myJobs = jobRepo.findAll().stream()
                     .filter(job -> currentUser.getId().equals(job.getCreatedBy()))
                     .collect(Collectors.toList());
-            
+
             Set<String> myJobIds = myJobs.stream()
                     .map(Job::getId)
                     .collect(Collectors.toSet());
-            
-            // 获取这些职位的所有申请
+
             List<Application> applications = applicationRepo.findAll().stream()
                     .filter(app -> myJobIds.contains(app.getJobId()))
                     .collect(Collectors.toList());
-            
+
             Set<String> applicationIds = applications.stream()
                     .map(Application::getId)
                     .collect(Collectors.toSet());
-            
+
             timesheets = timesheets.stream()
                     .filter(ts -> applicationIds.contains(ts.getApplicationId()))
                     .collect(Collectors.toList());
-            
-            // 按状态过滤
+
             if (status != null && !status.isEmpty()) {
                 timesheets = timesheets.stream()
                         .filter(ts -> status.equals(ts.getStatus()))
                         .collect(Collectors.toList());
             }
-            
-            // 按职位过滤
+
             if (jobId != null && !jobId.isEmpty()) {
                 Set<String> jobApplicationIds = applications.stream()
                         .filter(app -> jobId.equals(app.getJobId()))
                         .map(Application::getId)
                         .collect(Collectors.toSet());
-                
+
                 timesheets = timesheets.stream()
                         .filter(ts -> jobApplicationIds.contains(ts.getApplicationId()))
                         .collect(Collectors.toList());
             }
-            
-            // 补充学生和职位信息
+
             List<Map<String, Object>> result = new ArrayList<>();
             for (Timesheet ts : timesheets) {
                 Map<String, Object> item = new HashMap<>();
                 item.put("timesheet", ts);
-                
-                // 添加申请信息
+
                 try {
                     Optional<Application> appOpt = applicationRepo.findById(ts.getApplicationId());
                     if (appOpt.isPresent()) {
                         Application app = appOpt.get();
-                        
-                        // 添加学生信息
+
                         Optional<Student> studentOpt = studentRepo.findById(app.getStudentId());
                         if (studentOpt.isPresent()) {
                             Student student = studentOpt.get();
@@ -145,8 +139,7 @@ public class MOTimesheetServlet extends BaseServlet {
                             studentInfo.put("studentId", student.getStudentId());
                             item.put("student", studentInfo);
                         }
-                        
-                        // 添加职位信息
+
                         Optional<Job> jobOpt = jobRepo.findById(app.getJobId());
                         if (jobOpt.isPresent()) {
                             Job job = jobOpt.get();
@@ -157,134 +150,132 @@ public class MOTimesheetServlet extends BaseServlet {
                             item.put("job", jobInfo);
                         }
                     }
-                } catch (Exception e) {
-                    // 忽略
+                } catch (Exception ignored) {
+                    // Skip enrichment failures and keep the base timesheet record.
                 }
-                
+
                 result.add(item);
             }
-            
-            ResponseUtil.sendSuccess(response, "获取成功", result);
+
+            ResponseUtil.sendSuccess(response, "Success", result);
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
+            ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
     }
-    
-    /**
-     * 获取工时表详情
-     */
-    private void handleGetTimesheetDetail(HttpServletResponse response, String timesheetId, User currentUser) throws IOException {
+
+    private void handleGetTimesheetDetail(HttpServletResponse response, String timesheetId, User currentUser)
+            throws IOException {
         try {
             Optional<Timesheet> tsOpt = timesheetRepo.findById(timesheetId);
             if (!tsOpt.isPresent()) {
-                ResponseUtil.sendError(response, 404, "工时表不存在");
+                ResponseUtil.sendError(response, 404, "Timesheet not found");
                 return;
             }
-            
+
             Timesheet ts = tsOpt.get();
-            
-            // 验证权限：检查是否属于当前 MO 的职位
             Optional<Application> appOpt = applicationRepo.findById(ts.getApplicationId());
             if (!appOpt.isPresent()) {
-                ResponseUtil.sendError(response, 404, "申请不存在");
+                ResponseUtil.sendError(response, 404, "Application not found");
                 return;
             }
-            
+
             Application app = appOpt.get();
             Optional<Job> jobOpt = jobRepo.findById(app.getJobId());
             if (!jobOpt.isPresent() || !currentUser.getId().equals(jobOpt.get().getCreatedBy())) {
-                ResponseUtil.sendError(response, 403, "无权访问");
+                ResponseUtil.sendError(response, 403, "Forbidden");
                 return;
             }
-            
-            // 构建详细信息
+
             Map<String, Object> result = new HashMap<>();
             result.put("timesheet", ts);
             result.put("application", app);
             result.put("job", jobOpt.get());
-            
+
             Optional<Student> studentOpt = studentRepo.findById(app.getStudentId());
-            if (studentOpt.isPresent()) {
-                result.put("student", studentOpt.get());
-            }
-            
-            ResponseUtil.sendSuccess(response, "获取成功", result);
+            studentOpt.ifPresent(student -> result.put("student", student));
+
+            ResponseUtil.sendSuccess(response, "Success", result);
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
+            ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
     }
-    
-    /**
-     * 审核工时表
-     */
-    private void handleReviewTimesheet(HttpServletRequest request, HttpServletResponse response, String timesheetId, User currentUser) throws IOException {
+
+    private void handleReviewTimesheet(HttpServletRequest request, HttpServletResponse response, String timesheetId,
+            User currentUser) throws IOException {
         try {
             Optional<Timesheet> tsOpt = timesheetRepo.findById(timesheetId);
             if (!tsOpt.isPresent()) {
-                ResponseUtil.sendError(response, 404, "工时表不存在");
+                ResponseUtil.sendError(response, 404, "Timesheet not found");
                 return;
             }
-            
+
             Timesheet ts = tsOpt.get();
-            
-            // 验证权限
+
             Optional<Application> appOpt = applicationRepo.findById(ts.getApplicationId());
             if (!appOpt.isPresent()) {
-                ResponseUtil.sendError(response, 404, "申请不存在");
+                ResponseUtil.sendError(response, 404, "Application not found");
                 return;
             }
-            
+
             Application app = appOpt.get();
             Optional<Job> jobOpt = jobRepo.findById(app.getJobId());
             if (!jobOpt.isPresent() || !currentUser.getId().equals(jobOpt.get().getCreatedBy())) {
-                ResponseUtil.sendError(response, 403, "无权操作");
+                ResponseUtil.sendError(response, 403, "Forbidden");
                 return;
             }
-            
-            // 读取审核请求
+
             Map<String, Object> requestData = readRequestBody(request, Map.class);
-            String action = (String) requestData.get("action"); // "approve" or "reject"
+            String action = (String) requestData.get("action");
             String comment = (String) requestData.get("comment");
-            Double approvedHours = requestData.get("approvedHours") != null ? 
-                    ((Number) requestData.get("approvedHours")).doubleValue() : null;
-            
-            if (action == null || (!action.equals("approve") && !action.equals("reject"))) {
-                ResponseUtil.sendError(response, 400, "无效的操作");
+            Double approvedHours = requestData.get("approvedHours") != null
+                    ? ((Number) requestData.get("approvedHours")).doubleValue()
+                    : null;
+
+            if (action == null || (!"approve".equals(action) && !"reject".equals(action))) {
+                ResponseUtil.sendError(response, 400, "Invalid action");
                 return;
             }
-            
-            // 只能审核 pending 状态的工时表
+
             if (!"pending".equals(ts.getStatus())) {
-                ResponseUtil.sendError(response, 400, "只能审核待审核的工时表");
+                ResponseUtil.sendError(response, 400, "Only pending timesheets can be reviewed");
                 return;
             }
-            
-            // 更新状态
+
+            double loggedHours = ts.getHoursWorked() != null
+                    ? ts.getHoursWorked()
+                    : (ts.getHours() != null ? ts.getHours() : 0.0);
+
+            if ("approve".equals(action) && approvedHours != null) {
+                if (approvedHours < 0) {
+                    ResponseUtil.sendError(response, 400, "Approved hours cannot be negative");
+                    return;
+                }
+                if (approvedHours > loggedHours) {
+                    ResponseUtil.sendError(response, 400, "Approved hours cannot exceed logged hours");
+                    return;
+                }
+            }
+
             if ("approve".equals(action)) {
                 ts.setStatus("approved");
-                if (approvedHours != null) {
-                    ts.setApprovedHours(approvedHours);
-                } else {
-                    ts.setApprovedHours(ts.getHoursWorked());
-                }
+                ts.setApprovedHours(approvedHours != null ? approvedHours : loggedHours);
             } else {
                 ts.setStatus("rejected");
                 ts.setApprovedHours(0.0);
             }
-            
+
             ts.setReviewedBy(currentUser.getId());
             ts.setReviewedAt(LocalDateTime.now());
             ts.setReviewComment(comment);
             ts.setUpdatedAt(LocalDateTime.now());
-            
+
             timesheetRepo.save(ts);
-            
-            ResponseUtil.sendSuccess(response, "审核成功", ts);
+            ResponseUtil.sendSuccess(response, "Review completed", ts);
         } catch (Exception e) {
             e.printStackTrace();
-            ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
+            ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
     }
 }
