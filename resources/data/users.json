@@ -1,29 +1,22 @@
 [
   {
     "id": "MO001",
-    "name": "李老师",
-    "email": "mo1@bupt.edu.cn",
+    "name": "Prof. Li",
+    "email": "mo@bupt.edu.cn",
     "password": "123456",
     "role": "mo",
     "status": "active",
-    "createdAt": "2026-04-08T13:05:38.333526"
-  },
-  {
-    "id": "MO002",
-    "name": "王老师",
-    "email": "mo2@bupt.edu.cn",
-    "password": "123456",
-    "role": "mo",
-    "status": "active",
-    "createdAt": "2026-04-08T13:05:38.3345317"
+    "createdAt": "2026-04-08T13:05:38.333526",
+    "lastLoginAt": "2026-04-11T00:19:35.0869807"
   },
   {
     "id": "ADMIN001",
-    "name": "管理员",
+    "name": "Recruitment Admin",
     "email": "admin@bupt.edu.cn",
     "password": "123456",
     "role": "admin",
     "status": "active",
-    "createdAt": "2026-04-08T13:05:38.336563"
+    "createdAt": "2026-04-08T13:05:38.336563",
+    "lastLoginAt": "2026-04-11T09:30:00"
   }
 ]

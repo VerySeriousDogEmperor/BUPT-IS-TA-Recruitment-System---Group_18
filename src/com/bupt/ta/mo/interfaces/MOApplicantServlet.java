@@ -234,15 +234,27 @@ public class MOApplicantServlet extends BaseServlet {
             
             // 更新状态
             if ("accept".equals(action)) {
-                app.setStatus("accepted");
+                app.setStatus("approved");
             } else {
                 app.setStatus("rejected");
             }
-            
+
             app.setReviewedBy(currentUser.getId());
             app.setReviewedAt(LocalDateTime.now());
             app.setReviewComment(comment);
             app.setUpdatedAt(LocalDateTime.now());
+
+            List<Application.TimelineItem> timeline = app.getTimeline();
+            if (timeline == null) {
+                timeline = new ArrayList<>();
+                app.setTimeline(timeline);
+            }
+
+            Application.TimelineItem reviewItem = new Application.TimelineItem();
+            reviewItem.setStatus(app.getStatus());
+            reviewItem.setTime(LocalDateTime.now());
+            reviewItem.setNote("approved".equals(app.getStatus()) ? "Application approved by MO" : "Application rejected by MO");
+            timeline.add(reviewItem);
             
             applicationRepo.save(app);
             

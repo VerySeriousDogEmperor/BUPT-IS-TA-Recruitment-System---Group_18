@@ -1,32 +1,35 @@
 [
   {
     "id": "MOD001",
-    "name": "数据结构",
+    "name": "Data Structures",
     "code": "CS201",
-    "department": "计算机学院",
-    "semester": "2026春季",
+    "department": "Computer Science",
+    "semester": "Spring 2026",
     "moId": "MO001",
-    "description": "数据结构基础课程",
+    "coordinatorId": "MO001",
+    "description": "Core undergraduate module on data structures and algorithmic thinking.",
     "createdAt": "2026-04-08T13:05:38.3398832"
   },
   {
     "id": "MOD002",
-    "name": "操作系统",
+    "name": "Operating Systems",
     "code": "CS301",
-    "department": "计算机学院",
-    "semester": "2026春季",
+    "department": "Computer Science",
+    "semester": "Spring 2026",
     "moId": "MO001",
-    "description": "操作系统原理",
+    "coordinatorId": "MO001",
+    "description": "Systems module focused on process management, memory, and concurrency.",
     "createdAt": "2026-04-08T13:05:38.3427256"
   },
   {
     "id": "MOD003",
-    "name": "计算机网络",
+    "name": "Computer Networks",
     "code": "CS302",
-    "department": "计算机学院",
-    "semester": "2026春季",
-    "moId": "MO002",
-    "description": "计算机网络基础",
+    "department": "Computer Science",
+    "semester": "Spring 2026",
+    "moId": "MO001",
+    "coordinatorId": "MO001",
+    "description": "Networking module covering protocols, analysis, and lab support.",
     "createdAt": "2026-04-08T13:05:38.3437352"
   }
 ]

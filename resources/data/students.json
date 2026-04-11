@@ -1,192 +1,69 @@
 [
   {
-    "studentId": "2021211001",
-    "phone": "13800138001",
-    "major": "计算机科学与技术",
-    "grade": "大三",
-    "gpa": 3.8,
+    "studentId": "2023213073",
+    "phone": "15310016916",
+    "major": "Computer Science",
+    "grade": "Junior",
+    "bio": "Demo student account for the TA recruitment workflow.",
+    "gpa": 3.75,
     "skills": [
       "Java",
       "Python",
-      "C++",
-      "算法"
+      "Data Structures",
+      "SQL"
     ],
     "resume": {
       "education": [
         {
-          "school": "北京邮电大学",
-          "degree": "本科",
-          "major": "计算机科学与技术",
-          "startDate": "2021-09",
-          "endDate": "2025-06",
-          "gpa": 3.8
+          "school": "BUPT International School",
+          "degree": "Bachelor",
+          "major": "Computer Science",
+          "startDate": "2023-09",
+          "endDate": "2027-06",
+          "gpa": 3.75
         }
       ],
-      "experience": [],
+      "experience": [
+        {
+          "company": "Programming Lab",
+          "position": "Peer Tutor",
+          "startDate": "2025-09",
+          "endDate": "2026-01",
+          "description": "Supported weekly coding clinics and assignment feedback."
+        }
+      ],
       "awards": [
         {
-          "name": "国家奖学金",
-          "date": "2023-12",
-          "description": "学习成绩优异"
+          "name": "Dean\u0027s List",
+          "date": "2025-12",
+          "description": "Recognised for strong academic performance."
         }
       ]
     },
     "schedule": {
       "monday": [
-        "08:00-10:00",
-        "14:00-16:00"
-      ],
-      "tuesday": [],
-      "wednesday": [
         "10:00-12:00"
       ],
-      "thursday": [],
-      "friday": [
-        "14:00-16:00"
-      ],
-      "saturday": [],
-      "sunday": []
-    },
-    "id": "S001",
-    "name": "张三",
-    "email": "zhangsan@bupt.edu.cn",
-    "password": "123456",
-    "role": "student",
-    "status": "active",
-    "createdAt": "2026-04-08T13:05:38.2157592",
-    "lastLoginAt": "2026-04-08T16:08:52.4090986"
-  },
-  {
-    "studentId": "2021211002",
-    "phone": "13800138002",
-    "major": "软件工程",
-    "grade": "大三",
-    "gpa": 3.6,
-    "skills": [
-      "Java",
-      "Spring",
-      "MySQL",
-      "前端"
-    ],
-    "resume": {
-      "education": [
-        {
-          "school": "北京邮电大学",
-          "degree": "本科",
-          "major": "软件工程",
-          "startDate": "2021-09",
-          "endDate": "2025-06",
-          "gpa": 3.6
-        }
-      ],
-      "experience": [
-        {
-          "company": "字节跳动",
-          "position": "前端实习生",
-          "startDate": "2024-06",
-          "endDate": "2024-09",
-          "description": "负责Web应用开发"
-        }
-      ],
-      "awards": []
-    },
-    "schedule": {
-      "monday": [],
       "tuesday": [
-        "10:00-12:00",
         "14:00-16:00"
       ],
       "wednesday": [],
       "thursday": [
-        "08:00-10:00"
-      ],
-      "friday": [],
-      "saturday": [],
-      "sunday": []
-    },
-    "id": "S002",
-    "name": "李四",
-    "email": "lisi@bupt.edu.cn",
-    "password": "123456",
-    "role": "student",
-    "status": "active",
-    "createdAt": "2026-04-08T13:05:38.3199681"
-  },
-  {
-    "studentId": "2021211003",
-    "phone": "13800138003",
-    "major": "数据科学与大数据技术",
-    "grade": "大二",
-    "gpa": 3.9,
-    "skills": [
-      "Python",
-      "机器学习",
-      "数据分析",
-      "统计学"
-    ],
-    "resume": {
-      "education": [
-        {
-          "school": "北京邮电大学",
-          "degree": "本科",
-          "major": "数据科学与大数据技术",
-          "startDate": "2022-09",
-          "endDate": "2026-06",
-          "gpa": 3.9
-        }
-      ],
-      "experience": [],
-      "awards": []
-    },
-    "schedule": {
-      "monday": [
         "10:00-12:00"
       ],
-      "tuesday": [],
-      "wednesday": [
+      "friday": [
         "14:00-16:00"
       ],
-      "thursday": [],
-      "friday": [
-        "10:00-12:00"
-      ],
-      "saturday": [],
-      "sunday": []
-    },
-    "id": "S003",
-    "name": "王五",
-    "email": "wangwu@bupt.edu.cn",
-    "password": "123456",
-    "role": "student",
-    "status": "active",
-    "createdAt": "2026-04-08T13:05:38.3291717"
-  },
-  {
-    "studentId": "2023213073",
-    "phone": "15310016916",
-    "major": "EE",
-    "skills": [],
-    "resume": {
-      "education": [],
-      "experience": [],
-      "awards": []
-    },
-    "schedule": {
-      "monday": [],
-      "tuesday": [],
-      "wednesday": [],
-      "thursday": [],
-      "friday": [],
       "saturday": [],
       "sunday": []
     },
     "id": "S004",
-    "name": "邵逸飞",
-    "email": "2364845297@bupt.edu.cn",
+    "name": "Demo Student",
+    "email": "student@bupt.edu.cn",
     "password": "123456",
     "role": "student",
     "status": "active",
-    "createdAt": "2026-04-08T16:10:24.6994253",
-    "lastLoginAt": "2026-04-08T16:27:52.8046226"
+    "createdAt": "2026-04-10T22:40:00",
+    "lastLoginAt": "2026-04-11T00:18:35.4550486"
   }
 ]
