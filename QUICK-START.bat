@@ -8,9 +8,59 @@ title BUPT IS TA Recruitment Quick Start
 cls
 echo ========================================
 echo BUPT IS TA Recruitment Quick Start
+echo BUPT IS TA Recruitment Quick Start
 echo ========================================
 echo.
 
+if not exist "src\EmbeddedServer.java" (
+    echo [ERROR] Cannot find src\EmbeddedServer.java
+    echo Please run this script from the project root.
+    pause
+    exit /b 1
+)
+
+if not exist "web" (
+    echo [ERROR] Cannot find the web directory.
+    pause
+    exit /b 1
+)
+
+if not exist "resources" (
+    echo [ERROR] Cannot find the resources directory.
+    pause
+    exit /b 1
+)
+
+if not exist "lib\gson-2.13.2.jar" (
+    echo [ERROR] Missing dependency: lib\gson-2.13.2.jar
+    pause
+    exit /b 1
+)
+
+if not exist "lib\jakarta.servlet-api-6.0.0.jar" (
+    echo [ERROR] Missing dependency: lib\jakarta.servlet-api-6.0.0.jar
+    pause
+    exit /b 1
+)
+
+where java >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] java was not found in PATH.
+    echo Please install JDK 17 and make sure java is available in PATH.
+    pause
+    exit /b 1
+)
+
+where javac >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] javac was not found in PATH.
+    echo Please install JDK 17 instead of JRE only.
+    pause
+    exit /b 1
+)
+
+echo [INFO] Checking Java version...
+java -version
 if not exist "src\EmbeddedServer.java" (
     echo [ERROR] Cannot find src\EmbeddedServer.java
     echo Please run this script from the project root.
@@ -96,9 +146,12 @@ javac -encoding UTF-8 --release 17 -cp "%LIB_CP%" -d out ^
     src\com\bupt\ta\shared\interfaces\*.java ^
     src\com\bupt\ta\student\domain\*.java ^
     src\com\bupt\ta\student\interfaces\*.java ^
-    src\com\bupt\ta\mo\interfaces\*.java ^
-    src\com\bupt\ta\admin\interfaces\*.java
+    src\com\bupt\ta\mo\interfaces\*.java
 
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Business code compilation failed.
+    echo Please check the compiler output above.
 if errorlevel 1 (
     echo.
     echo [ERROR] Business code compilation failed.
@@ -114,7 +167,18 @@ javac -encoding UTF-8 --release 17 -cp "%SRC_CP%" -d out ^
     src\HttpServletRequestAdapter.java ^
     src\HttpServletResponseAdapter.java ^
     src\EmbeddedServer.java
+echo.
+echo [INFO] Compiling server entry and HTTP adapters...
+javac -encoding UTF-8 --release 17 -cp "%SRC_CP%" -d out ^
+    src\HttpSessionAdapter.java ^
+    src\HttpServletRequestAdapter.java ^
+    src\HttpServletResponseAdapter.java ^
+    src\EmbeddedServer.java
 
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Server bootstrap compilation failed.
+    echo Please check the compiler output above.
 if errorlevel 1 (
     echo.
     echo [ERROR] Server bootstrap compilation failed.
@@ -126,13 +190,22 @@ if errorlevel 1 (
 echo.
 echo [INFO] Copying resources...
 xcopy "resources" "out\resources" /E /I /Y >nul
+echo.
+echo [INFO] Copying resources...
+xcopy "resources" "out\resources" /E /I /Y >nul
 
 echo.
 echo [INFO] Starting server...
 echo [INFO] Open http://localhost:%SERVER_PORT% in your browser after startup.
 echo.
+echo [INFO] Starting server...
+echo [INFO] Open http://localhost:%SERVER_PORT% in your browser after startup.
+echo.
+java -cp "%RUN_CP%" EmbeddedServer
 java -cp "%RUN_CP%" EmbeddedServer
 
+echo.
+echo [INFO] Server process finished.
 echo.
 echo [INFO] Server process finished.
 pause
