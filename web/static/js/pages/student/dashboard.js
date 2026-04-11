@@ -1,108 +1,144 @@
-// Dashboard Page JavaScript
-// Version: 2.5 - Fixed Overview page with real-time data
+console.log('Dashboard JS loaded - Version 3.0');
 
-console.log('Dashboard JS loaded - Version 2.5');
-
-// Real applications data (will be loaded from API)
+let currentUserProfile = null;
 let userApplications = [];
-
-// Mock schedule data
-const mockSchedule = [
-    { day: 'Monday', startTime: '08:00', endTime: '10:00', course: 'Advanced Algorithms' },
-    { day: 'Monday', startTime: '14:00', endTime: '16:00', course: 'Software Engineering' },
-    { day: 'Wednesday', startTime: '08:00', endTime: '10:00', course: 'Advanced Algorithms' },
-    { day: 'Wednesday', startTime: '14:00', endTime: '16:00', course: 'Database Systems' },
-    { day: 'Friday', startTime: '10:00', endTime: '12:00', course: 'Computer Networks' }
-];
-
-// Mock favorites data
-const mockFavorites = [
-    {
-        id: '1',
-        title: 'Java Programming Course TA',
-        department: 'Computer Science',
-        location: 'Main Campus',
-        hoursPerWeek: '10-15',
-        salary: '¥80/hour',
-        tags: ['Programming', 'Teaching', 'Java'],
-        image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400'
-    },
-    {
-        id: '2',
-        title: 'Data Structures TA',
-        department: 'Computer Science',
-        location: 'Main Campus',
-        hoursPerWeek: '8-12',
-        salary: '¥75/hour',
-        tags: ['Algorithms', 'Teaching', 'C++'],
-        image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400'
-    }
-];
+let favoriteJobIds = [];
+let favoriteJobs = [];
+let scheduleEntries = [];
+let studentTimesheets = [];
 
 const statusConfig = {
-    submitted: {
-        label: 'Submitted',
-        icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline>`,
-        color: 'status-submitted'
-    },
-    reviewing: {
-        label: 'Under Review',
-        icon: `<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>`,
-        color: 'status-reviewing'
-    },
-    interview: {
-        label: 'Interview Stage',
-        icon: `<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline>`,
-        color: 'status-interview'
-    },
-    offered: {
-        label: 'Offer Received',
-        icon: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>`,
-        color: 'status-offered'
-    },
-    rejected: {
-        label: 'Not Selected',
-        icon: `<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>`,
-        color: 'status-rejected'
-    }
+    pending: { label: 'Under Review', color: 'warning' },
+    approved: { label: 'Approved', color: 'success' },
+    rejected: { label: 'Not Selected', color: 'danger' },
+    withdrawn: { label: 'Withdrawn', color: 'secondary' }
 };
 
-// Load user data
-function loadUserData() {
-    let user = null;
-    
+const scheduleDayMap = {
+    monday: 'Monday',
+    mon: 'Monday',
+    tuesday: 'Tuesday',
+    tue: 'Tuesday',
+    tues: 'Tuesday',
+    wednesday: 'Wednesday',
+    wed: 'Wednesday',
+    thursday: 'Thursday',
+    thu: 'Thursday',
+    thur: 'Thursday',
+    thurs: 'Thursday',
+    friday: 'Friday',
+    fri: 'Friday',
+    saturday: 'Saturday',
+    sat: 'Saturday',
+    sunday: 'Sunday',
+    sun: 'Sunday'
+};
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = `
+        position:fixed;top:20px;right:20px;padding:12px 16px;border-radius:10px;color:#fff;
+        background:${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#2563eb'};
+        box-shadow:0 8px 20px rgba(0,0,0,.15);z-index:9999;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2800);
+}
+
+function syncUserToLocalStorage(user) {
+    currentUserProfile = user;
+    localStorage.setItem('user', JSON.stringify(user));
+}
+
+function getFavoriteStorageKey() {
+    const user = currentUserProfile || JSON.parse(localStorage.getItem('user') || '{}');
+    return user.id ? `student-favorites-${user.id}` : 'student-favorites';
+}
+
+function loadFavoriteIds() {
     try {
-        const userData = localStorage.getItem('user');
-        if (userData && userData !== 'undefined' && userData !== 'null') {
-            user = JSON.parse(userData);
-        }
-    } catch (e) {
-        console.error('Error parsing user data:', e);
-        user = null;
+        const parsed = JSON.parse(localStorage.getItem(getFavoriteStorageKey()) || '[]');
+        favoriteJobIds = Array.isArray(parsed) ? [...new Set(parsed)] : [];
+    } catch (error) {
+        favoriteJobIds = [];
     }
-    
-    // If no user data, show message and redirect after delay
-    if (!user || !user.name) {
-        document.getElementById('userName').textContent = 'Not Logged In';
-        document.getElementById('userMeta').textContent = 'Please login to view your dashboard';
-        document.getElementById('gpaBadge').textContent = 'GPA: N/A';
-        document.getElementById('idBadge').textContent = 'ID: N/A';
-        
-        // Show alert and redirect
-        setTimeout(() => {
-            alert('Please login to access your dashboard');
-            window.location.href = '/login.html';
-        }, 1000);
-        return;
+}
+
+function saveFavoriteIds() {
+    localStorage.setItem(getFavoriteStorageKey(), JSON.stringify(favoriteJobIds));
+}
+
+function flattenSchedule(schedule) {
+    if (!schedule) return [];
+    return Object.entries(schedule).flatMap(([dayKey, slots]) => {
+        const label = scheduleDayMap[dayKey.toLowerCase()];
+        if (!label || !Array.isArray(slots)) return [];
+        return slots.map((slot) => {
+            const value = String(slot || '').trim();
+            const firstSpace = value.indexOf(' ');
+            const range = firstSpace === -1 ? value : value.slice(0, firstSpace);
+            const course = firstSpace === -1 ? 'Class' : value.slice(firstSpace + 1).trim();
+            const [startTime = '', endTime = ''] = range.split('-');
+            return startTime && endTime ? { day: label, startTime, endTime, course } : null;
+        }).filter(Boolean);
+    });
+}
+
+function buildSchedulePayload(entries) {
+    const payload = { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: [] };
+    entries.forEach((entry) => {
+        const key = Object.keys(payload).find((item) => scheduleDayMap[item] === entry.day);
+        if (key) payload[key].push(`${entry.startTime}-${entry.endTime} ${entry.course}`.trim());
+    });
+    return payload;
+}
+
+function normalizeDay(value) {
+    return scheduleDayMap[String(value || '').trim().toLowerCase()] || null;
+}
+
+function hasResumeContent(user) {
+    const resume = user?.resume;
+    return Boolean(
+        user?.resumePdfData ||
+        (resume?.education && resume.education.length) ||
+        (resume?.experience && resume.experience.length) ||
+        (resume?.awards && resume.awards.length)
+    );
+}
+
+function hasStandardResume(user) {
+    const resume = user?.resume;
+    return Boolean(
+        (resume?.education && resume.education.length) ||
+        (resume?.experience && resume.experience.length) ||
+        (resume?.awards && resume.awards.length)
+    );
+}
+
+async function loadProfileFromServer() {
+    try {
+        const profile = await API.student.getProfile();
+        syncUserToLocalStorage(profile);
+        loadFavoriteIds();
+        scheduleEntries = flattenSchedule(profile.schedule);
+        return profile;
+    } catch (error) {
+        console.error('Failed to load profile:', error);
+        return null;
     }
-    
-    // Update header
-    document.getElementById('userName').textContent = user.name || 'Guest User';
+}
+
+function loadUserData() {
+    const user = currentUserProfile;
+    if (!user) return;
+
+    document.getElementById('userName').textContent = user.name || 'Student';
     document.getElementById('userMeta').textContent = user.major ? `${user.major} · ${user.grade || 'N/A'}` : 'Student';
-    document.getElementById('gpaBadge').textContent = `GPA: ${user.gpa || 'N/A'}`;
-    document.getElementById('idBadge').textContent = `ID: ${user.id || user.studentId || 'N/A'}`;
-    
-    // Update avatar
+    document.getElementById('gpaBadge').textContent = `GPA: ${user.gpa ?? 'N/A'}`;
+    document.getElementById('idBadge').textContent = `ID: ${user.studentId || user.id || 'N/A'}`;
+
     const avatarImg = document.getElementById('profileAvatarImg');
     const avatarIcon = document.getElementById('profileAvatarIcon');
     if (user.avatar) {
@@ -113,597 +149,601 @@ function loadUserData() {
         avatarImg.style.display = 'none';
         avatarIcon.style.display = 'block';
     }
-    
-    // Update form fields
+
     const form = document.getElementById('profileForm');
-    if (form) {
-        form.elements.name.value = user.name || '';
-        form.elements.email.value = user.email || '';
-        form.elements.phone.value = user.phone || '';
-        form.elements.studentId.value = user.studentId || '';
-        form.elements.major.value = user.major || '';
-        form.elements.year.value = user.year || user.grade || '';
-        form.elements.gpa.value = user.gpa || '';
-        form.elements.bio.value = user.bio || '';
-    }
-    
-    // Check if GPA is missing and show modal
-    if (!user.gpa || user.gpa === 0) {
-        setTimeout(() => {
-            showGPAModal();
-        }, 500);
+    form.elements.name.value = user.name || '';
+    form.elements.email.value = user.email || '';
+    form.elements.phone.value = user.phone || '';
+    form.elements.studentId.value = user.studentId || '';
+    form.elements.major.value = user.major || '';
+    form.elements.year.value = user.grade || '';
+    form.elements.gpa.value = user.gpa ?? '';
+    form.elements.bio.value = user.bio || '';
+
+    populateResumeForm(user);
+    renderUploadedResumeInfo(user);
+    renderResumeStatus(user);
+
+    if (!user.gpa && user.gpa !== 0) {
+        setTimeout(showGPAModal, 300);
     }
 }
 
-// Tab switching
+function populateResumeForm(user) {
+    const form = document.getElementById('standardResumeForm');
+    const education = user?.resume?.education?.[0] || {};
+    const experience = user?.resume?.experience?.[0] || {};
+    form.elements.resumeName.value = user?.name || '';
+    form.elements.resumeStudentId.value = user?.studentId || '';
+    form.elements.resumeEmail.value = user?.email || '';
+    form.elements.resumeMajor.value = education.major || user?.major || '';
+    form.elements.resumeGpa.value = education.gpa ?? user?.gpa ?? '';
+    form.elements.resumeSkills.value = Array.isArray(user?.skills) ? user.skills.join(', ') : '';
+    form.elements.resumeExperience.value = experience.description || '';
+}
+
+function renderProfileCompletion() {
+    const user = currentUserProfile || {};
+    const items = document.querySelectorAll('.completion-item .badge');
+    const resumeLabel = document.getElementById('resumeCompletionLabel');
+    if (items.length < 3) return;
+    items[0].className = `badge ${user.name && user.email && user.phone && user.studentId && user.major ? 'badge-success' : 'badge-secondary'}`;
+    items[0].textContent = user.name && user.email && user.phone && user.studentId && user.major ? 'Complete' : 'Pending';
+    items[1].className = `badge ${hasResumeContent(user) ? 'badge-success' : 'badge-secondary'}`;
+    items[1].textContent = hasResumeContent(user) ? (user?.resumePdfData ? 'PDF Saved' : 'Standard Saved') : 'Pending';
+    if (resumeLabel) {
+        resumeLabel.textContent = user?.resumePdfData ? 'Resume PDF' : 'Resume Ready';
+    }
+    items[2].className = `badge ${user.gpa || user.gpa === 0 ? 'badge-success' : 'badge-warning'}`;
+    items[2].textContent = user.gpa || user.gpa === 0 ? 'Complete' : 'Missing GPA';
+}
+
+function renderResumeStatus(user) {
+    const storageInfo = document.getElementById('resumeStorageInfo');
+    const standardInfo = document.getElementById('standardResumeStatus');
+    if (storageInfo) {
+        const pdfMessage = user?.resumePdfData
+            ? `Your uploaded PDF "${user.resumePdfName || 'Resume.pdf'}" is saved in your profile and can be opened below immediately.`
+            : 'No PDF resume uploaded yet. Upload one here and it will appear immediately below.';
+        storageInfo.innerHTML = `
+            <div>
+                <p class="schedule-info-title">Current Resume Status</p>
+                <p class="schedule-info-text">${pdfMessage}</p>
+            </div>
+        `;
+    }
+    if (standardInfo) {
+        const standardMessage = hasStandardResume(user)
+            ? 'Your standard resume has been saved to your profile. Use Preview to view the current version.'
+            : 'Not generated yet. Fill the form and click Generate Resume to save it.';
+        standardInfo.innerHTML = `
+            <div>
+                <p class="schedule-info-title">Standard Resume</p>
+                <p class="schedule-info-text">${standardMessage}</p>
+            </div>
+        `;
+    }
+}
+
+async function loadApplications() {
+    const result = await API.student.getApplications();
+    userApplications = Array.isArray(result?.items) ? result.items : [];
+}
+
+async function loadTimesheets() {
+    const result = await API.student.getTimesheets();
+    studentTimesheets = Array.isArray(result) ? result : [];
+}
+
+function renderQuickStats() {
+    const items = document.querySelectorAll('.stat-item');
+    if (items.length < 3) return;
+    const total = userApplications.length;
+    const underReview = userApplications.filter((app) => app.status === 'pending').length;
+    const approved = userApplications.filter((app) => app.status === 'approved').length;
+    items[0].querySelector('.stat-value').textContent = total;
+    items[1].querySelector('.stat-value').textContent = underReview;
+    items[2].querySelector('.stat-value').textContent = approved;
+}
+
+function renderTimeline() {
+    const timeline = document.getElementById('applicationTimeline');
+    if (!timeline) return;
+    if (!userApplications.length) {
+        timeline.innerHTML = `<div style="text-align:center;padding:2rem;color:#6b7280;">No applications yet. <a href="/apply.html">Browse Positions</a></div>`;
+        return;
+    }
+    timeline.innerHTML = userApplications.slice(0, 5).map((app) => {
+        const config = statusConfig[app.status] || statusConfig.pending;
+        const appliedDate = app.appliedAt ? new Date(app.appliedAt).toLocaleDateString('en-US') : 'Unknown';
+        return `
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-info">
+                        <h4 class="timeline-title">${app.jobTitle || 'Unknown Position'}</h4>
+                        <p class="timeline-dept">${app.department || 'N/A'}</p>
+                        <p class="timeline-date">Applied on ${appliedDate}</p>
+                    </div>
+                    <span class="badge badge-${config.color}">${config.label}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderApplicationsList() {
+    const list = document.getElementById('applicationsList');
+    if (!list) return;
+    if (!userApplications.length) {
+        list.innerHTML = `<div style="text-align:center;padding:2rem;color:#6b7280;">No applications yet. <a href="/apply.html" class="btn btn-primary" style="margin-top:1rem;">Browse Positions</a></div>`;
+        return;
+    }
+    list.innerHTML = userApplications.map((app) => {
+        const config = statusConfig[app.status] || statusConfig.pending;
+        const canWithdraw = app.status === 'pending';
+        const appliedDate = app.appliedAt ? new Date(app.appliedAt).toLocaleDateString('en-US') : 'Unknown';
+        return `
+            <div class="application-card">
+                <div class="application-header">
+                    <div>
+                        <h4 class="application-title">${app.jobTitle || 'Unknown Position'}</h4>
+                        <p class="application-dept">${app.department || 'N/A'}</p>
+                    </div>
+                    <span class="badge badge-${config.color}">${config.label}</span>
+                </div>
+                <p class="application-date">Applied on ${appliedDate}</p>
+                ${app.reviewNote ? `<p style="margin:.75rem 0 0;color:#6b7280;">Review note: ${app.reviewNote}</p>` : ''}
+                <div class="favorite-card-actions" style="margin-top:1rem;">
+                    <a href="/job-detail.html?id=${app.jobId}" class="btn btn-outline btn-sm">View Details</a>
+                    ${canWithdraw ? `<button class="btn btn-outline btn-sm" onclick="withdrawApplication('${app.id}')">Withdraw</button>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function refreshApplicationViews() {
+    await loadApplications();
+    renderQuickStats();
+    renderTimeline();
+    renderApplicationsList();
+    populateTimesheetJobOptions();
+}
+
+async function refreshTimesheetViews() {
+    await loadTimesheets();
+    renderTimesheetList();
+}
+
+window.withdrawApplication = async function withdrawApplication(applicationId) {
+    try {
+        await API.student.withdrawApplication(applicationId);
+        showToast('Application withdrawn successfully', 'success');
+        await refreshApplicationViews();
+    } catch (error) {
+        showToast(error.message || 'Failed to withdraw application', 'error');
+    }
+};
+
 function initTabs() {
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabButtons.forEach(button => {
+    document.querySelectorAll('.tab-btn').forEach((button) => {
         button.addEventListener('click', () => {
-            const tabName = button.dataset.tab;
-            
-            // Remove active class from all tabs
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            // Add active class to clicked tab
+            document.querySelectorAll('.tab-btn').forEach((item) => item.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach((item) => item.classList.remove('active'));
             button.classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`tab-${button.dataset.tab}`).classList.add('active');
         });
     });
 }
 
-// Edit profile functionality
+function populateTimesheetJobOptions() {
+    const select = document.getElementById('timesheetJobId');
+    if (!select) return;
+
+    const approvedApplications = userApplications.filter((app) => app.status === 'approved');
+    if (!approvedApplications.length) {
+        select.innerHTML = '<option value="">No approved positions available yet</option>';
+        select.disabled = true;
+        return;
+    }
+
+    select.disabled = false;
+    select.innerHTML = '<option value="">Select a position...</option>' + approvedApplications.map((app) => `
+        <option value="${app.jobId}">${app.jobTitle || 'Approved Position'}</option>
+    `).join('');
+}
+
+function renderTimesheetList() {
+    const list = document.getElementById('timesheetsList');
+    if (!list) return;
+
+    if (!studentTimesheets.length) {
+        list.innerHTML = `<div style="text-align:center;padding:2rem;color:#6b7280;">No timesheets submitted yet.</div>`;
+        return;
+    }
+
+    const statusMap = {
+        pending: { label: 'Pending Review', badge: 'badge-warning' },
+        approved: { label: 'Approved', badge: 'badge-success' },
+        rejected: { label: 'Rejected', badge: 'badge-danger' }
+    };
+
+    list.innerHTML = studentTimesheets.map((item) => {
+        const status = statusMap[item.status] || statusMap.pending;
+        return `
+            <div class="application-card">
+                <div class="application-header">
+                    <div>
+                        <h4 class="application-title">${item.jobTitle || 'Unknown Position'}</h4>
+                        <p class="application-dept">${item.date || 'No date provided'}</p>
+                    </div>
+                    <span class="badge ${status.badge}">${status.label}</span>
+                </div>
+                <p class="application-date">${item.hours ?? 0} hours submitted</p>
+                <p style="margin:.75rem 0 0;color:#374151;white-space:pre-wrap;">${item.description || 'No description provided.'}</p>
+                ${item.reviewNote ? `<p style="margin:.75rem 0 0;color:#6b7280;">Review note: ${item.reviewNote}</p>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function initTimesheetForm() {
+    const form = document.getElementById('timesheetForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const jobId = form.elements.jobId.value;
+        const date = form.elements.date.value;
+        const hours = Number(form.elements.hours.value);
+        const description = form.elements.description.value.trim();
+
+        if (!jobId || !date || !Number.isFinite(hours) || hours <= 0 || !description) {
+            showToast('Please complete all timesheet fields', 'error');
+            return;
+        }
+
+        try {
+            await API.student.submitTimesheet({ jobId, date, hours, description });
+            form.reset();
+            showToast('Timesheet submitted successfully', 'success');
+            populateTimesheetJobOptions();
+            await refreshTimesheetViews();
+        } catch (error) {
+            showToast(error.message || 'Failed to submit timesheet', 'error');
+        }
+    });
+}
+
 function initEditProfile() {
     const editBtn = document.getElementById('editProfileBtn');
     const cancelBtn = document.getElementById('cancelEditBtn');
     const form = document.getElementById('profileForm');
     const formActions = document.getElementById('formActions');
-    const inputs = form.querySelectorAll('input, textarea');
-    
-    let isEditing = false;
-    
-    editBtn.addEventListener('click', () => {
-        isEditing = !isEditing;
-        
-        if (isEditing) {
-            // Enable editing
-            inputs.forEach(input => input.disabled = false);
-            formActions.style.display = 'flex';
-            editBtn.textContent = 'Cancel';
-        } else {
-            // Cancel editing
-            inputs.forEach(input => input.disabled = true);
-            formActions.style.display = 'none';
-            editBtn.textContent = 'Edit Profile';
-            loadUserData(); // Reload original data
-        }
-    });
-    
-    cancelBtn.addEventListener('click', () => {
-        inputs.forEach(input => input.disabled = true);
-        formActions.style.display = 'none';
-        editBtn.textContent = 'Edit Profile';
-        isEditing = false;
-        loadUserData(); // Reload original data
-    });
-    
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = {
-            name: form.elements.name.value,
-            email: form.elements.email.value,
-            phone: form.elements.phone.value,
-            studentId: form.elements.studentId.value,
-            major: form.elements.major.value,
-            year: form.elements.year.value,
-            gpa: form.elements.gpa.value,
-            bio: form.elements.bio.value
-        };
-        
-        try {
-            // Update localStorage
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const updatedUser = { ...user, ...formData };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-            
-            // Update UI
-            loadUserData();
-            
-            // Disable editing
-            inputs.forEach(input => input.disabled = true);
-            formActions.style.display = 'none';
-            editBtn.textContent = 'Edit Profile';
-            isEditing = false;
-            
-            showToast('Profile updated successfully!', 'success');
-        } catch (error) {
-            console.error('Error updating profile:', error);
-            showToast('Failed to update profile', 'error');
-        }
-    });
-}
+    const editable = ['phone', 'major', 'year', 'gpa', 'bio'];
 
-// Render Profile Completion
-function renderProfileCompletion() {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    
-    // Check Basic Information (name, email, phone, studentId, major)
-    const hasBasicInfo = user.name && user.email && user.phone && user.studentId && user.major;
-    
-    // Check Resume (check if resume has any content)
-    const hasResume = user.resume && (
-        (user.resume.education && user.resume.education.length > 0) ||
-        (user.resume.experience && user.resume.experience.length > 0) ||
-        (user.resume.awards && user.resume.awards.length > 0)
-    );
-    
-    // Check Academic Records (GPA filled)
-    const hasAcademicRecords = user.gpa && user.gpa > 0;
-    
-    // Update UI
-    const completionItems = document.querySelectorAll('.completion-item');
-    if (completionItems.length >= 3) {
-        // Basic Information
-        const basicBadge = completionItems[0].querySelector('.badge');
-        if (hasBasicInfo) {
-            basicBadge.className = 'badge badge-success';
-            basicBadge.textContent = 'Complete';
-        } else {
-            basicBadge.className = 'badge badge-secondary';
-            basicBadge.textContent = 'Pending';
-        }
-        
-        // Resume Uploaded
-        const resumeBadge = completionItems[1].querySelector('.badge');
-        if (hasResume) {
-            resumeBadge.className = 'badge badge-success';
-            resumeBadge.textContent = 'Complete';
-        } else {
-            resumeBadge.className = 'badge badge-secondary';
-            resumeBadge.textContent = 'Pending';
-        }
-        
-        // Academic Records (GPA)
-        const academicBadge = completionItems[2].querySelector('.badge');
-        if (hasAcademicRecords) {
-            academicBadge.className = 'badge badge-success';
-            academicBadge.textContent = 'Complete';
-        } else {
-            academicBadge.className = 'badge badge-warning';
-            academicBadge.textContent = 'Missing GPA';
-        }
-    }
-}
-
-// Render Quick Stats
-async function renderQuickStats() {
-    try {
-        // Load applications from API
-        const response = await fetch('/api/student/applications', {
-            credentials: 'include'
+    const setEditing = (editing) => {
+        editable.forEach((name) => {
+            form.elements[name].disabled = !editing;
         });
-        
-        if (response.ok) {
-            const result = await response.json();
-            userApplications = result.data || [];
-        } else {
-            userApplications = [];
-        }
-    } catch (error) {
-        console.error('Error loading applications:', error);
-        userApplications = [];
-    }
-    
-    // Calculate stats
-    const totalApplications = userApplications.length;
-    const underReview = userApplications.filter(app => app.status === 'pending' || app.status === 'reviewing').length;
-    const interviews = userApplications.filter(app => app.status === 'interview').length;
-    
-    // Update UI
-    const statItems = document.querySelectorAll('.stat-item');
-    if (statItems.length >= 3) {
-        statItems[0].querySelector('.stat-value').textContent = totalApplications;
-        statItems[1].querySelector('.stat-value').textContent = underReview;
-        statItems[2].querySelector('.stat-value').textContent = interviews;
-    }
-}
-
-// Render application timeline
-async function renderTimeline() {
-    const timeline = document.getElementById('applicationTimeline');
-    if (!timeline) return;
-    
-    // Use loaded applications
-    if (userApplications.length === 0) {
-        timeline.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: #6b7280;">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 1rem;">
-                    <path d="M9 11l3 3L22 4"></path>
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                </svg>
-                <p>No applications yet</p>
-                <a href="/apply.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Positions</a>
-            </div>
-        `;
-        return;
-    }
-    
-    // Get recent applications (up to 5)
-    const recentApps = userApplications.slice(0, 5);
-    
-    // Load job details for each application
-    const appsWithDetails = await Promise.all(recentApps.map(async (app) => {
-        try {
-            const jobResponse = await fetch(`/api/jobs/${app.jobId}`, {
-                credentials: 'include'
-            });
-            if (jobResponse.ok) {
-                const jobResult = await jobResponse.json();
-                return {
-                    ...app,
-                    jobTitle: jobResult.data?.title || 'Unknown Position',
-                    department: jobResult.data?.department || 'N/A'
-                };
-            }
-        } catch (error) {
-            console.error('Error loading job details:', error);
-        }
-        return {
-            ...app,
-            jobTitle: 'Unknown Position',
-            department: 'N/A'
-        };
-    }));
-    
-    timeline.innerHTML = appsWithDetails.map((app) => {
-        const config = statusConfig[app.status] || statusConfig.submitted;
-        const date = new Date(app.appliedAt);
-        const formattedDate = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
-        
-        return `
-            <div class="timeline-item">
-                <div class="timeline-icon ${config.color}">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        ${config.icon}
-                    </svg>
-                </div>
-                <div class="timeline-content">
-                    <div class="timeline-info">
-                        <h4 class="timeline-title">${app.jobTitle}</h4>
-                        <p class="timeline-dept">${app.department}</p>
-                        <p class="timeline-date">Applied on ${formattedDate}</p>
-                    </div>
-                    <span class="badge badge-${app.status === 'approved' || app.status === 'offered' ? 'success' : app.status === 'rejected' ? 'danger' : app.status === 'pending' ? 'warning' : 'secondary'}">
-                        ${config.label}
-                    </span>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// Render applications list
-async function renderApplicationsList() {
-    const list = document.getElementById('applicationsList');
-    if (!list) return;
-    
-    if (userApplications.length === 0) {
-        list.innerHTML = `
-            <div style="text-align: center; padding: 3rem; color: #6b7280;">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 1rem;">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <h3 style="margin-bottom: 0.5rem;">No Applications Yet</h3>
-                <p style="margin-bottom: 1.5rem;">Start applying to TA positions to see them here</p>
-                <a href="/apply.html" class="btn btn-primary">Browse Positions</a>
-            </div>
-        `;
-        return;
-    }
-    
-    // Load job details for all applications
-    const appsWithDetails = await Promise.all(userApplications.map(async (app) => {
-        try {
-            const jobResponse = await fetch(`/api/jobs/${app.jobId}`, {
-                credentials: 'include'
-            });
-            if (jobResponse.ok) {
-                const jobResult = await jobResponse.json();
-                return {
-                    ...app,
-                    jobTitle: jobResult.data?.title || 'Unknown Position',
-                    department: jobResult.data?.department || 'N/A'
-                };
-            }
-        } catch (error) {
-            console.error('Error loading job details:', error);
-        }
-        return {
-            ...app,
-            jobTitle: 'Unknown Position',
-            department: 'N/A'
-        };
-    }));
-    
-    list.innerHTML = appsWithDetails.map(app => {
-        const config = statusConfig[app.status] || statusConfig.submitted;
-        const date = new Date(app.appliedAt);
-        const formattedDate = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
-        
-        return `
-            <div class="application-card">
-                <div class="application-header">
-                    <div>
-                        <h4 class="application-title">${app.jobTitle}</h4>
-                        <p class="application-dept">${app.department}</p>
-                    </div>
-                    <span class="badge badge-${app.status === 'approved' || app.status === 'offered' ? 'success' : app.status === 'rejected' ? 'danger' : app.status === 'pending' ? 'warning' : 'secondary'}">
-                        ${config.label}
-                    </span>
-                </div>
-                <p class="application-date">Applied on ${formattedDate}</p>
-            </div>
-        `;
-    }).join('');
-}
-
-// Logout functionality
-function initLogout() {
-    const logoutBtn = document.getElementById('logoutBtn');
-    const signOutBtn = document.getElementById('signOutBtn');
-    
-    const handleLogout = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        window.location.href = '/login.html';
+        formActions.style.display = editing ? 'flex' : 'none';
+        editBtn.textContent = editing ? 'Cancel' : 'Edit Profile';
     };
-    
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', handleLogout);
-    }
-    
-    if (signOutBtn) {
-        signOutBtn.addEventListener('click', handleLogout);
-    }
+
+    editBtn.addEventListener('click', () => {
+        const editing = editBtn.textContent === 'Edit Profile';
+        setEditing(editing);
+        if (!editing) loadUserData();
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        setEditing(false);
+        loadUserData();
+    });
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            const updated = await API.student.updateProfile({
+                phone: form.elements.phone.value.trim(),
+                major: form.elements.major.value.trim(),
+                grade: form.elements.year.value.trim(),
+                gpa: form.elements.gpa.value ? parseFloat(form.elements.gpa.value) : null,
+                bio: form.elements.bio.value.trim()
+            });
+            syncUserToLocalStorage(updated);
+            loadUserData();
+            renderProfileCompletion();
+            setEditing(false);
+            showToast('Profile updated successfully', 'success');
+        } catch (error) {
+            showToast(error.message || 'Failed to update profile', 'error');
+        }
+    });
 }
 
-// Toast notification
-function showToast(message, type = 'info') {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-        color: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 9999;
-        animation: slideIn 0.3s ease-out;
+function renderUploadedResumeInfo(user) {
+    const uploadArea = document.getElementById('pdfUploadArea');
+    const info = document.getElementById('uploadedFileInfo');
+    if (!uploadArea || !info) return;
+    if (!user?.resumePdfData) {
+        uploadArea.style.display = 'block';
+        info.style.display = 'block';
+        info.innerHTML = `
+            <div class="uploaded-file-card">
+                <div class="uploaded-file-info">
+                    <div>
+                        <p class="uploaded-file-name">No PDF resume uploaded</p>
+                        <p class="uploaded-file-size">Upload a PDF above and it will appear here immediately.</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    const uploadedAt = user.resumePdfUploadedAt ? new Date(user.resumePdfUploadedAt).toLocaleString('en-US') : 'Just now';
+    info.style.display = 'block';
+    info.innerHTML = `
+        <div class="uploaded-file-card">
+            <div class="uploaded-file-info">
+                <div>
+                    <p class="uploaded-file-name">${user.resumePdfName || 'Resume.pdf'}</p>
+                    <p class="uploaded-file-size">Available now · uploaded at ${uploadedAt}</p>
+                </div>
+            </div>
+            <div class="favorite-card-actions">
+                <button class="btn btn-outline btn-sm" id="viewResumePdfBtn">View</button>
+                <button class="btn btn-outline btn-sm" id="removeResumePdfBtn">Remove</button>
+            </div>
+        </div>
+        <div style="margin-top:1rem;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;">
+            <iframe src="${user.resumePdfData}" title="Uploaded Resume PDF" style="width:100%;height:420px;border:0;"></iframe>
+        </div>
     `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    document.getElementById('viewResumePdfBtn').onclick = () => window.open(user.resumePdfData, '_blank');
+    document.getElementById('removeResumePdfBtn').onclick = async () => {
+        try {
+            const updated = await API.student.updateProfile({ clearResumePdf: true });
+            const refreshed = await loadProfileFromServer();
+            syncUserToLocalStorage(refreshed || updated);
+            renderUploadedResumeInfo(refreshed || updated);
+            renderResumeStatus(refreshed || updated);
+            renderProfileCompletion();
+            showToast('Uploaded PDF removed', 'success');
+        } catch (error) {
+            showToast('Failed to remove PDF resume', 'error');
+        }
+    };
 }
 
-// Add CSS animations
-const dashboardStyle = document.createElement('style');
-dashboardStyle.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(dashboardStyle);
+function buildResumePreviewHtml() {
+    const form = document.getElementById('standardResumeForm');
+    const skills = form.elements.resumeSkills.value.split(',').map((item) => item.trim()).filter(Boolean);
+    return `
+        <div class="card">
+            <div class="card-body">
+                <h3 style="margin-bottom:.5rem;">${form.elements.resumeName.value || 'Unnamed Student'}</h3>
+                <p style="color:#6b7280;margin:0 0 1rem;">${form.elements.resumeStudentId.value} · ${form.elements.resumeEmail.value}</p>
+                <p><strong>Major:</strong> ${form.elements.resumeMajor.value || 'N/A'}</p>
+                <p><strong>GPA:</strong> ${form.elements.resumeGpa.value || 'N/A'}</p>
+                <p><strong>Skills:</strong> ${skills.length ? skills.join(', ') : 'N/A'}</p>
+                <p><strong>Experience:</strong></p>
+                <p style="white-space:pre-wrap;">${form.elements.resumeExperience.value || 'N/A'}</p>
+            </div>
+        </div>
+    `;
+}
 
-
-// Resume tabs functionality
 function initResumeTabs() {
-    const resumeTabBtns = document.querySelectorAll('.resume-tab-btn');
-    const resumeTabContents = document.querySelectorAll('.resume-tab-content');
-    
-    resumeTabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabName = btn.dataset.resumeTab;
-            
-            // Remove active class
-            resumeTabBtns.forEach(b => b.classList.remove('active'));
-            resumeTabContents.forEach(c => c.classList.remove('active'));
-            
-            // Add active class
-            btn.classList.add('active');
-            document.getElementById(`resume-tab-${tabName}`).classList.add('active');
+    document.querySelectorAll('.resume-tab-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.resume-tab-btn').forEach((item) => item.classList.remove('active'));
+            document.querySelectorAll('.resume-tab-content').forEach((item) => item.classList.remove('active'));
+            button.classList.add('active');
+            document.getElementById(`resume-tab-${button.dataset.resumeTab}`).classList.add('active');
         });
     });
-    
-    // PDF upload
-    const uploadArea = document.getElementById('pdfUploadArea');
+
     const fileInput = document.getElementById('resumeUpload');
-    const fileInfo = document.getElementById('uploadedFileInfo');
-    
-    if (uploadArea && fileInput) {
-        uploadArea.addEventListener('click', () => fileInput.click());
-        
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type === 'application/pdf') {
-                uploadArea.style.display = 'none';
-                fileInfo.style.display = 'block';
-                fileInfo.innerHTML = `
-                    <div class="uploaded-file-card">
-                        <div class="uploaded-file-info">
-                            <svg class="uploaded-file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                            </svg>
-                            <div>
-                                <p class="uploaded-file-name">${file.name}</p>
-                                <p class="uploaded-file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                            </div>
-                        </div>
-                        <button class="btn btn-outline btn-sm">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            View
-                        </button>
-                    </div>
-                `;
-                showToast('Resume uploaded successfully!', 'success');
-            } else {
-                showToast('Please upload a PDF file', 'error');
+    const uploadArea = document.getElementById('pdfUploadArea');
+    uploadArea.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.type !== 'application/pdf') {
+            showToast('Please upload a PDF file', 'error');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('PDF must be smaller than 5MB', 'error');
+            return;
+        }
+        try {
+            const dataUrl = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            const optimisticUser = {
+                ...(currentUserProfile || {}),
+                resumePdfName: file.name,
+                resumePdfData: dataUrl,
+                resumePdfUploadedAt: new Date().toISOString().slice(0, 19)
+            };
+            renderUploadedResumeInfo(optimisticUser);
+            renderResumeStatus(optimisticUser);
+            const updated = await API.student.updateProfile({
+                resumePdfName: file.name,
+                resumePdfData: dataUrl,
+                resumePdfUploadedAt: new Date().toISOString().slice(0, 19)
+            });
+            const refreshed = await loadProfileFromServer();
+            const finalUser = refreshed || updated;
+            if (!finalUser?.resumePdfData) {
+                throw new Error('The PDF upload response did not include a saved file');
             }
-        });
-    }
-    
-    // AI Polish
-    const polishBtn = document.getElementById('polishBtn');
-    if (polishBtn) {
-        polishBtn.addEventListener('click', () => {
-            polishBtn.disabled = true;
-            polishBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Polishing...';
-            
-            setTimeout(() => {
-                polishBtn.disabled = false;
-                polishBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Polish with AI';
-                showToast('Resume polished with AI suggestions!', 'success');
-            }, 2000);
-        });
-    }
+            syncUserToLocalStorage(finalUser);
+            renderUploadedResumeInfo(finalUser);
+            renderResumeStatus(finalUser);
+            renderProfileCompletion();
+            showToast('PDF resume uploaded and available immediately', 'success');
+        } catch (error) {
+            renderUploadedResumeInfo(currentUserProfile);
+            renderResumeStatus(currentUserProfile || {});
+            showToast(error.message || 'Failed to upload PDF resume', 'error');
+        } finally {
+            event.target.value = '';
+        }
+    });
+
+    const form = document.getElementById('standardResumeForm');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            const updated = await API.student.updateProfile({
+                skills: form.elements.resumeSkills.value.split(',').map((item) => item.trim()).filter(Boolean),
+                resume: {
+                    education: [{
+                        school: 'BUPT',
+                        degree: 'Student',
+                        major: form.elements.resumeMajor.value.trim(),
+                        startDate: '',
+                        endDate: '',
+                        gpa: form.elements.resumeGpa.value ? parseFloat(form.elements.resumeGpa.value) : null
+                    }],
+                    experience: [{
+                        company: 'BUPT',
+                        position: 'Teaching Assistant Applicant',
+                        startDate: '',
+                        endDate: '',
+                        description: form.elements.resumeExperience.value.trim()
+                    }],
+                    awards: []
+                }
+            });
+            syncUserToLocalStorage(updated);
+            populateResumeForm(updated);
+            renderResumeStatus(updated);
+            renderProfileCompletion();
+            showToast('Resume information saved successfully', 'success');
+        } catch (error) {
+            showToast('Failed to save resume information', 'error');
+        }
+    });
+
+    const previewModal = document.getElementById('resumePreviewModal');
+    document.getElementById('previewResumeBtn').addEventListener('click', () => {
+        document.getElementById('resumePreviewContent').innerHTML = buildResumePreviewHtml();
+        previewModal.style.display = 'flex';
+    });
+    document.getElementById('closeResumePreviewBtn').addEventListener('click', () => {
+        previewModal.style.display = 'none';
+    });
+    previewModal.addEventListener('click', (event) => {
+        if (event.target === previewModal) previewModal.style.display = 'none';
+    });
+
+    document.getElementById('polishBtn').addEventListener('click', () => {
+        showToast('AI polish is not included in this round', 'info');
+    });
 }
 
-// Render schedule table
 function renderScheduleTable() {
     const tbody = document.getElementById('scheduleTableBody');
-    if (!tbody) return;
-    
-    const timeSlots = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
-    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    
-    tbody.innerHTML = timeSlots.map(time => {
-        return `
-            <tr>
-                <td style="font-weight: 500; color: #374151;">${time}</td>
-                ${daysOfWeek.map(day => {
-                    const slot = mockSchedule.find(s => s.day === day && s.startTime === time);
-                    return `
-                        <td>
-                            ${slot ? `
-                                <div class="schedule-slot">
-                                    <p class="schedule-slot-title">${slot.course}</p>
-                                    <p class="schedule-slot-time">${slot.startTime} - ${slot.endTime}</p>
-                                </div>
-                            ` : ''}
-                        </td>
-                    `;
-                }).join('')}
-            </tr>
-        `;
-    }).join('');
+    const slots = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    tbody.innerHTML = slots.map((time) => `
+        <tr>
+            <td style="font-weight:500;color:#374151;">${time}</td>
+            ${days.map((day) => {
+                const entry = scheduleEntries.find((item) => item.day === day && item.startTime === time);
+                return `<td>${entry ? `<div class="schedule-slot"><p class="schedule-slot-title">${entry.course}</p><p class="schedule-slot-time">${entry.startTime} - ${entry.endTime}</p></div>` : ''}</td>`;
+            }).join('')}
+        </tr>
+    `).join('');
 }
 
-// Render favorites list
-function renderFavoritesList() {
-    const list = document.getElementById('favoritesList');
-    if (!list) return;
-    
-    if (mockFavorites.length === 0) {
-        list.innerHTML = `
-            <div class="favorites-empty">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-                <p>No saved positions yet</p>
-                <a href="/apply.html" class="btn btn-primary">Browse Positions</a>
-            </div>
-        `;
+function initScheduleUpload() {
+    const input = document.getElementById('scheduleUpload');
+    input.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        try {
+            const lines = (await file.text()).split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+            const startIndex = /^day\s*,/i.test(lines[0] || '') ? 1 : 0;
+            const entries = lines.slice(startIndex).map((line) => {
+                const [rawDay, startTime, endTime, ...courseParts] = line.split(',');
+                const day = normalizeDay(rawDay);
+                return day && startTime && endTime && courseParts.length ? {
+                    day,
+                    startTime: startTime.trim(),
+                    endTime: endTime.trim(),
+                    course: courseParts.join(',').trim()
+                } : null;
+            }).filter(Boolean);
+            if (!entries.length) throw new Error('No valid rows');
+            const updated = await API.student.updateProfile({ schedule: buildSchedulePayload(entries) });
+            syncUserToLocalStorage(updated);
+            scheduleEntries = flattenSchedule(updated.schedule);
+            renderScheduleTable();
+            showToast('Schedule imported successfully', 'success');
+        } catch (error) {
+            showToast('Failed to import schedule. Use CSV: day,start,end,course', 'error');
+        } finally {
+            event.target.value = '';
+        }
+    });
+}
+
+async function loadFavoriteJobs() {
+    if (!favoriteJobIds.length) {
+        favoriteJobs = [];
         return;
     }
-    
-    list.innerHTML = mockFavorites.map(job => `
+    const jobs = await Promise.all(favoriteJobIds.map(async (jobId) => {
+        try {
+            return await API.jobs.getById(jobId);
+        } catch (error) {
+            return null;
+        }
+    }));
+    favoriteJobs = jobs.filter(Boolean);
+    const validIds = favoriteJobs.map((job) => job.id);
+    if (validIds.length !== favoriteJobIds.length) {
+        favoriteJobIds = validIds;
+        saveFavoriteIds();
+    }
+}
+
+function renderFavoritesList() {
+    const list = document.getElementById('favoritesList');
+    if (!favoriteJobs.length) {
+        list.innerHTML = `<div class="favorites-empty"><p>No saved positions yet</p><a href="/apply.html" class="btn btn-primary">Browse Positions</a></div>`;
+        return;
+    }
+    list.innerHTML = favoriteJobs.map((job) => `
         <div class="favorite-card">
             <div class="favorite-card-grid">
-                <div class="favorite-card-image">
-                    <img src="${job.image}" alt="${job.title}">
-                </div>
+                <div class="favorite-card-image"><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400" alt="${job.title}"></div>
                 <div class="favorite-card-content">
                     <div class="favorite-card-header">
                         <div>
                             <h4 class="favorite-card-title">${job.title}</h4>
-                            <p class="favorite-card-dept">${job.department}</p>
+                            <p class="favorite-card-dept">${job.department || 'N/A'}</p>
                         </div>
-                        <button class="favorite-delete-btn" onclick="removeFavorite('${job.id}')">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
+                        <button class="favorite-delete-btn" onclick="removeFavorite('${job.id}')">Remove</button>
                     </div>
-                    <div class="favorite-card-tags">
-                        ${job.tags.map(tag => `<span class="badge badge-secondary">${tag}</span>`).join('')}
-                    </div>
+                    <div class="favorite-card-tags">${(job.requiredSkills || []).map((tag) => `<span class="badge badge-secondary">${tag}</span>`).join('')}</div>
                     <div class="favorite-card-meta">
-                        <div class="favorite-card-meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            ${job.location}
-                        </div>
-                        <div class="favorite-card-meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                            ${job.hoursPerWeek} hours/week
-                        </div>
-                        <div class="favorite-card-meta-item favorite-card-salary">
-                            ${job.salary}
-                        </div>
+                        <div class="favorite-card-meta-item">${job.location || 'BUPT Campus'}</div>
+                        <div class="favorite-card-meta-item">${job.hoursPerWeek || 'N/A'} hours/week</div>
+                        <div class="favorite-card-meta-item favorite-card-salary">${job.hourlyRate ? `CNY ${job.hourlyRate}/hour` : 'Salary negotiable'}</div>
                     </div>
                     <div class="favorite-card-actions">
                         <a href="/job-detail.html?id=${job.id}" class="btn btn-primary btn-sm">View Details</a>
-                        <button class="btn btn-outline btn-sm">Apply Now</button>
+                        <button class="btn btn-outline btn-sm" onclick="applyFromFavorites('${job.id}')">Apply Now</button>
                     </div>
                 </div>
             </div>
@@ -711,184 +751,146 @@ function renderFavoritesList() {
     `).join('');
 }
 
-// Remove favorite
-function removeFavorite(id) {
-    const index = mockFavorites.findIndex(f => f.id === id);
-    if (index > -1) {
-        mockFavorites.splice(index, 1);
-        renderFavoritesList();
-        showToast('Removed from favorites', 'success');
-    }
-}
+window.removeFavorite = function removeFavorite(jobId) {
+    favoriteJobIds = favoriteJobIds.filter((item) => item !== jobId);
+    favoriteJobs = favoriteJobs.filter((job) => job.id !== jobId);
+    saveFavoriteIds();
+    renderFavoritesList();
+    showToast('Removed from favorites', 'success');
+};
 
-// Avatar upload functionality
+window.applyFromFavorites = async function applyFromFavorites(jobId) {
+    try {
+        await API.student.applyJob(jobId);
+        showToast('Application submitted successfully', 'success');
+        await refreshApplicationViews();
+    } catch (error) {
+        showToast(error.message || 'Failed to apply for this job', 'error');
+    }
+};
+
 function initAvatarUpload() {
-    const avatarContainer = document.getElementById('profileAvatarContainer');
-    const avatarUpload = document.getElementById('avatarUpload');
-    const avatarOverlay = document.getElementById('avatarUploadOverlay');
-    
-    if (avatarContainer && avatarUpload) {
-        avatarOverlay.addEventListener('click', (e) => {
-            e.stopPropagation();
-            avatarUpload.click();
-        });
-        
-        avatarUpload.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            // Check file type
-            if (!file.type.startsWith('image/')) {
-                showToast('Please upload an image file', 'error');
-                return;
-            }
-            
-            // Check file size (max 2MB)
-            if (file.size > 2 * 1024 * 1024) {
-                showToast('Image size should be less than 2MB', 'error');
-                return;
-            }
-            
-            // Read file as base64
+    const input = document.getElementById('avatarUpload');
+    document.getElementById('avatarUploadOverlay').addEventListener('click', (event) => {
+        event.stopPropagation();
+        input.click();
+    });
+    input.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            showToast('Please upload an image file', 'error');
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('Image must be smaller than 2MB', 'error');
+            return;
+        }
+        const dataUrl = await new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = async (event) => {
-                const base64Image = event.target.result;
-                
-                try {
-                    // Update UI immediately
-                    const avatarImg = document.getElementById('profileAvatarImg');
-                    const avatarIcon = document.getElementById('profileAvatarIcon');
-                    avatarImg.src = base64Image;
-                    avatarImg.style.display = 'block';
-                    avatarIcon.style.display = 'none';
-                    
-                    // Update localStorage
-                    const user = JSON.parse(localStorage.getItem('user') || '{}');
-                    user.avatar = base64Image;
-                    localStorage.setItem('user', JSON.stringify(user));
-                    
-                    // TODO: Call API to save avatar to backend
-                    // await API.student.updateProfile({ avatar: base64Image });
-                    
-                    showToast('Avatar uploaded successfully!', 'success');
-                } catch (error) {
-                    console.error('Error uploading avatar:', error);
-                    showToast('Failed to upload avatar', 'error');
-                }
-            };
-            
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
             reader.readAsDataURL(file);
         });
-    }
+        try {
+            const updated = await API.student.updateProfile({ avatar: dataUrl });
+            syncUserToLocalStorage(updated);
+            loadUserData();
+            showToast('Avatar uploaded successfully', 'success');
+        } catch (error) {
+            showToast('Failed to upload avatar', 'error');
+        }
+    });
 }
 
-// GPA Modal functionality
 function showGPAModal() {
-    const modal = document.getElementById('gpaModal');
-    if (modal) {
-        modal.style.display = 'flex';
-    }
+    document.getElementById('gpaModal').style.display = 'flex';
 }
 
 function hideGPAModal() {
-    const modal = document.getElementById('gpaModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
+    document.getElementById('gpaModal').style.display = 'none';
 }
 
 function initGPAModal() {
-    const gpaForm = document.getElementById('gpaForm');
-    
-    if (gpaForm) {
-        gpaForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const gpaInput = document.getElementById('gpaInput');
-            const gpa = parseFloat(gpaInput.value);
-            
-            if (isNaN(gpa) || gpa < 0 || gpa > 4) {
-                showToast('Please enter a valid GPA (0.0 - 4.0)', 'error');
-                return;
-            }
-            
-            try {
-                // Update localStorage
-                const user = JSON.parse(localStorage.getItem('user') || '{}');
-                user.gpa = gpa;
-                localStorage.setItem('user', JSON.stringify(user));
-                
-                // Update UI
-                document.getElementById('gpaBadge').textContent = `GPA: ${gpa.toFixed(2)}`;
-                
-                // Update form
-                const profileForm = document.getElementById('profileForm');
-                if (profileForm && profileForm.elements.gpa) {
-                    profileForm.elements.gpa.value = gpa;
-                }
-                
-                // TODO: Call API to save GPA to backend
-                // await API.student.updateProfile({ gpa: gpa });
-                
-                hideGPAModal();
-                showToast('GPA saved successfully!', 'success');
-            } catch (error) {
-                console.error('Error saving GPA:', error);
-                showToast('Failed to save GPA', 'error');
-            }
-        });
-    }
+    document.getElementById('gpaForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const value = parseFloat(document.getElementById('gpaInput').value);
+        if (Number.isNaN(value) || value < 0 || value > 4) {
+            showToast('Please enter a valid GPA (0.0 - 4.0)', 'error');
+            return;
+        }
+        try {
+            const updated = await API.student.updateProfile({ gpa: value });
+            syncUserToLocalStorage(updated);
+            loadUserData();
+            renderProfileCompletion();
+            hideGPAModal();
+            showToast('GPA saved successfully', 'success');
+        } catch (error) {
+            showToast('Failed to save GPA', 'error');
+        }
+    });
 }
 
-// Initialize on page load
+function initLogout() {
+    const handleLogout = () => {
+        API.auth.logout().catch(() => null).finally(() => {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('userRole');
+            window.location.href = '/login.html';
+        });
+    };
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    document.getElementById('signOutBtn').addEventListener('click', handleLogout);
+}
+
+function initSecurityForm() {
+    const form = document.getElementById('securityForm');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const currentPassword = form.elements.currentPassword.value;
+        const newPassword = form.elements.newPassword.value;
+        const confirmPassword = form.elements.confirmPassword.value;
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showToast('Please complete all password fields', 'error');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showToast('New passwords do not match', 'error');
+            return;
+        }
+        try {
+            await API.student.updateProfile({ currentPassword, newPassword });
+            form.reset();
+            showToast('Password updated successfully', 'success');
+        } catch (error) {
+            showToast(error.message || 'Failed to update password', 'error');
+        }
+    });
+    document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+        showToast('Delete account is not supported yet because related records are still linked to your applications and timesheets.', 'info');
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOMContentLoaded fired');
-    
-    try {
-        // Load user data
-        console.log('Loading user data...');
-        loadUserData();
-        console.log('User data loaded');
-        
-        console.log('Initializing tabs...');
-        initTabs();
-        
-        console.log('Initializing edit profile...');
-        initEditProfile();
-        
-        console.log('Initializing logout...');
-        initLogout();
-        
-        console.log('Initializing avatar upload...');
-        initAvatarUpload();
-        
-        console.log('Initializing GPA modal...');
-        initGPAModal();
-        
-        // Load applications data first
-        console.log('Loading applications data...');
-        await renderQuickStats();
-        
-        console.log('Rendering profile completion...');
-        renderProfileCompletion();
-        
-        console.log('Rendering timeline...');
-        await renderTimeline();
-        
-        console.log('Rendering applications list...');
-        await renderApplicationsList();
-        
-        console.log('Initializing resume tabs...');
-        initResumeTabs();
-        
-        console.log('Rendering schedule table...');
-        renderScheduleTable();
-        
-        console.log('Rendering favorites list...');
-        renderFavoritesList();
-        
-        console.log('Dashboard initialization complete!');
-    } catch (error) {
-        console.error('Dashboard initialization error:', error);
-    }
+    const profile = await loadProfileFromServer();
+    if (!profile) return;
+    loadUserData();
+    initTabs();
+    initEditProfile();
+    initLogout();
+    initAvatarUpload();
+    initGPAModal();
+    initResumeTabs();
+    initScheduleUpload();
+    initSecurityForm();
+    initTimesheetForm();
+    renderProfileCompletion();
+    await refreshApplicationViews();
+    await refreshTimesheetViews();
+    await loadFavoriteJobs();
+    renderFavoritesList();
+    renderScheduleTable();
 });
