@@ -2,26 +2,29 @@
   {
     "id": "JOB001",
     "moduleId": "MOD001",
+    "moduleCode": "CS201",
+    "moduleName": "Data Structures",
     "moId": "MO001",
-    "moName": "李老师",
-    "title": "数据结构课程助教",
-    "department": "计算机学院",
+    "moName": "Prof. Li",
+    "createdBy": "MO001",
+    "title": "Data Structures TA",
+    "department": "Computer Science",
     "type": "TA",
-    "description": "协助教师完成数据结构课程的教学工作",
+    "description": "Support tutorials, office hours, and assignment grading for the Data Structures module.",
     "responsibilities": [
-      "批改作业",
-      "答疑辅导",
-      "监考"
+      "Grade weekly assignments",
+      "Host tutorial Q&A",
+      "Support lab sessions"
     ],
     "requirements": [
-      "熟悉数据结构",
-      "有耐心",
-      "责任心强"
+      "Strong understanding of data structures",
+      "Clear communication skills",
+      "Reliable weekly availability"
     ],
     "requiredSkills": [
       "C++",
-      "算法",
-      "数据结构"
+      "Algorithms",
+      "Data Structures"
     ],
     "hoursPerWeek": 10,
     "hourlyRate": 50.0,
@@ -41,32 +44,38 @@
     "startDate": "2026-09-01",
     "endDate": "2027-01-15",
     "slots": 2,
+    "positions": 2,
+    "duration": "Semester",
     "status": "published",
     "createdAt": "2026-04-08T13:05:38.3514076",
+    "updatedAt": "2026-04-10T10:00:00",
     "publishedAt": "2026-04-03T13:05:38.3514076"
   },
   {
     "id": "JOB002",
     "moduleId": "MOD002",
+    "moduleCode": "CS301",
+    "moduleName": "Operating Systems",
     "moId": "MO001",
-    "moName": "李老师",
-    "title": "操作系统课程助教",
-    "department": "计算机学院",
+    "moName": "Prof. Li",
+    "createdBy": "MO001",
+    "title": "Operating Systems TA",
+    "department": "Computer Science",
     "type": "TA",
-    "description": "协助教师完成操作系统课程的教学工作",
+    "description": "Assist with lab preparation, grading, and tutorial support for Operating Systems.",
     "responsibilities": [
-      "批改作业",
-      "实验指导",
-      "答疑"
+      "Grade lab reports",
+      "Support Linux labs",
+      "Answer student questions"
     ],
     "requirements": [
-      "熟悉Linux",
-      "了解操作系统原理"
+      "Comfortable with Linux",
+      "Understands OS fundamentals"
     ],
     "requiredSkills": [
       "C",
       "Linux",
-      "操作系统"
+      "Operating Systems"
     ],
     "hoursPerWeek": 12,
     "hourlyRate": 55.0,
@@ -86,31 +95,38 @@
     "startDate": "2026-09-01",
     "endDate": "2027-01-15",
     "slots": 2,
+    "positions": 2,
+    "duration": "Semester",
     "status": "published",
     "createdAt": "2026-04-08T13:05:38.3614501",
+    "updatedAt": "2026-04-10T10:30:00",
     "publishedAt": "2026-04-05T13:05:38.3614501"
   },
   {
     "id": "JOB003",
     "moduleId": "MOD003",
-    "moId": "MO002",
-    "moName": "王老师",
-    "title": "计算机网络课程助教",
-    "department": "计算机学院",
+    "moduleCode": "CS302",
+    "moduleName": "Computer Networks",
+    "moId": "MO001",
+    "moName": "Prof. Li",
+    "createdBy": "MO001",
+    "title": "Computer Networks TA",
+    "department": "Computer Science",
     "type": "TA",
-    "description": "协助教师完成计算机网络课程的教学工作",
+    "description": "Help run network labs, support troubleshooting sessions, and review reports.",
     "responsibilities": [
-      "批改作业",
-      "实验指导"
+      "Support network labs",
+      "Assist with troubleshooting",
+      "Review weekly reports"
     ],
     "requirements": [
-      "熟悉网络协议",
-      "有实验经验"
+      "Familiar with networking basics",
+      "Lab support experience preferred"
     ],
     "requiredSkills": [
-      "网络协议",
+      "Networking",
       "Wireshark",
-      "Socket编程"
+      "Socket Programming"
     ],
     "hoursPerWeek": 8,
     "hourlyRate": 50.0,
@@ -130,34 +146,39 @@
     "startDate": "2026-09-01",
     "endDate": "2027-01-15",
     "slots": 1,
+    "positions": 1,
+    "duration": "Semester",
     "status": "published",
     "createdAt": "2026-04-08T13:05:38.3651702",
+    "updatedAt": "2026-04-10T11:00:00",
     "publishedAt": "2026-04-06T13:05:38.3651702"
   },
   {
     "id": "JOB004",
     "moduleId": "MOD001",
+    "moduleCode": "CS201",
+    "moduleName": "Data Structures",
     "moId": "MO001",
-    "moName": "李老师",
-    "title": "数据库系统课程助教",
-    "department": "计算机学院",
+    "moName": "Prof. Li",
+    "createdBy": "MO001",
+    "title": "Data Structures Lab TA",
+    "department": "Computer Science",
     "type": "TA",
-    "description": "协助教师完成数据库系统课程的教学工作",
+    "description": "Draft role for extra lab support in the Data Structures teaching team.",
     "responsibilities": [
-      "批改作业",
-      "实验指导"
+      "Support lab check-ins",
+      "Monitor student progress"
     ],
     "requirements": [
-      "熟悉SQL",
-      "了解数据库原理"
+      "Comfortable with weekly labs",
+      "Good communication skills"
     ],
     "requiredSkills": [
-      "SQL",
-      "MySQL",
-      "数据库设计"
+      "C++",
+      "Teaching Support"
     ],
-    "hoursPerWeek": 10,
-    "hourlyRate": 50.0,
+    "hoursPerWeek": 6,
+    "hourlyRate": 45.0,
     "schedule": {
       "monday": [
         "10:00-12:00"
@@ -173,32 +194,38 @@
     },
     "startDate": "2026-09-01",
     "endDate": "2027-01-15",
-    "slots": 2,
+    "slots": 1,
+    "positions": 1,
+    "duration": "Semester",
     "status": "draft",
-    "createdAt": "2026-04-08T13:05:38.3687054"
+    "createdAt": "2026-04-08T13:05:38.3687054",
+    "updatedAt": "2026-04-10T11:20:00"
   },
   {
     "id": "JOB005",
     "moduleId": "MOD002",
-    "moId": "MO002",
-    "moName": "王老师",
-    "title": "算法分析与设计助教",
-    "department": "计算机学院",
+    "moduleCode": "CS301",
+    "moduleName": "Operating Systems",
+    "moId": "MO001",
+    "moName": "Prof. Li",
+    "createdBy": "MO001",
+    "title": "Operating Systems Project TA",
+    "department": "Computer Science",
     "type": "TA",
-    "description": "协助教师完成算法分析课程的教学工作",
+    "description": "Assist the project stream with feedback, debugging support, and office hours.",
     "responsibilities": [
-      "批改作业",
-      "答疑辅导",
-      "习题讲解"
+      "Review project milestones",
+      "Hold debugging office hours",
+      "Track student progress"
     ],
     "requirements": [
-      "算法基础扎实",
-      "ACM经验优先"
+      "Solid systems background",
+      "Able to support project work independently"
     ],
     "requiredSkills": [
-      "算法",
-      "C++",
-      "数据结构"
+      "C",
+      "Linux",
+      "Debugging"
     ],
     "hoursPerWeek": 10,
     "hourlyRate": 60.0,
@@ -218,8 +245,11 @@
     "startDate": "2026-09-01",
     "endDate": "2027-01-15",
     "slots": 1,
+    "positions": 1,
+    "duration": "Semester",
     "status": "published",
     "createdAt": "2026-04-08T13:05:38.37376",
+    "updatedAt": "2026-04-10T12:00:00",
     "publishedAt": "2026-04-07T13:05:38.37376"
   }
 ]

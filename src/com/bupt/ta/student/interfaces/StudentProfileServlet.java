@@ -4,7 +4,9 @@ import com.bupt.ta.shared.domain.Resume;
 import com.bupt.ta.shared.domain.Schedule;
 import com.bupt.ta.shared.interfaces.BaseServlet;
 import com.bupt.ta.shared.infrastructure.StudentRepository;
+import com.bupt.ta.shared.util.PasswordUtil;
 import com.bupt.ta.shared.util.ResponseUtil;
+import com.bupt.ta.shared.util.SessionUtil;
 import com.bupt.ta.student.domain.Student;
 
 import jakarta.servlet.annotation.WebServlet;
@@ -23,6 +25,9 @@ import java.util.Optional;
 @WebServlet("/api/student/profile")
 public class StudentProfileServlet extends BaseServlet {
     private final StudentRepository studentRepo = new StudentRepository();
+    private static final int MAX_AVATAR_BYTES = 2 * 1024 * 1024;
+    private static final int MAX_RESUME_PDF_BYTES = 5 * 1024 * 1024;
+    private static final int MAX_PROFILE_TEXT_LENGTH = 2000;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -31,6 +36,10 @@ public class StudentProfileServlet extends BaseServlet {
         }
 
         if (!requireRole(request, response, "student")) {
+            return;
+        }
+
+        if (!requireCsrf(request, response)) {
             return;
         }
 
@@ -45,6 +54,7 @@ public class StudentProfileServlet extends BaseServlet {
 
             Student student = studentOpt.get();
             student.setPassword(null);
+            student.setCsrfToken(SessionUtil.ensureCsrfToken(request));
             ResponseUtil.sendSuccess(response, student);
 
         } catch (Exception e) {
@@ -60,6 +70,10 @@ public class StudentProfileServlet extends BaseServlet {
         }
 
         if (!requireRole(request, response, "student")) {
+            return;
+        }
+
+        if (!requireCsrf(request, response)) {
             return;
         }
 
@@ -81,36 +95,62 @@ public class StudentProfileServlet extends BaseServlet {
             }
 
             if (updateData.phone != null) {
-                existingStudent.setPhone(updateData.phone);
+                existingStudent.setPhone(trimLimit(updateData.phone, 80));
             }
             if (updateData.major != null) {
-                existingStudent.setMajor(updateData.major);
+                existingStudent.setMajor(trimLimit(updateData.major, 120));
             }
             if (updateData.grade != null) {
-                existingStudent.setGrade(updateData.grade);
+                existingStudent.setGrade(trimLimit(updateData.grade, 80));
             }
             if (updateData.bio != null) {
-                existingStudent.setBio(updateData.bio);
+                existingStudent.setBio(trimLimit(updateData.bio, MAX_PROFILE_TEXT_LENGTH));
             }
             if (updateData.gpa != null) {
+                if (updateData.gpa < 0 || updateData.gpa > 4.0) {
+                    ResponseUtil.sendError(response, 400, "GPA must be between 0 and 4.0");
+                    return;
+                }
                 existingStudent.setGpa(updateData.gpa);
             }
             if (updateData.avatar != null) {
+                String avatarError = validateDataUrl(updateData.avatar, "data:image/", MAX_AVATAR_BYTES, "Avatar");
+                if (avatarError != null) {
+                    ResponseUtil.sendError(response, 400, avatarError);
+                    return;
+                }
                 existingStudent.setAvatar(updateData.avatar);
             }
             if (updateData.skills != null) {
-                existingStudent.setSkills(updateData.skills);
+                if (updateData.skills.size() > 30) {
+                    ResponseUtil.sendError(response, 400, "No more than 30 skills are allowed");
+                    return;
+                }
+                existingStudent.setSkills(updateData.skills.stream()
+                        .filter(skill -> skill != null && !skill.isBlank())
+                        .map(skill -> trimLimit(skill, 80))
+                        .collect(java.util.stream.Collectors.toList()));
             }
             if (updateData.resume != null) {
                 existingStudent.setResume(updateData.resume);
             }
             if (updateData.schedule != null) {
+                String scheduleError = validateSchedule(updateData.schedule);
+                if (scheduleError != null) {
+                    ResponseUtil.sendError(response, 400, scheduleError);
+                    return;
+                }
                 existingStudent.setSchedule(updateData.schedule);
             }
             if (updateData.resumePdfName != null) {
-                existingStudent.setResumePdfName(updateData.resumePdfName);
+                existingStudent.setResumePdfName(trimLimit(updateData.resumePdfName, 160));
             }
             if (updateData.resumePdfData != null) {
+                String pdfError = validateDataUrl(updateData.resumePdfData, "data:application/pdf;base64,", MAX_RESUME_PDF_BYTES, "Resume PDF");
+                if (pdfError != null) {
+                    ResponseUtil.sendError(response, 400, pdfError);
+                    return;
+                }
                 existingStudent.setResumePdfData(updateData.resumePdfData);
             }
             if (updateData.resumePdfUploadedAt != null) {
@@ -123,7 +163,7 @@ public class StudentProfileServlet extends BaseServlet {
             }
 
             if (updateData.newPassword != null && !updateData.newPassword.isBlank()) {
-                if (updateData.currentPassword == null || !updateData.currentPassword.equals(existingStudent.getPassword())) {
+                if (updateData.currentPassword == null || !PasswordUtil.verify(updateData.currentPassword, existingStudent.getPassword())) {
                     ResponseUtil.sendError(response, 400, "当前密码不正确");
                     return;
                 }
@@ -131,11 +171,19 @@ public class StudentProfileServlet extends BaseServlet {
                     ResponseUtil.sendError(response, 400, "新密码至少 6 位");
                     return;
                 }
-                existingStudent.setPassword(updateData.newPassword);
+                existingStudent.setPassword(PasswordUtil.hash(updateData.newPassword));
+            }
+
+            if ((updateData.newPassword == null || updateData.newPassword.isBlank())
+                    && PasswordUtil.needsRehash(existingStudent.getPassword())
+                    && updateData.currentPassword != null
+                    && PasswordUtil.verify(updateData.currentPassword, existingStudent.getPassword())) {
+                existingStudent.setPassword(PasswordUtil.hash(updateData.currentPassword));
             }
 
             studentRepo.save(existingStudent);
             existingStudent.setPassword(null);
+            existingStudent.setCsrfToken(SessionUtil.ensureCsrfToken(request));
             ResponseUtil.sendSuccess(response, "更新成功", existingStudent);
 
         } catch (Exception e) {
@@ -160,5 +208,102 @@ public class StudentProfileServlet extends BaseServlet {
         String resumePdfData;
         LocalDateTime resumePdfUploadedAt;
         Boolean clearResumePdf;
+    }
+
+    private String trimLimit(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
+    }
+
+    private String validateDataUrl(String value, String requiredPrefix, int maxBytes, String label) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        if (!value.startsWith(requiredPrefix)) {
+            return label + " must use a valid data URL";
+        }
+        if ("data:image/".equals(requiredPrefix)
+                && !(value.startsWith("data:image/png;base64,")
+                || value.startsWith("data:image/jpeg;base64,")
+                || value.startsWith("data:image/jpg;base64,")
+                || value.startsWith("data:image/webp;base64,")
+                || value.startsWith("data:image/gif;base64,"))) {
+            return label + " must be PNG, JPG, WebP, or GIF";
+        }
+        int commaIndex = value.indexOf(',');
+        if (commaIndex < 0) {
+            return label + " data is malformed";
+        }
+        String payload = value.substring(commaIndex + 1).replaceAll("\\s", "");
+        int estimatedBytes = payload.length() * 3 / 4;
+        if (estimatedBytes > maxBytes) {
+            return label + " exceeds the allowed size";
+        }
+        return null;
+    }
+
+    private String validateSchedule(Schedule schedule) {
+        String error = validateScheduleSlots("Monday", schedule.getMonday());
+        if (error != null) return error;
+        error = validateScheduleSlots("Tuesday", schedule.getTuesday());
+        if (error != null) return error;
+        error = validateScheduleSlots("Wednesday", schedule.getWednesday());
+        if (error != null) return error;
+        error = validateScheduleSlots("Thursday", schedule.getThursday());
+        if (error != null) return error;
+        error = validateScheduleSlots("Friday", schedule.getFriday());
+        if (error != null) return error;
+        error = validateScheduleSlots("Saturday", schedule.getSaturday());
+        if (error != null) return error;
+        return validateScheduleSlots("Sunday", schedule.getSunday());
+    }
+
+    private String validateScheduleSlots(String day, List<String> slots) {
+        if (slots == null) {
+            return null;
+        }
+        if (slots.size() > 20) {
+            return day + " has too many schedule entries";
+        }
+        for (String slot : slots) {
+            if (slot == null || slot.isBlank()) {
+                continue;
+            }
+            int[] range = parseScheduleRange(slot);
+            if (range == null || range[0] >= range[1]) {
+                return "Invalid schedule time on " + day + ": " + slot;
+            }
+        }
+        return null;
+    }
+
+    private int[] parseScheduleRange(String value) {
+        String[] parts = value.trim().split("\\s+")[0].split("-");
+        if (parts.length != 2) {
+            return null;
+        }
+        Integer start = parseMinutes(parts[0]);
+        Integer end = parseMinutes(parts[1]);
+        return start == null || end == null ? null : new int[]{start, end};
+    }
+
+    private Integer parseMinutes(String value) {
+        String[] parts = value.trim().split(":");
+        if (parts.length != 2) {
+            return null;
+        }
+        try {
+            int hours = Integer.parseInt(parts[0]);
+            int minutes = Integer.parseInt(parts[1]);
+            if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                return null;
+            }
+            return hours * 60 + minutes;
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 }

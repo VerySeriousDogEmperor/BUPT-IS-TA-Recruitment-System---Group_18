@@ -48,8 +48,8 @@ public class JobServlet extends BaseServlet {
             String pageStr = request.getParameter("page");
             String sizeStr = request.getParameter("size");
             
-            int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
-            int size = sizeStr != null ? Integer.parseInt(sizeStr) : 10;
+            int page = parsePositiveInt(pageStr, 1, "page");
+            int size = Math.min(parsePositiveInt(sizeStr, 10, "size"), 100);
             
             // 获取所有已发布的职位
             List<Job> jobs = jobRepo.findPublished();
@@ -57,20 +57,23 @@ public class JobServlet extends BaseServlet {
             // 筛选
             if (department != null && !department.isEmpty()) {
                 jobs = jobs.stream()
-                        .filter(j -> j.getDepartment().equals(department))
+                        .filter(j -> department.equals(j.getDepartment()))
                         .collect(Collectors.toList());
             }
             
             if (type != null && !type.isEmpty()) {
                 jobs = jobs.stream()
-                        .filter(j -> j.getType().equals(type))
+                        .filter(j -> type.equals(j.getType()))
                         .collect(Collectors.toList());
             }
             
             if (keyword != null && !keyword.isEmpty()) {
+                String normalizedKeyword = keyword.toLowerCase();
                 jobs = jobs.stream()
-                        .filter(j -> j.getTitle().contains(keyword) || 
-                                   j.getDescription().contains(keyword))
+                        .filter(j -> containsIgnoreCase(j.getTitle(), normalizedKeyword) ||
+                                   containsIgnoreCase(j.getDescription(), normalizedKeyword) ||
+                                   containsIgnoreCase(j.getModuleCode(), normalizedKeyword) ||
+                                   containsIgnoreCase(j.getModuleName(), normalizedKeyword))
                         .collect(Collectors.toList());
             }
             
@@ -85,7 +88,7 @@ public class JobServlet extends BaseServlet {
             int start = (page - 1) * size;
             int end = Math.min(start + size, total);
             
-            List<Job> pagedJobs = jobs.subList(start, end);
+            List<Job> pagedJobs = start >= total ? Collections.emptyList() : jobs.subList(start, end);
             
             // 构建响应
             Map<String, Object> result = new HashMap<>();
@@ -96,6 +99,8 @@ public class JobServlet extends BaseServlet {
             
             ResponseUtil.sendSuccess(response, result);
             
+        } catch (IllegalArgumentException e) {
+            ResponseUtil.sendError(response, 400, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
@@ -106,6 +111,25 @@ public class JobServlet extends BaseServlet {
     /**
      * 获取职位详情
      */
+    private boolean containsIgnoreCase(String value, String normalizedKeyword) {
+        return value != null && value.toLowerCase().contains(normalizedKeyword);
+    }
+
+    private int parsePositiveInt(String value, int fallback, String fieldName) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            int parsed = Integer.parseInt(value.trim());
+            if (parsed < 1) {
+                throw new NumberFormatException("negative or zero");
+            }
+            return parsed;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(fieldName + " must be a positive number");
+        }
+    }
+
     private void handleGetJobDetail(HttpServletRequest request, HttpServletResponse response, String jobId) throws IOException {
         try {
             Optional<Job> jobOpt = jobRepo.findById(jobId);

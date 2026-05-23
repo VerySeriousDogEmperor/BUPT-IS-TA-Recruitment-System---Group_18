@@ -13,27 +13,29 @@ import java.util.stream.Collectors;
 public class JobRepository {
     
     public List<Job> findAll() throws IOException {
-        return DataStore.loadJobs();
+        return DataStore.loadJobs().stream()
+                .map(this::normalize)
+                .collect(Collectors.toList());
     }
     
     public Optional<Job> findById(String id) throws IOException {
-        List<Job> jobs = DataStore.loadJobs();
+        List<Job> jobs = findAll();
         return jobs.stream()
                 .filter(j -> j.getId().equals(id))
                 .findFirst();
     }
     
     public List<Job> findByStatus(String status) throws IOException {
-        List<Job> jobs = DataStore.loadJobs();
+        List<Job> jobs = findAll();
         return jobs.stream()
                 .filter(j -> j.getStatus().equals(status))
                 .collect(Collectors.toList());
     }
     
     public List<Job> findByMoId(String moId) throws IOException {
-        List<Job> jobs = DataStore.loadJobs();
+        List<Job> jobs = findAll();
         return jobs.stream()
-                .filter(j -> j.getMoId().equals(moId))
+                .filter(j -> moId != null && (moId.equals(j.getMoId()) || moId.equals(j.getCreatedBy())))
                 .collect(Collectors.toList());
     }
     
@@ -42,6 +44,7 @@ public class JobRepository {
     }
     
     public void save(Job job) throws IOException {
+        normalize(job);
         List<Job> jobs = DataStore.loadJobs();
         
         boolean exists = false;
@@ -84,5 +87,24 @@ public class JobRepository {
             }
         }
         return String.format("JOB%03d", maxId + 1);
+    }
+
+    private Job normalize(Job job) {
+        if (job == null) {
+            return null;
+        }
+        if (job.getSlots() == null && job.getPositions() != null) {
+            job.setSlots(job.getPositions());
+        }
+        if (job.getPositions() == null && job.getSlots() != null) {
+            job.setPositions(job.getSlots());
+        }
+        if ((job.getMoId() == null || job.getMoId().isBlank()) && job.getCreatedBy() != null) {
+            job.setMoId(job.getCreatedBy());
+        }
+        if ((job.getCreatedBy() == null || job.getCreatedBy().isBlank()) && job.getMoId() != null) {
+            job.setCreatedBy(job.getMoId());
+        }
+        return job;
     }
 }
