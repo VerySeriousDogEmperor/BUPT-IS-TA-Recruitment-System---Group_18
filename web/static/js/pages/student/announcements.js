@@ -1,80 +1,57 @@
-/**
- * Announcements Page - 公告页面逻辑
- */
-
-const announcements = [
-  {
-    id: '1',
-    title: 'Spring 2026 TA Recruitment Now Open',
-    date: '2026-03-18',
-    category: 'Important',
-    isPinned: true,
-    content: 'We are excited to announce that applications for Spring 2026 Teaching Assistant positions are now open. This semester, we have over 50 positions available across Computer Science, Mathematics, and Engineering departments.'
-  },
-  {
-    id: '2',
-    title: 'Interview Schedule for Java Programming TA',
-    date: '2026-03-15',
-    category: 'Interview',
-    isPinned: true,
-    content: 'Interview rounds for Java Programming TA positions will be conducted from March 25-30, 2026. Selected candidates will be notified via email with specific time slots.'
-  },
-  {
-    id: '3',
-    title: 'TA Training Workshop - April 2026',
-    date: '2026-03-12',
-    category: 'Training',
-    isPinned: false,
-    content: 'All newly selected TAs are required to attend the mandatory training workshop on April 5, 2026. Topics include teaching methodologies, grading policies, and student interaction best practices.'
-  },
-  {
-    id: '4',
-    title: 'Updated Work Hour Policies',
-    date: '2026-03-10',
-    category: 'Policy',
-    isPinned: false,
-    content: 'Please note the updated work hour policies: Students may work up to 20 hours per week across all TA positions. Proper time management and academic performance must be maintained.'
-  },
-  {
-    id: '5',
-    title: 'Final Exam Invigilator Positions Available',
-    date: '2026-03-08',
-    category: 'Recruitment',
-    isPinned: false,
-    content: 'We are hiring invigilators for the June 2026 final examination period. Flexible schedules available. Applications close on May 15, 2026.'
-  }
-];
-
 const categoryClasses = {
-  'Important': 'badge-important',
-  'Interview': 'badge-interview',
-  'Training': 'badge-training',
-  'Policy': 'badge-policy',
-  'Recruitment': 'badge-recruitment'
+  Important: 'badge-important',
+  Interview: 'badge-interview',
+  Training: 'badge-training',
+  Policy: 'badge-policy',
+  Recruitment: 'badge-recruitment'
 };
 
-/**
- * 格式化日期
- */
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadAnnouncements();
+});
+
+async function loadAnnouncements() {
+  const container = document.getElementById('announcementsList');
+  if (!container) return;
+  container.innerHTML = '<div class="announcement-card"><p class="announcement-text">Loading announcements...</p></div>';
+
+  try {
+    const announcements = await API.announcements.getList();
+    renderAnnouncements(announcements || []);
+  } catch (error) {
+    container.innerHTML = `<div class="announcement-card"><p class="announcement-text">Failed to load announcements: ${escapeHtml(error.message)}</p></div>`;
+  }
+}
+
 function formatDate(dateString) {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
+  return Number.isNaN(date.getTime()) ? dateString : date.toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric'
   });
 }
 
-/**
- * 渲染公告列表
- */
-function renderAnnouncements() {
+function renderAnnouncements(announcements) {
   const container = document.getElementById('announcementsList');
-  
+  if (!announcements.length) {
+    container.innerHTML = '<div class="announcement-card"><p class="announcement-text">No announcements yet.</p></div>';
+    return;
+  }
+
   container.innerHTML = announcements.map(announcement => `
     <div class="announcement-card">
       <div class="announcement-content">
-        ${announcement.isPinned ? `
+        ${announcement.pinned ? `
           <div class="pin-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 17v5"></path>
@@ -82,32 +59,15 @@ function renderAnnouncements() {
             </svg>
           </div>
         ` : ''}
-        
         <div class="announcement-body">
           <div class="announcement-meta">
-            <span class="badge ${categoryClasses[announcement.category]}">
-              ${announcement.category}
-            </span>
-            <div class="announcement-date">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              ${formatDate(announcement.date)}
-            </div>
+            <span class="badge ${categoryClasses[announcement.category] || 'badge-policy'}">${escapeHtml(announcement.category || 'Notice')}</span>
+            <div class="announcement-date">${escapeHtml(formatDate(announcement.date))}</div>
           </div>
-          
-          <h2 class="announcement-title">${announcement.title}</h2>
-          <p class="announcement-text">${announcement.content}</p>
+          <h2 class="announcement-title">${escapeHtml(announcement.title)}</h2>
+          <p class="announcement-text">${escapeHtml(announcement.content)}</p>
         </div>
       </div>
     </div>
   `).join('');
 }
-
-/**
- * 初始化
- */
-document.addEventListener('DOMContentLoaded', () => {
-  renderAnnouncements();
-});

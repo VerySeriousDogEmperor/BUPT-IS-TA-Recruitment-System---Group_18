@@ -5,15 +5,53 @@
 let jobs = [];
 let favorites = new Set();
 let studentSchedule = [];
+let studentProfileCache = null;
 const filters = {
   keyword: '',
   types: [],
   categories: []
 };
 
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem('user') || '{}');
+  } catch (error) {
+    return {};
+  }
+}
+
+function getStoredRole() {
+  const user = getStoredUser();
+  return localStorage.getItem('userRole') || user.role || '';
+}
+
+function isStudentAuthenticated() {
+  return localStorage.getItem('isAuthenticated') === 'true' && getStoredRole() === 'student';
+}
+
+function studentLoginUrl() {
+  const currentPath = window.location.pathname + window.location.search;
+  return `/login.html?redirect=${encodeURIComponent(currentPath)}`;
+}
+
+function requireStudentAccountForApply() {
+  if (isStudentAuthenticated()) {
+    return true;
+  }
+
+  const role = getStoredRole();
+  if (role && role !== 'student') {
+    showToast('Please sign in with a student account to apply for positions.', 'error');
+    return false;
+  }
+
+  window.location.href = studentLoginUrl();
+  return false;
+}
+
 function getFavoriteStorageKey() {
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = getStoredUser();
     return user.id ? `student-favorites-${user.id}` : 'student-favorites';
   } catch (error) {
     return 'student-favorites';
@@ -36,7 +74,12 @@ function saveFavorites() {
 
 function loadStudentSchedule() {
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!isStudentAuthenticated()) {
+      studentSchedule = [];
+      return;
+    }
+
+    const user = studentProfileCache || getStoredUser();
     const schedule = user?.schedule || {};
     const dayLabels = {
       monday: 'Monday',
@@ -60,6 +103,87 @@ function loadStudentSchedule() {
   } catch (error) {
     studentSchedule = [];
   }
+}
+
+function hasResumeReady(user) {
+  const resume = user?.resume;
+  const hasEducation = Array.isArray(resume?.education) && resume.education.some((item) => (
+    String(item?.major || '').trim() ||
+    item?.gpa !== null && item?.gpa !== undefined
+  ));
+  const hasExperience = Array.isArray(resume?.experience) && resume.experience.some((item) => String(item?.description || '').trim());
+  const hasAward = Array.isArray(resume?.awards) && resume.awards.some((item) => (
+    String(item?.name || '').trim() ||
+    String(item?.description || '').trim()
+  ));
+  return Boolean(
+    user?.resumePdfData ||
+    hasEducation ||
+    hasExperience ||
+    hasAward
+  );
+}
+
+async function getStudentProfile() {
+  if (!isStudentAuthenticated()) {
+    return {};
+  }
+
+  if (studentProfileCache) {
+    return studentProfileCache;
+  }
+  try {
+    studentProfileCache = await API.student.getProfile();
+    localStorage.setItem('user', JSON.stringify(studentProfileCache));
+    return studentProfileCache;
+  } catch (error) {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (parseError) {
+      return {};
+    }
+  }
+}
+
+async function ensureResumeReady() {
+  const profile = await getStudentProfile();
+  if (hasResumeReady(profile)) {
+    return true;
+  }
+  showResumePreparationModal();
+  return false;
+}
+
+function showResumePreparationModal() {
+  let modal = document.getElementById('resumeRequiredModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'resumeRequiredModal';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.45);padding:24px;';
+    modal.innerHTML = `
+      <div style="width:min(440px,100%);background:#fff;border-radius:8px;box-shadow:0 24px 70px rgba(15,23,42,.25);padding:26px;">
+        <h3 style="margin:0 0 10px;color:#111827;font-size:22px;">Resume required before applying</h3>
+        <p style="margin:0 0 18px;color:#4b5563;line-height:1.6;">Please upload a PDF resume or complete the standard resume form in your personal center before submitting a TA application.</p>
+        <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;">
+          <button type="button" id="resumeRequiredCancel" class="btn btn-outline">Not Now</button>
+          <button type="button" id="resumeRequiredGo" class="btn btn-primary">Prepare Resume</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('resumeRequiredCancel').addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    document.getElementById('resumeRequiredGo').addEventListener('click', () => {
+      window.location.href = '/student/dashboard.html#resume';
+    });
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+  modal.style.display = 'flex';
 }
 
 function parseTimeToMinutes(value) {
@@ -110,6 +234,15 @@ function hasScheduleConflict(job) {
       return jobStart < studentEnd && studentStart < jobEnd;
     });
   });
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 function getJobProjectType(job) {
@@ -210,6 +343,7 @@ function renderJobs() {
     const category = job.moduleCode || job.moduleName || job.department || 'General';
     const location = job.location || 'BUPT Campus';
     const salary = job.hourlyRate ? `CNY ${job.hourlyRate}/hour` : 'Salary negotiable';
+    const safeTitle = escapeHtml(job.title || 'Untitled Position');
 
     return `
       <div class="job-card-apply">
@@ -225,10 +359,10 @@ function renderJobs() {
           <div class="job-card-content">
             <div class="job-card-header">
               <div class="job-card-title-section">
-                <h3 class="job-card-title" onclick="viewJob('${job.id}')">${job.title}</h3>
-                <p class="job-card-department">${job.department || 'Department not specified'}</p>
+                <h3 class="job-card-title" onclick="viewJob('${escapeHtml(job.id)}')">${safeTitle}</h3>
+                <p class="job-card-department">${escapeHtml(job.department || 'Department not specified')}</p>
               </div>
-              <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${job.id}', event)">
+              <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${escapeHtml(job.id)}', event)">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
@@ -236,12 +370,12 @@ function renderJobs() {
             </div>
 
             <div class="job-card-badges">
-              <span class="badge badge-secondary">${job.type || 'TA'}</span>
-              <span class="badge badge-outline">${category}</span>
-              ${tags.slice(0, 3).map((tag) => `<span class="badge badge-outline">${tag}</span>`).join('')}
+              <span class="badge badge-secondary">${escapeHtml(job.type || 'TA')}</span>
+              <span class="badge badge-outline">${escapeHtml(category)}</span>
+              ${tags.slice(0, 3).map((tag) => `<span class="badge badge-outline">${escapeHtml(tag)}</span>`).join('')}
             </div>
 
-            <p class="job-card-description">${job.description || 'No description provided.'}</p>
+            <p class="job-card-description">${escapeHtml(job.description || 'No description provided.')}</p>
 
             <div class="job-card-meta">
               <div class="job-meta-item">
@@ -249,17 +383,17 @@ function renderJobs() {
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                   <circle cx="12" cy="10" r="3"></circle>
                 </svg>
-                ${location}
+                ${escapeHtml(location)}
               </div>
               <div class="job-meta-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                ${job.hoursPerWeek || 0} hrs/week
+                ${escapeHtml(job.hoursPerWeek || 0)} hrs/week
               </div>
               <div class="job-meta-item job-meta-salary">
-                ${salary}
+                ${escapeHtml(salary)}
               </div>
             </div>
 
@@ -275,8 +409,8 @@ function renderJobs() {
             ` : ''}
 
             <div class="job-card-actions">
-              <button class="btn btn-primary" onclick="viewJob('${job.id}')">View Details</button>
-              <button class="btn btn-outline" ${job.hasConflict ? 'disabled' : ''} onclick="quickApply('${job.id}')">Quick Apply</button>
+              <button class="btn btn-primary" onclick="viewJob('${escapeHtml(job.id)}')">View Details</button>
+              <button class="btn btn-outline" ${job.hasConflict ? 'disabled' : ''} onclick="quickApply('${escapeHtml(job.id)}')">Quick Apply</button>
             </div>
           </div>
         </div>
@@ -309,6 +443,12 @@ function toggleFavorite(jobId, event) {
 
 async function quickApply(jobId) {
   try {
+    if (!requireStudentAccountForApply()) {
+      return;
+    }
+    if (!(await ensureResumeReady())) {
+      return;
+    }
     await API.student.applyJob(jobId);
     showToast('Application submitted successfully!', 'success');
   } catch (error) {
@@ -330,6 +470,9 @@ function clearFilters() {
 document.addEventListener('DOMContentLoaded', () => {
   loadFavorites();
   loadStudentSchedule();
+  if (isStudentAuthenticated()) {
+    getStudentProfile().then(() => loadStudentSchedule());
+  }
   loadJobs();
 
   const searchInput = document.getElementById('searchInput');
@@ -379,7 +522,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('auth-state-changed', () => {
+    studentProfileCache = null;
     loadStudentSchedule();
+    if (isStudentAuthenticated()) {
+      getStudentProfile().then(() => loadStudentSchedule());
+    }
     loadFavorites();
     loadJobs();
   });

@@ -23,10 +23,6 @@ function setupModulesPageEvents() {
         window.location.href = '/mo/post-job.html';
     });
 
-    const overlay = document.getElementById('drawerOverlay');
-    const drawer = document.getElementById('formDrawer');
-    if (overlay) overlay.style.display = 'none';
-    if (drawer) drawer.style.display = 'none';
 }
 
 async function loadModulesPageData() {
@@ -56,12 +52,14 @@ function renderModulesPageStats() {
     const statsGrid = document.getElementById('statsGrid');
     const publishedJobs = modulesPageState.jobs.filter((job) => job.status === 'published').length;
     const draftJobs = modulesPageState.jobs.filter((job) => job.status === 'draft').length;
+    const adminReviewJobs = modulesPageState.jobs.filter((job) => job.status === 'pending').length;
     const pendingApplicants = modulesPageState.applicants.filter((item) => item.application?.status === 'pending').length;
 
     const stats = [
         { label: 'My Modules', value: modulesPageState.modules.length, icon: 'book-open' },
-        { label: 'Published Jobs', value: publishedJobs, icon: 'badge-check' },
+        { label: 'Visible Jobs', value: publishedJobs, icon: 'badge-check' },
         { label: 'Draft Jobs', value: draftJobs, icon: 'file-text' },
+        { label: 'Admin Review', value: adminReviewJobs, icon: 'clock-3' },
         { label: 'Pending Applicants', value: pendingApplicants, icon: 'users' }
     ];
 
@@ -94,6 +92,7 @@ function renderModulesGrid() {
         const relatedApplicants = modulesPageState.applicants.filter((item) => item.job?.moduleCode === moduleCode);
         const publishedJobs = relatedJobs.filter((job) => job.status === 'published').length;
         const draftJobs = relatedJobs.filter((job) => job.status === 'draft').length;
+        const adminReviewJobs = relatedJobs.filter((job) => job.status === 'pending').length;
 
         return `
             <div class="module-card">
@@ -104,6 +103,7 @@ function renderModulesGrid() {
                             <div class="module-code">${moEscapeHtml(moduleCode)}</div>
                             <div class="module-badges">
                                 <span class="status-badge active">${publishedJobs} published</span>
+                                <span class="status-badge pending">${adminReviewJobs} review</span>
                                 <span class="status-badge draft">${draftJobs} draft</span>
                             </div>
                             <div class="module-title">${moEscapeHtml(module.name || module.moduleName || 'Untitled module')}</div>
@@ -182,24 +182,29 @@ function renderModuleJobsList() {
     }, {});
 
     container.innerHTML = modulesPageState.jobs.map((job) => {
-        const stateClass = job.status === 'published' || job.status === 'completed' ? 'approved' : 'pending';
+        const stateClass = job.status === 'published' || job.status === 'completed' || job.status === 'closed' ? 'approved' : 'pending';
         const stateIcon = job.status === 'published'
             ? 'badge-check'
-            : job.status === 'completed'
+            : job.status === 'completed' || job.status === 'closed'
                 ? 'archive'
                 : 'clock-3';
         const stateText = job.status === 'draft'
             ? 'Draft is ready for editing or publishing'
             : job.status === 'published'
                 ? 'Visible to students now'
+                : job.status === 'closed'
+                    ? 'Closed to new applications'
                 : job.status === 'completed'
                     ? 'Recruitment cycle archived'
-                    : 'Status available in system';
+                    : 'Waiting for Admin review before students can see it';
         const detailTarget = job.status === 'draft'
             ? `/mo/post-job.html?jobId=${encodeURIComponent(job.id)}`
+            : job.status === 'pending'
+                ? `/mo/post-job.html`
             : `/mo/applicants.html?module=${encodeURIComponent(job.moduleCode || '')}`;
-        const detailLabel = job.status === 'draft' ? 'Edit Draft' : 'View Applicants';
-        const detailIcon = job.status === 'draft' ? 'square-pen' : 'users';
+        const detailLabel = job.status === 'draft' ? 'Edit Draft' : job.status === 'pending' ? 'Awaiting Review' : 'View Applicants';
+        const detailIcon = job.status === 'draft' ? 'square-pen' : job.status === 'pending' ? 'clock-3' : 'users';
+        const statusLabel = job.status === 'pending' ? 'Pending Admin Review' : moStatusLabel(job.status);
 
         return `
             <div class="request-card">
@@ -211,8 +216,8 @@ function renderModuleJobsList() {
                         <div class="request-content">
                             <div class="request-badges">
                                 <span class="request-badge code">${moEscapeHtml(job.moduleCode || '-')}</span>
-                                <span class="request-badge type-new">${moEscapeHtml(moStatusLabel(job.status))}</span>
-                                <span class="request-status ${moEscapeHtml(job.status || 'draft')}">${moEscapeHtml(moStatusLabel(job.status))}</span>
+                                <span class="request-badge type-new">${moEscapeHtml(statusLabel)}</span>
+                                <span class="request-status ${moEscapeHtml(job.status || 'draft')}">${moEscapeHtml(statusLabel)}</span>
                             </div>
                             <div class="request-title">${moEscapeHtml(job.title || 'Untitled job')}</div>
                             <div class="request-meta">${moEscapeHtml(job.moduleName || 'Unknown module')} · ${moEscapeHtml(job.positions || job.slots || 0)} positions · ${moEscapeHtml(moFormatHours(job.hoursPerWeek || 0))}/week</div>
@@ -221,7 +226,7 @@ function renderModuleJobsList() {
                     <div class="request-dates">
                         <span>Updated ${moEscapeHtml(moFormatDate(job.updatedAt || job.createdAt))}</span>
                         <span>Applicants ${moEscapeHtml(applicantCountByJobId[job.id] || 0)}</span>
-                        <button class="btn-details" onclick="window.location.href='${detailTarget}'">
+                        <button class="btn-details" onclick="${job.status === 'pending' ? `showModulesToast('This job is waiting for Admin review.')` : `window.location.href='${detailTarget}'`}">
                             ${moIcon(detailIcon)}
                             <span>${detailLabel}</span>
                             <i class="chevron" data-lucide="chevron-right"></i>
@@ -249,13 +254,28 @@ function updateModulesPageCounts() {
     document.getElementById('requestsCount').textContent = modulesPageState.jobs.length;
 
     const badge = document.getElementById('requestsBadge');
-    const draftJobs = modulesPageState.jobs.filter((job) => job.status === 'draft').length;
-    if (draftJobs) {
-        badge.textContent = draftJobs;
+    const needsAttention = modulesPageState.jobs.filter((job) => job.status === 'draft' || job.status === 'pending').length;
+    if (needsAttention) {
+        badge.textContent = needsAttention;
         badge.style.display = 'inline-block';
     } else {
         badge.style.display = 'none';
     }
+}
+
+function showModulesToast(message) {
+    let toast = document.getElementById('modulesToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'modulesToast';
+        toast.style.cssText = 'position:fixed;right:24px;bottom:24px;z-index:10000;background:#17312f;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 16px 40px rgba(15,23,42,.22);font-size:14px;';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.display = 'block';
+    window.setTimeout(() => {
+        toast.style.display = 'none';
+    }, 2600);
 }
 
 function switchModulesTab(tab) {

@@ -1,0 +1,15 @@
+﻿/* Admin shared theme styles */
+
+:root {
+    --admin-bg: #f5f7fb;
+    --admin-card-bg: #ffffff;
+    --admin-border: #e5e7eb;
+    --admin-text: #111827;
+    --admin-muted: #6b7280;
+    --admin-primary: #2563eb;
+}
+
+body.admin-page {
+    background: var(--admin-bg);
+    color: var(--admin-text);
+}

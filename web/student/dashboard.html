@@ -179,14 +179,15 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">AI Resume Polish</h3>
-                                    <p class="card-description">Feature placeholder</p>
+                                    <p class="card-description">Draft a stronger resume bullet from your own experience text</p>
                                 </div>
                                 <div class="card-body">
-                                    <textarea id="originalText" class="form-textarea" rows="5"></textarea>
+                                    <textarea id="originalText" class="form-textarea" rows="5" placeholder="Paste one experience paragraph or leave blank to use your standard resume experience."></textarea>
                                     <button type="button" class="btn btn-primary" id="polishBtn">Polish with AI</button>
+                                    <button type="button" class="btn btn-outline" id="usePolishedBtn" style="margin-left:.75rem;">Use in Resume</button>
                                     <div class="form-group" style="margin-top:1.5rem;">
                                         <label class="form-label">AI-Polished Version</label>
-                                        <div class="polished-result"><p>Provided comprehensive academic support to undergraduate students through one-on-one tutoring sessions and office hours.</p></div>
+                                        <div class="polished-result"><p id="polishedText">Your polished version will appear here.</p></div>
                                     </div>
                                 </div>
                             </div>
@@ -225,7 +226,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Hours Worked</label>
-                                        <input type="number" id="timesheetHours" name="hours" class="form-input" min="0.5" step="0.5" required>
+                                        <input type="number" id="timesheetHours" name="hours" class="form-input" min="0.5" max="24" step="0.5" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
