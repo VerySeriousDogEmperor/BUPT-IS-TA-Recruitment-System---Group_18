@@ -1,0 +1,22 @@
+[
+  {
+    "id": "MO001",
+    "name": "Prof. Li",
+    "email": "mo@bupt.edu.cn",
+    "password": "pbkdf2_sha256$120000$i+honVBF/JqMgB2wyYbjmw\u003d\u003d$tXS/G/pQhpjPcxAIacI3Fyk1OmV9cVIo2lLGv2HETyA\u003d",
+    "role": "mo",
+    "status": "active",
+    "createdAt": "2026-04-08T13:05:38.333526",
+    "lastLoginAt": "2026-05-20T15:08:33.5854063"
+  },
+  {
+    "id": "ADMIN001",
+    "name": "Recruitment Admin",
+    "email": "admin@bupt.edu.cn",
+    "password": "pbkdf2_sha256$120000$fODBDrCvEH4dvky74CMQdw\u003d\u003d$255b1sMh844QroTzXdRu5iTr7h8LchQ/U6ydUf6+pus\u003d",
+    "role": "admin",
+    "status": "active",
+    "createdAt": "2026-04-08T13:05:38.336563",
+    "lastLoginAt": "2026-05-20T19:27:19.9831216"
+  }
+]
