@@ -73,7 +73,7 @@ public class Application {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     
-    public String getReviewNote() { return reviewNote != null ? reviewNote : reviewComment; }
+    public String getReviewNote() { return reviewNote; }
     public void setReviewNote(String reviewNote) { this.reviewNote = reviewNote; }
     
     public String getReviewedBy() { return reviewedBy; }
@@ -82,7 +82,7 @@ public class Application {
     public LocalDateTime getReviewedAt() { return reviewedAt; }
     public void setReviewedAt(LocalDateTime reviewedAt) { this.reviewedAt = reviewedAt; }
     
-    public String getReviewComment() { return reviewComment != null ? reviewComment : reviewNote; }
+    public String getReviewComment() { return reviewComment; }
     public void setReviewComment(String reviewComment) { this.reviewComment = reviewComment; }
     
     public Integer getAiScore() { return aiScore; }
@@ -93,13 +93,4 @@ public class Application {
     
     public List<TimelineItem> getTimeline() { return timeline; }
     public void setTimeline(List<TimelineItem> timeline) { this.timeline = timeline; }
-
-    public void normalizeReviewFields() {
-        if ((reviewNote == null || reviewNote.isBlank()) && reviewComment != null && !reviewComment.isBlank()) {
-            reviewNote = reviewComment;
-        }
-        if ((reviewComment == null || reviewComment.isBlank()) && reviewNote != null && !reviewNote.isBlank()) {
-            reviewComment = reviewNote;
-        }
-    }
 }

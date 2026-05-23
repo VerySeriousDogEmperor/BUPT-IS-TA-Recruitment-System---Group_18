@@ -53,24 +53,24 @@ function setupDashboardEvents() {
         exportDashboardBtn.addEventListener('click', exportDashboardReport);
     }
 
-    document.getElementById('filterPendingOnly').addEventListener('click', () => {
+    document.getElementById('filterHighMatch').addEventListener('click', () => {
         dashboardState.filterPendingOnly = !dashboardState.filterPendingOnly;
-        document.getElementById('filterPendingOnly').classList.toggle('active', dashboardState.filterPendingOnly);
+        document.getElementById('filterHighMatch').classList.toggle('active', dashboardState.filterPendingOnly);
         if (dashboardState.filterPendingOnly) {
             dashboardState.filterApprovedOnly = false;
-            document.getElementById('filterApprovedOnly').classList.remove('active', 'green');
+            document.getElementById('filterNoConflict').classList.remove('active', 'green');
         }
         renderDashboardBoard();
     });
 
-    document.getElementById('filterApprovedOnly').addEventListener('click', () => {
+    document.getElementById('filterNoConflict').addEventListener('click', () => {
         dashboardState.filterApprovedOnly = !dashboardState.filterApprovedOnly;
-        const button = document.getElementById('filterApprovedOnly');
+        const button = document.getElementById('filterNoConflict');
         button.classList.toggle('active', dashboardState.filterApprovedOnly);
         button.classList.toggle('green', dashboardState.filterApprovedOnly);
         if (dashboardState.filterApprovedOnly) {
             dashboardState.filterPendingOnly = false;
-            document.getElementById('filterPendingOnly').classList.remove('active');
+            document.getElementById('filterHighMatch').classList.remove('active');
         }
         renderDashboardBoard();
     });
@@ -84,8 +84,8 @@ function setupDashboardEvents() {
         dashboardState.filterPendingOnly = false;
         dashboardState.filterApprovedOnly = false;
         dashboardState.filterModule = 'all';
-        document.getElementById('filterPendingOnly').classList.remove('active');
-        document.getElementById('filterApprovedOnly').classList.remove('active', 'green');
+        document.getElementById('filterHighMatch').classList.remove('active');
+        document.getElementById('filterNoConflict').classList.remove('active', 'green');
         document.getElementById('filterModule').value = 'all';
         renderDashboardBoard();
     });
@@ -169,9 +169,9 @@ function updateDashboardStats() {
     const approved = dashboardState.applicants.filter((item) => item.status === 'approved').length;
 
     document.getElementById('totalApplicants').textContent = total;
-    document.getElementById('pendingReviewCount').textContent = pending;
-    document.getElementById('pendingReviewHint').textContent = pending ? `${pending} awaiting your decision` : 'No pending reviews';
-    document.getElementById('rejectedCount').textContent = rejected;
+    document.getElementById('highMatchCount').textContent = pending;
+    document.getElementById('highMatchPercent').textContent = pending ? `${pending} awaiting your decision` : 'No pending reviews';
+    document.getElementById('conflictCount').textContent = rejected;
     document.getElementById('finalCount').textContent = approved;
 }
 
@@ -260,7 +260,6 @@ function renderDashboardCard(applicant) {
     const reviewNote = applicant.reviewComment
         ? `<div class="card-tags"><span class="card-tag skill">${moEscapeHtml(applicant.reviewComment)}</span></div>`
         : '';
-    const fill = getDashboardJobFill(applicant.job || {});
 
     const actionButtons = applicant.status === 'pending'
         ? `
@@ -269,17 +268,10 @@ function renderDashboardCard(applicant) {
                     <i data-lucide="x"></i>
                     Reject
                 </button>
-                ${fill.full ? `
-                    <button class="card-btn-move" disabled title="This job has reached its approved capacity." style="opacity:.55;cursor:not-allowed;">
-                        Full
-                        <i data-lucide="circle-alert"></i>
-                    </button>
-                ` : `
-                    <button class="card-btn-move" onclick="handleDashboardDecision('${applicant.id}', 'accept')">
-                        Approve
-                        <i data-lucide="check-circle-2"></i>
-                    </button>
-                `}
+                <button class="card-btn-move" onclick="handleDashboardDecision('${applicant.id}', 'accept')">
+                    Approve
+                    <i data-lucide="check-circle-2"></i>
+                </button>
             </div>
         `
         : '';
@@ -315,47 +307,6 @@ function renderDashboardCard(applicant) {
     `;
 }
 
-function calculateDashboardFit(student, job) {
-    const gpa = Number(student.gpa || 0);
-    const skills = Array.isArray(student.skills) ? student.skills.map((item) => String(item).toLowerCase()) : [];
-    const requirements = [
-        ...(Array.isArray(job.requiredSkills) ? job.requiredSkills : []),
-        ...(Array.isArray(job.requirements) ? job.requirements : [])
-    ].map((item) => String(item).toLowerCase());
-    const resume = student.resume || {};
-    const hasResume = Boolean(
-        student.resumePdfName ||
-        student.resumePdfUploadedAt ||
-        resume.education?.length ||
-        resume.experience?.length ||
-        resume.awards?.length
-    );
-    const matchedSkills = requirements.filter((req) => skills.some((skill) => req.includes(skill) || skill.includes(req)));
-    let score = 20;
-    if (gpa >= 3.7) score += 25;
-    else if (gpa >= 3.5) score += 18;
-    else if (gpa > 0) score += 8;
-    if (hasResume) score += 25;
-    if (matchedSkills.length) score += Math.min(25, matchedSkills.length * 8);
-    if (student.major) score += 10;
-    if (student.phone || student.bio) score += 5;
-    score = Math.min(100, score);
-    return {
-        score,
-        label: score >= 80 ? 'Strong Fit' : score >= 60 ? 'Good Fit' : score >= 40 ? 'Needs Review' : 'Weak Evidence',
-        hasResume,
-        matchedSkills
-    };
-}
-
-function getDashboardJobFill(job) {
-    const slots = Number(job.positions || job.slots || 0);
-    const approved = dashboardState.applicants.filter((item) =>
-        item.job?.id === job.id && item.status === 'approved'
-    ).length;
-    return { approved, slots, full: slots > 0 && approved >= slots };
-}
-
 async function openDashboardDrawer(applicationId) {
     dashboardState.selectedApplicantId = applicationId;
 
@@ -366,8 +317,6 @@ async function openDashboardDrawer(applicationId) {
         const job = detail.job || {};
         const reviewComment = application.reviewComment || application.reviewNote || 'No review comment yet';
         const timeline = Array.isArray(application.timeline) ? application.timeline : [];
-        const fit = calculateDashboardFit(student, job);
-        const fill = getDashboardJobFill(job);
 
         document.getElementById('drawerHeaderContent').innerHTML = `
             <div style="display:flex;align-items:center;gap:16px;">
@@ -395,11 +344,6 @@ async function openDashboardDrawer(applicationId) {
                             <div style="font-size:13px;color:#5e7a74;">Applied ${moEscapeHtml(moFormatDateTime(application.appliedAt))}</div>
                         </div>
                         <div style="background:#F8FAFC;border-radius:12px;padding:14px;">
-                            <div style="font-size:12px;color:#64748B;">Capacity</div>
-                            <div style="font-size:14px;font-weight:600;color:${fill.full ? '#b91c1c' : '#17312f'};">${moEscapeHtml(fill.approved)} approved${fill.slots ? ` / ${moEscapeHtml(fill.slots)}` : ''}</div>
-                            <div style="font-size:13px;color:#5e7a74;">${fill.full ? 'Position full' : 'Slots available'}</div>
-                        </div>
-                        <div style="background:#F8FAFC;border-radius:12px;padding:14px;">
                             <div style="font-size:12px;color:#64748B;">Major</div>
                             <div style="font-size:14px;font-weight:600;color:#17312f;">${moEscapeHtml(student.major || 'Not provided')}</div>
                         </div>
@@ -415,29 +359,6 @@ async function openDashboardDrawer(applicationId) {
                         ${(Array.isArray(student.skills) && student.skills.length ? student.skills : ['No skills recorded']).map((skill) => `
                             <span style="padding:6px 12px;background:#d7f2ee;color:#0f766e;border-radius:999px;font-size:12px;">${moEscapeHtml(skill)}</span>
                         `).join('')}
-                    </div>
-                </div>
-                <div>
-                    <h3 style="font-size:14px;color:#64748B;margin-bottom:10px;">Fit Summary</h3>
-                    <div style="background:#F8FAFC;border-radius:12px;padding:14px;font-size:13px;color:#334155;line-height:1.7;">
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                            <span>${moEscapeHtml(fit.label)}</span>
-                            <strong style="font-size:20px;color:#0f766e;">${moEscapeHtml(fit.score)}%</strong>
-                        </div>
-                        <div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-bottom:8px;">
-                            <div style="height:100%;width:${fit.score}%;background:#0f766e;"></div>
-                        </div>
-                        <div>Resume: ${fit.hasResume ? 'ready' : 'missing'} · Skill signals: ${fit.matchedSkills.length}</div>
-                    </div>
-                </div>
-                <div>
-                    <h3 style="font-size:14px;color:#64748B;margin-bottom:10px;">Resume Snapshot</h3>
-                    <div style="background:#F8FAFC;border-radius:12px;padding:14px;font-size:13px;color:#334155;line-height:1.7;">
-                        <div>PDF Resume: ${moEscapeHtml(student.resumePdfName || 'Not uploaded')}</div>
-                        <div>PDF Uploaded: ${moEscapeHtml(student.resumePdfUploadedAt ? moFormatDateTime(student.resumePdfUploadedAt) : 'N/A')}</div>
-                        <div>Education entries: ${moEscapeHtml(student.resume?.education?.length || 0)}</div>
-                        <div>Experience entries: ${moEscapeHtml(student.resume?.experience?.length || 0)}</div>
-                        <div>Awards: ${moEscapeHtml(student.resume?.awards?.length || 0)}</div>
                     </div>
                 </div>
                 <div>
@@ -465,17 +386,10 @@ async function openDashboardDrawer(applicationId) {
                     <i data-lucide="x"></i>
                     Reject
                 </button>
-                ${fill.full ? `
-                    <button class="drawer-btn drawer-btn-move" disabled title="This job has reached its approved capacity." style="opacity:.55;cursor:not-allowed;">
-                        <i data-lucide="circle-alert"></i>
-                        Capacity Full
-                    </button>
-                ` : `
-                    <button class="drawer-btn drawer-btn-move" onclick="handleDashboardDecision('${application.id}', 'accept', true)">
-                        <i data-lucide="check-circle-2"></i>
-                        Approve
-                    </button>
-                `}
+                <button class="drawer-btn drawer-btn-move" onclick="handleDashboardDecision('${application.id}', 'accept', true)">
+                    <i data-lucide="check-circle-2"></i>
+                    Approve
+                </button>
             `
             : `
                 <button class="drawer-btn drawer-btn-move" onclick="closeDrawer()">

@@ -65,10 +65,6 @@ public class MOApplicantServlet extends BaseServlet {
             return;
         }
         
-        if (!requireCsrf(request, response)) {
-            return;
-        }
-
         String applicationId = pathInfo.substring(1, pathInfo.indexOf("/status"));
         handleUpdateStatus(request, response, applicationId, currentUser);
     }
@@ -120,7 +116,15 @@ public class MOApplicantServlet extends BaseServlet {
                 try {
                     Optional<Student> studentOpt = studentRepo.findById(app.getStudentId());
                     if (studentOpt.isPresent()) {
-                        item.put("student", safeStudentInfo(studentOpt.get()));
+                        Student student = studentOpt.get();
+                        Map<String, Object> studentInfo = new HashMap<>();
+                        studentInfo.put("id", student.getId());
+                        studentInfo.put("name", student.getName());
+                        studentInfo.put("email", student.getEmail());
+                        studentInfo.put("studentId", student.getStudentId());
+                        studentInfo.put("major", student.getMajor());
+                        studentInfo.put("gpa", student.getGpa());
+                        item.put("student", studentInfo);
                     }
                 } catch (Exception e) {
                     // 忽略
@@ -145,18 +149,11 @@ public class MOApplicantServlet extends BaseServlet {
                 result.add(item);
             }
             
-            ResponseUtil.sendSuccess(response, "获取成功", collectionResponse(result));
+            ResponseUtil.sendSuccess(response, "获取成功", result);
         } catch (Exception e) {
             e.printStackTrace();
             ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
         }
-    }
-
-    private Map<String, Object> collectionResponse(List<?> items) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("items", items);
-        result.put("total", items.size());
-        return result;
     }
     
     /**
@@ -186,7 +183,7 @@ public class MOApplicantServlet extends BaseServlet {
             // 添加学生详细信息
             Optional<Student> studentOpt = studentRepo.findById(app.getStudentId());
             if (studentOpt.isPresent()) {
-                result.put("student", safeStudentInfo(studentOpt.get()));
+                result.put("student", studentOpt.get());
             }
             
             // 添加职位信息
@@ -221,12 +218,8 @@ public class MOApplicantServlet extends BaseServlet {
             
             // 读取状态更新请求
             Map<String, String> requestData = readRequestBody(request, Map.class);
-            if (requestData == null) {
-                ResponseUtil.sendError(response, 400, "Request body is required");
-                return;
-            }
             String action = requestData.get("action"); // "accept" or "reject"
-            String comment = limitText(requestData.get("comment"), 1000);
+            String comment = requestData.get("comment");
             
             if (action == null || (!action.equals("accept") && !action.equals("reject"))) {
                 ResponseUtil.sendError(response, 400, "无效的操作");
@@ -240,12 +233,6 @@ public class MOApplicantServlet extends BaseServlet {
             }
             
             // 更新状态
-            Job job = jobOpt.get();
-            if ("accept".equals(action) && isJobFull(job, app.getId())) {
-                ResponseUtil.sendError(response, 409, "This position is already full. Please reject this application or increase the job slots before approving another student.");
-                return;
-            }
-
             if ("accept".equals(action)) {
                 app.setStatus("approved");
             } else {
@@ -255,7 +242,6 @@ public class MOApplicantServlet extends BaseServlet {
             app.setReviewedBy(currentUser.getId());
             app.setReviewedAt(LocalDateTime.now());
             app.setReviewComment(comment);
-            app.setReviewNote(comment);
             app.setUpdatedAt(LocalDateTime.now());
 
             List<Application.TimelineItem> timeline = app.getTimeline();
@@ -277,45 +263,5 @@ public class MOApplicantServlet extends BaseServlet {
             e.printStackTrace();
             ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
         }
-    }
-
-    private boolean isJobFull(Job job, String currentApplicationId) throws IOException {
-        int slots = job.getPositions() != null ? job.getPositions() : (job.getSlots() != null ? job.getSlots() : 0);
-        if (slots <= 0) {
-            return false;
-        }
-        long approved = applicationRepo.findAll().stream()
-                .filter(application -> job.getId().equals(application.getJobId()))
-                .filter(application -> !application.getId().equals(currentApplicationId))
-                .filter(application -> "approved".equals(application.getStatus()))
-                .count();
-        return approved >= slots;
-    }
-
-    private String limitText(String value, int maxLength) {
-        if (value == null) {
-            return null;
-        }
-        String trimmed = value.trim();
-        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
-    }
-
-    private Map<String, Object> safeStudentInfo(Student student) {
-        Map<String, Object> studentInfo = new HashMap<>();
-        studentInfo.put("id", student.getId());
-        studentInfo.put("name", student.getName());
-        studentInfo.put("email", student.getEmail());
-        studentInfo.put("studentId", student.getStudentId());
-        studentInfo.put("phone", student.getPhone());
-        studentInfo.put("major", student.getMajor());
-        studentInfo.put("grade", student.getGrade());
-        studentInfo.put("bio", student.getBio());
-        studentInfo.put("gpa", student.getGpa());
-        studentInfo.put("avatar", student.getAvatar());
-        studentInfo.put("skills", student.getSkills());
-        studentInfo.put("resume", student.getResume());
-        studentInfo.put("resumePdfName", student.getResumePdfName());
-        studentInfo.put("resumePdfUploadedAt", student.getResumePdfUploadedAt());
-        return studentInfo;
     }
 }

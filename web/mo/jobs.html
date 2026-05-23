@@ -93,7 +93,7 @@
                                 <i data-lucide="clipboard-list"></i>
                             </div>
                             <div class="step-label active">Track Job Posts</div>
-                            <div class="step-desc">Compare draft, Admin review, and published roles across your modules.</div>
+                            <div class="step-desc">Compare draft and published roles across your modules.</div>
                         </div>
                     </div>
                     <div class="workflow-connector active"></div>
@@ -137,6 +137,93 @@
             <div id="requestsContent" class="requests-list" style="display: none;"></div>
         </div>
     </main>
+
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <div class="form-drawer" id="formDrawer">
+        <div class="form-header">
+            <div class="form-header-content">
+                <div class="form-header-icon">
+                    <i data-lucide="square-pen"></i>
+                </div>
+                <div>
+                    <div class="form-header-title">Submit Module Request</div>
+                    <div class="form-header-subtitle">Requests are reviewed and approved by Admin before taking effect</div>
+                </div>
+            </div>
+            <button class="btn-close" id="btnCloseDrawer">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="form-body">
+            <div class="form-group">
+                <label class="form-label">Request Type *</label>
+                <div class="type-buttons">
+                    <button class="type-btn active" data-type="new_module">
+                        <i data-lucide="plus-circle"></i>
+                        <span>New Module</span>
+                    </button>
+                    <button class="type-btn" data-type="edit_module">
+                        <i data-lucide="square-pen"></i>
+                        <span>Edit Existing</span>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Module Code *</label>
+                <input type="text" class="form-input" id="inputModuleCode" placeholder="e.g. COMP402">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Module Title *</label>
+                <input type="text" class="form-input" id="inputModuleTitle" placeholder="e.g. Advanced Machine Learning">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Semester *</label>
+                <input type="text" class="form-input" id="inputSemester" placeholder="e.g. Sem 1, 2026" value="Sem 1, 2026">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">TA Slots *</label>
+                    <div class="number-input">
+                        <button class="number-btn" id="btnSlotsDown">-</button>
+                        <div class="number-value" id="slotsValue">2</div>
+                        <button class="number-btn" id="btnSlotsUp">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Budget Hours *</label>
+                    <div class="number-input">
+                        <button class="number-btn" id="btnBudgetDown">-</button>
+                        <div class="number-value" id="budgetValue">80h</div>
+                        <button class="number-btn" id="btnBudgetUp">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Reason for Request *</label>
+                <textarea class="form-textarea" id="inputReason" rows="4" placeholder="Explain why this module needs to be added or changed, including any supporting context..."></textarea>
+            </div>
+            <div class="form-info">
+                <i data-lucide="info"></i>
+                <div class="form-info-text">
+                    Once submitted, this request enters the <strong>Admin approval</strong> workflow. The module will only appear in My Modules after approval.
+                </div>
+            </div>
+        </div>
+        <div class="form-footer">
+            <button class="btn-cancel" id="btnCancel">Cancel</button>
+            <div class="form-actions">
+                <button class="btn-draft" id="btnSaveDraft">
+                    <i data-lucide="file-text"></i>
+                    <span>Save Draft</span>
+                </button>
+                <button class="btn-submit-form" id="btnSubmitForm">
+                    <i data-lucide="send"></i>
+                    <span>Submit for Review</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="/static/js/utils/api.js"></script>
     <script src="/static/js/pages/mo/common.js"></script>

@@ -325,6 +325,11 @@ const API = {
       method: 'POST',
       body: JSON.stringify({ message, sessionId })
     }),
+
+    polishResume: (text) => request('/ai/student/resume-polish', {
+      method: 'POST',
+      body: JSON.stringify({ text })
+    }),
     
     anomaly: () => request('/ai/anomaly')
   }

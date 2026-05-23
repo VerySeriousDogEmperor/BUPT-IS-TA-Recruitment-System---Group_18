@@ -47,10 +47,10 @@ public class Timesheet {
     public String getDate() { return date; }
     public void setDate(String date) { this.date = date; }
     
-    public Double getHours() { return hours != null ? hours : hoursWorked; }
+    public Double getHours() { return hours; }
     public void setHours(Double hours) { this.hours = hours; }
     
-    public Double getHoursWorked() { return hoursWorked != null ? hoursWorked : hours; }
+    public Double getHoursWorked() { return hoursWorked; }
     public void setHoursWorked(Double hoursWorked) { this.hoursWorked = hoursWorked; }
     
     public Double getApprovedHours() { return approvedHours; }
@@ -71,10 +71,10 @@ public class Timesheet {
     public String getReviewedBy() { return reviewedBy; }
     public void setReviewedBy(String reviewedBy) { this.reviewedBy = reviewedBy; }
     
-    public String getReviewNote() { return reviewNote != null ? reviewNote : reviewComment; }
+    public String getReviewNote() { return reviewNote; }
     public void setReviewNote(String reviewNote) { this.reviewNote = reviewNote; }
     
-    public String getReviewComment() { return reviewComment != null ? reviewComment : reviewNote; }
+    public String getReviewComment() { return reviewComment; }
     public void setReviewComment(String reviewComment) { this.reviewComment = reviewComment; }
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
@@ -85,19 +85,4 @@ public class Timesheet {
     
     public String getAnomalyReason() { return anomalyReason; }
     public void setAnomalyReason(String anomalyReason) { this.anomalyReason = anomalyReason; }
-
-    public void normalizeCompatibleFields() {
-        if (hours == null && hoursWorked != null) {
-            hours = hoursWorked;
-        }
-        if (hoursWorked == null && hours != null) {
-            hoursWorked = hours;
-        }
-        if ((reviewNote == null || reviewNote.isBlank()) && reviewComment != null && !reviewComment.isBlank()) {
-            reviewNote = reviewComment;
-        }
-        if ((reviewComment == null || reviewComment.isBlank()) && reviewNote != null && !reviewNote.isBlank()) {
-            reviewComment = reviewNote;
-        }
-    }
 }

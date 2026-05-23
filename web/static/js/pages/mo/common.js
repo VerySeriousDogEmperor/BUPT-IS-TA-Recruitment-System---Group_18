@@ -66,7 +66,6 @@ function moStatusLabel(status) {
         draft: 'Draft',
         pending: 'Pending',
         published: 'Published',
-        closed: 'Closed',
         completed: 'Completed',
         approved: 'Approved',
         rejected: 'Rejected',
@@ -78,11 +77,6 @@ function moStatusLabel(status) {
 function moLogoutFallback() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userInfo');
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('csrfToken');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('isAuthenticated');
     sessionStorage.clear();
     window.location.href = '/login.html?mode=staff&role=mo';
 }

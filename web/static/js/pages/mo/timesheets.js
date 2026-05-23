@@ -79,7 +79,6 @@ function normalizeTimesheetRecord(item) {
 function updateTimesheetStats() {
     const pending = timesheetsState.timesheets.filter((item) => item.status === 'pending');
     const approved = timesheetsState.timesheets.filter((item) => item.status === 'approved');
-    const flagged = timesheetsState.timesheets.filter((item) => item.hasAnomaly);
     const activeTAs = new Set(timesheetsState.timesheets.map((item) => item.taId));
 
     document.getElementById('pendingCount').textContent = pending.length;
@@ -87,7 +86,6 @@ function updateTimesheetStats() {
     document.getElementById('approvedHours').textContent = moFormatHours(approved.reduce((sum, item) => sum + (item.hoursApproved || 0), 0));
     document.getElementById('activeTAs').textContent = activeTAs.size;
     document.getElementById('pendingBadge').textContent = pending.length;
-    document.getElementById('flaggedBadge').textContent = flagged.length;
 }
 
 function renderTimesheets() {
@@ -96,9 +94,7 @@ function renderTimesheets() {
 
     const filtered = timesheetsState.activeTab === 'all'
         ? timesheetsState.timesheets
-        : timesheetsState.activeTab === 'flagged'
-            ? timesheetsState.timesheets.filter((item) => item.hasAnomaly)
-            : timesheetsState.timesheets.filter((item) => item.status === timesheetsState.activeTab);
+        : timesheetsState.timesheets.filter((item) => item.status === timesheetsState.activeTab);
 
     if (!filtered.length) {
         container.style.display = 'none';
@@ -280,9 +276,7 @@ async function reviewTimesheet(id, action) {
 function exportTimesheetsCsv() {
     const visibleTimesheets = timesheetsState.activeTab === 'all'
         ? timesheetsState.timesheets
-        : timesheetsState.activeTab === 'flagged'
-            ? timesheetsState.timesheets.filter((item) => item.hasAnomaly)
-            : timesheetsState.timesheets.filter((item) => item.status === timesheetsState.activeTab);
+        : timesheetsState.timesheets.filter((item) => item.status === timesheetsState.activeTab);
 
     const rows = [
         ['TA Name', 'TA ID', 'Module', 'Date', 'Hours Logged', 'Hours Approved', 'Status', 'Submitted At', 'Reviewed At', 'Review Comment'],

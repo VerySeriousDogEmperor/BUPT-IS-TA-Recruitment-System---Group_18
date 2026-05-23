@@ -185,54 +185,12 @@ function renderApplicantsTable() {
     });
 }
 
-function calculateCandidateFit(student, job) {
-    const gpa = Number(student.gpa || 0);
-    const skills = Array.isArray(student.skills) ? student.skills.map((item) => String(item).toLowerCase()) : [];
-    const requirements = [
-        ...(Array.isArray(job.requiredSkills) ? job.requiredSkills : []),
-        ...(Array.isArray(job.requirements) ? job.requirements : [])
-    ].map((item) => String(item).toLowerCase());
-    const resume = student.resume || {};
-    const hasPdf = Boolean(student.resumePdfName || student.resumePdfUploadedAt);
-    const hasStandardResume = Boolean(
-        resume.education?.length ||
-        resume.experience?.length ||
-        resume.awards?.length
-    );
-    const matchedSkills = requirements.filter((req) => skills.some((skill) => req.includes(skill) || skill.includes(req)));
-    let score = 20;
-    if (gpa >= 3.7) score += 25;
-    else if (gpa >= 3.5) score += 18;
-    else if (gpa > 0) score += 8;
-    if (hasPdf || hasStandardResume) score += 25;
-    if (matchedSkills.length) score += Math.min(25, matchedSkills.length * 8);
-    if (student.major) score += 10;
-    if (student.phone || student.bio) score += 5;
-    score = Math.min(100, score);
-    return {
-        score,
-        label: score >= 80 ? 'Strong Fit' : score >= 60 ? 'Good Fit' : score >= 40 ? 'Needs Review' : 'Weak Evidence',
-        resumeReady: hasPdf || hasStandardResume,
-        matchedSkills
-    };
-}
-
-function getApplicantJobFill(job) {
-    const slots = Number(job.positions || job.slots || 0);
-    const approved = applicantsState.allApplicants.filter((item) =>
-        item.application?.jobId === job.id && item.application?.status === 'approved'
-    ).length;
-    return { approved, slots, full: slots > 0 && approved >= slots };
-}
-
 async function openApplicantDrawer(applicationId) {
     try {
         const detail = await request(`/mo/applicants/${applicationId}`);
         const application = detail.application || {};
         const student = detail.student || {};
         const job = detail.job || {};
-        const fit = calculateCandidateFit(student, job);
-        const fill = getApplicantJobFill(job);
 
         document.getElementById('drawerHeaderContent').innerHTML = `
             <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
@@ -267,20 +225,6 @@ async function openApplicantDrawer(applicationId) {
                     <div style="background:#F8FAFC;border-radius:12px;padding:16px;">
                         <div style="font-size:13px;color:#475569;line-height:1.6;">Applied for ${moEscapeHtml(job.title || 'this job')} on ${moEscapeHtml(moFormatDateTime(application.appliedAt))}.</div>
                         <div style="font-size:13px;color:#475569;line-height:1.6;margin-top:8px;">Review comment: ${moEscapeHtml(application.reviewComment || application.reviewNote || 'No review comment yet')}</div>
-                        <div style="font-size:13px;color:${fill.full ? '#b91c1c' : '#0f766e'};line-height:1.6;margin-top:8px;">Capacity: ${moEscapeHtml(fill.approved)} approved${fill.slots ? ` / ${moEscapeHtml(fill.slots)} slots` : ''}${fill.full ? ' - full' : ''}</div>
-                    </div>
-                </div>
-                <div>
-                    <h3 style="font-size:14px;font-weight:600;color:#64748B;margin-bottom:12px;">Fit Summary</h3>
-                    <div style="background:#F8FAFC;border-radius:12px;padding:16px;">
-                        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;">
-                            <div style="font-size:13px;color:#475569;">Rule-based candidate fit</div>
-                            <div style="font-size:20px;font-weight:700;color:#0f766e;">${moEscapeHtml(fit.score)}%</div>
-                        </div>
-                        <div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-bottom:10px;">
-                            <div style="height:100%;width:${fit.score}%;background:#0f766e;"></div>
-                        </div>
-                        <div style="font-size:13px;color:#334155;">${moEscapeHtml(fit.label)} - Resume ${fit.resumeReady ? 'ready' : 'missing'} - ${fit.matchedSkills.length ? `${fit.matchedSkills.length} skill signal(s)` : 'no direct skill match recorded'}</div>
                     </div>
                 </div>
                 <div>
@@ -294,9 +238,7 @@ async function openApplicantDrawer(applicationId) {
                 <div>
                     <h3 style="font-size:14px;font-weight:600;color:#64748B;margin-bottom:12px;">Resume Snapshot</h3>
                     <div style="background:#F8FAFC;border-radius:12px;padding:16px;">
-                        <div style="font-size:13px;color:#334155;">PDF Resume: ${moEscapeHtml(student.resumePdfName || 'Not uploaded')}</div>
-                        <div style="font-size:13px;color:#334155;margin-top:6px;">PDF Uploaded: ${moEscapeHtml(student.resumePdfUploadedAt ? moFormatDateTime(student.resumePdfUploadedAt) : 'N/A')}</div>
-                        <div style="font-size:13px;color:#334155;margin-top:6px;">Education entries: ${moEscapeHtml(student.resume?.education?.length || 0)}</div>
+                        <div style="font-size:13px;color:#334155;">Education entries: ${moEscapeHtml(student.resume?.education?.length || 0)}</div>
                         <div style="font-size:13px;color:#334155;margin-top:6px;">Experience entries: ${moEscapeHtml(student.resume?.experience?.length || 0)}</div>
                         <div style="font-size:13px;color:#334155;margin-top:6px;">Awards: ${moEscapeHtml(student.resume?.awards?.length || 0)}</div>
                     </div>
@@ -310,17 +252,10 @@ async function openApplicantDrawer(applicationId) {
                     ${moIcon('x-circle')}
                     <span>Reject</span>
                 </button>
-                ${fill.full ? `
-                    <button class="drawer-btn drawer-btn-move" disabled title="This job has reached its approved capacity." style="opacity:.55;cursor:not-allowed;">
-                        ${moIcon('circle-alert')}
-                        <span>Capacity Full</span>
-                    </button>
-                ` : `
-                    <button class="drawer-btn drawer-btn-move" onclick="reviewApplicant('${application.id}', 'accept')">
-                        ${moIcon('check-circle-2')}
-                        <span>Approve</span>
-                    </button>
-                `}
+                <button class="drawer-btn drawer-btn-move" onclick="reviewApplicant('${application.id}', 'accept')">
+                    ${moIcon('check-circle-2')}
+                    <span>Approve</span>
+                </button>
             `
             : `
                 <button class="drawer-btn drawer-btn-move" onclick="closeDrawer()">

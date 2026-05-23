@@ -13,7 +13,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,6 @@ public class StudentTimesheetServlet extends BaseServlet {
     private final TimesheetRepository timesheetRepo = new TimesheetRepository();
     private final JobRepository jobRepo = new JobRepository();
     private final ApplicationRepository appRepo = new ApplicationRepository();
-    private static final int MAX_DESCRIPTION_LENGTH = 1000;
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -36,10 +34,6 @@ public class StudentTimesheetServlet extends BaseServlet {
         }
         
         if (!requireRole(request, response, "student")) {
-            return;
-        }
-
-        if (!requireCsrf(request, response)) {
             return;
         }
         
@@ -69,9 +63,7 @@ public class StudentTimesheetServlet extends BaseServlet {
                 item.put("status", ts.getStatus());
                 item.put("submittedAt", ts.getSubmittedAt());
                 item.put("reviewedAt", ts.getReviewedAt());
-                item.put("reviewNote", firstText(ts.getReviewNote(), ts.getReviewComment()));
-                item.put("reviewComment", ts.getReviewComment());
-                item.put("approvedHours", ts.getApprovedHours());
+                item.put("reviewNote", ts.getReviewNote());
                 
                 // 获取职位信息
                 Optional<Job> jobOpt = jobRepo.findById(ts.getJobId());
@@ -109,39 +101,18 @@ public class StudentTimesheetServlet extends BaseServlet {
         if (!requireRole(request, response, "student")) {
             return;
         }
-
-        if (!requireCsrf(request, response)) {
-            return;
-        }
         
         try {
             String studentId = getCurrentUserId(request);
             TimesheetRequest tsReq = readRequestBody(request, TimesheetRequest.class);
             
             // 验证参数
-            if (tsReq == null || isBlank(tsReq.jobId) || isBlank(tsReq.date) || tsReq.hours == null || isBlank(tsReq.description)) {
+            if (tsReq.jobId == null || tsReq.date == null || tsReq.hours == null || tsReq.description == null) {
                 ResponseUtil.sendError(response, 400, "所有字段都不能为空");
                 return;
             }
             
             // 检查职位是否存在
-            if (tsReq.hours <= 0 || tsReq.hours > 24) {
-                ResponseUtil.sendError(response, 400, "Hours must be greater than 0 and no more than 24");
-                return;
-            }
-
-            LocalDate workDate;
-            try {
-                workDate = LocalDate.parse(tsReq.date);
-            } catch (Exception ex) {
-                ResponseUtil.sendError(response, 400, "Date must use YYYY-MM-DD format");
-                return;
-            }
-            if (workDate.isAfter(LocalDate.now())) {
-                ResponseUtil.sendError(response, 400, "Future timesheets cannot be submitted");
-                return;
-            }
-
             Optional<Job> jobOpt = jobRepo.findById(tsReq.jobId);
             if (!jobOpt.isPresent()) {
                 ResponseUtil.sendError(response, 404, "职位不存在");
@@ -149,25 +120,13 @@ public class StudentTimesheetServlet extends BaseServlet {
             }
             
             // 检查学生是否被该职位录用
-            Optional<Application> appOpt = appRepo.findByStudentId(studentId).stream()
-                    .filter(application -> tsReq.jobId.equals(application.getJobId()))
-                    .filter(application -> "approved".equals(application.getStatus()))
-                    .findFirst();
+            Optional<Application> appOpt = appRepo.findByStudentAndJob(studentId, tsReq.jobId);
             if (!appOpt.isPresent() || !"approved".equals(appOpt.get().getStatus())) {
                 ResponseUtil.sendError(response, 403, "您未被该职位录用，无法提交工时");
                 return;
             }
             
             // 创建工时记录
-            if (hasDuplicateTimesheet(studentId, tsReq.jobId, tsReq.date)) {
-                ResponseUtil.sendError(response, 409, "A timesheet for this position and date already exists");
-                return;
-            }
-            if (dailySubmittedHours(studentId, tsReq.date) + tsReq.hours > 24) {
-                ResponseUtil.sendError(response, 400, "Total submitted hours for one day cannot exceed 24");
-                return;
-            }
-
             Timesheet timesheet = new Timesheet();
             timesheet.setId(timesheetRepo.generateId());
             timesheet.setStudentId(studentId);
@@ -176,7 +135,7 @@ public class StudentTimesheetServlet extends BaseServlet {
             timesheet.setDate(tsReq.date);
             timesheet.setHours(tsReq.hours);
             timesheet.setHoursWorked(tsReq.hours);
-            timesheet.setDescription(limitText(tsReq.description, MAX_DESCRIPTION_LENGTH));
+            timesheet.setDescription(tsReq.description);
             
             timesheetRepo.save(timesheet);
             
@@ -198,36 +157,5 @@ public class StudentTimesheetServlet extends BaseServlet {
         String date;
         Double hours;
         String description;
-    }
-
-    private boolean hasDuplicateTimesheet(String studentId, String jobId, String date) throws IOException {
-        return timesheetRepo.findByStudentId(studentId).stream()
-                .filter(timesheet -> jobId.equals(timesheet.getJobId()))
-                .filter(timesheet -> date.equals(timesheet.getDate()))
-                .anyMatch(timesheet -> !"rejected".equals(timesheet.getStatus()));
-    }
-
-    private double dailySubmittedHours(String studentId, String date) throws IOException {
-        return timesheetRepo.findByStudentId(studentId).stream()
-                .filter(timesheet -> date.equals(timesheet.getDate()))
-                .filter(timesheet -> !"rejected".equals(timesheet.getStatus()))
-                .mapToDouble(timesheet -> timesheet.getHours() == null ? 0 : timesheet.getHours())
-                .sum();
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
-    }
-
-    private String limitText(String value, int maxLength) {
-        String trimmed = value == null ? "" : value.trim();
-        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
-    }
-
-    private String firstText(String primary, String fallback) {
-        if (primary != null && !primary.isBlank()) {
-            return primary;
-        }
-        return fallback;
     }
 }

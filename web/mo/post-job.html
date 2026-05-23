@@ -58,7 +58,7 @@
             <div class="page-header">
                 <div>
                     <h1>Post a Job</h1>
-                    <p class="page-subtitle">Create, update, submit for Admin review, and monitor your recruitment postings</p>
+                    <p class="page-subtitle">Create, update, publish, and monitor your recruitment postings</p>
                 </div>
                 <button class="btn-primary" id="btnNewPosting">
                     <i data-lucide="plus-circle"></i>
@@ -73,7 +73,7 @@
                     </div>
                     <div class="workflow-copy">
                         <span class="workflow-title">Job Publishing Flow</span>
-                        <span class="workflow-subtitle">Build a draft, submit it for Admin review, then monitor how the role moves into review and closure.</span>
+                        <span class="workflow-subtitle">Build a draft, publish it to students, then monitor how the role moves into review and closure.</span>
                     </div>
                 </div>
                 <div class="workflow-steps">
@@ -92,8 +92,8 @@
                             <div class="step-icon done">
                                 <i data-lucide="send"></i>
                             </div>
-                            <div class="step-label done">Submit Review</div>
-                            <div class="step-desc">Send the post to Admin before it becomes student-facing.</div>
+                            <div class="step-label done">Publish</div>
+                            <div class="step-desc">Make the post visible on the student-facing site.</div>
                         </div>
                     </div>
                     <div class="workflow-connector partial"></div>
@@ -142,20 +142,15 @@
                     <span>All Posts</span>
                     <span class="tab-count" id="pendingCount">0</span>
                 </button>
-                <button class="tab-btn" data-tab="pending" id="tabAdminReview">
-                    <i data-lucide="clock-3"></i>
-                    <span>Admin Review</span>
-                    <span class="tab-count" id="adminReviewCount">0</span>
-                </button>
                 <button class="tab-btn" data-tab="published" id="tabPublished">
                     <i data-lucide="badge-check"></i>
                     <span>Published</span>
                     <span class="tab-count" id="publishedCount">0</span>
                 </button>
-                <button class="tab-btn" data-tab="closed" id="tabClosed">
+                <button class="tab-btn" data-tab="completed" id="tabCompleted">
                     <i data-lucide="archive"></i>
-                    <span>Closed</span>
-                    <span class="tab-count" id="closedCount">0</span>
+                    <span>Completed</span>
+                    <span class="tab-count" id="completedCount">0</span>
                 </button>
             </div>
 
@@ -173,7 +168,7 @@
                 </div>
                 <div>
                     <div class="form-header-title">Post a Job Opening</div>
-                    <div class="form-header-subtitle">Fill in the details, save as draft, or submit for Admin review</div>
+                    <div class="form-header-subtitle">Fill in the details, save as draft, or publish directly</div>
                 </div>
             </div>
             <button class="btn-close" id="btnCloseDrawer">
@@ -228,7 +223,7 @@
             <div class="form-info">
                 <i data-lucide="info"></i>
                 <div class="form-info-text">
-                    Save a draft while you are still editing, or submit the posting for Admin review when it is ready.
+                    Save a draft while you are still editing, or publish directly once the posting is ready for students.
                 </div>
             </div>
         </div>
@@ -241,7 +236,7 @@
                 </button>
                 <button class="btn-submit-form" id="btnSubmitForm">
                     <i data-lucide="send"></i>
-                    <span>Submit Review</span>
+                    <span>Publish Job</span>
                 </button>
             </div>
         </div>
