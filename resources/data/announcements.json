@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ANN001",
+    "title": "Spring 2026 TA Recruitment Now Open",
+    "date": "2026-03-18",
+    "category": "Important",
+    "pinned": true,
+    "content": "Applications for Spring 2026 Teaching Assistant positions are now open across the International School."
+  },
+  {
+    "id": "ANN002",
+    "title": "Interview Schedule Published",
+    "date": "2026-03-15",
+    "category": "Interview",
+    "pinned": true,
+    "content": "Selected candidates will receive interview invitations and time slots via the portal and email."
+  },
+  {
+    "id": "ANN003",
+    "title": "TA Training Workshop",
+    "date": "2026-04-05",
+    "category": "Training",
+    "pinned": false,
+    "content": "Newly selected TAs must attend the training workshop covering grading, communication, and workload policy."
+  }
+]

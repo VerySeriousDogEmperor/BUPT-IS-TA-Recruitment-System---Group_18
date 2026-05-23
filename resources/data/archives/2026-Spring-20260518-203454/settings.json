@@ -1,0 +1,51 @@
+{
+  "recruitmentOpen": true,
+  "archived": false,
+  "currentSemester": "2026 Spring",
+  "archiveHistory": [],
+  "rates": {
+    "senior": 65,
+    "general": 40,
+    "lab": 55
+  },
+  "publicFiles": [
+    {
+      "id": "pub-1",
+      "name": "TA_Handbook_2026.pdf",
+      "size": "2.4 MB",
+      "status": "vectorized",
+      "db": "public",
+      "preview": "This handbook outlines the responsibilities, expectations, and guidelines for Teaching Assistants.",
+      "syncedAt": "2026-05-18T14:59:53.2961704"
+    },
+    {
+      "id": "pub-2",
+      "name": "Grading_Policy_v3.pdf",
+      "size": "1.1 MB",
+      "status": "vectorized",
+      "db": "public",
+      "preview": "Grading rubrics, feedback expectations, and appeal timelines for coursework support.",
+      "syncedAt": "2026-05-18T14:59:53.2961704"
+    }
+  ],
+  "internalFiles": [
+    {
+      "id": "int-1",
+      "name": "Admin_Approval_SOP.pdf",
+      "size": "1.7 MB",
+      "status": "vectorized",
+      "db": "internal",
+      "preview": "Standard operating procedure for Admin approval of module and recruitment changes.",
+      "syncedAt": "2026-05-18T14:59:53.2961704"
+    },
+    {
+      "id": "int-2",
+      "name": "Budget_Allocation_Rules.pdf",
+      "size": "0.9 MB",
+      "status": "vectorized",
+      "db": "internal",
+      "preview": "Rules for TA budget allocation, additional hour requests, and budget overrun reporting.",
+      "syncedAt": "2026-05-18T14:59:53.2961704"
+    }
+  ]
+}

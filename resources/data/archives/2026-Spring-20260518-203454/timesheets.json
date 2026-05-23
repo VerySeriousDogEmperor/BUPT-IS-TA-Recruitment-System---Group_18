@@ -1,0 +1,49 @@
+[
+  {
+    "id": "TS001",
+    "studentId": "S004",
+    "jobId": "JOB005",
+    "applicationId": "APP002",
+    "date": "2026-04-01",
+    "hours": 4.0,
+    "hoursWorked": 4.0,
+    "approvedHours": 4.0,
+    "description": "Reviewed milestone submissions and shared written feedback.",
+    "status": "approved",
+    "submittedAt": "2026-04-05T13:05:38.3992328",
+    "reviewedAt": "2026-04-06T13:05:38.3992328",
+    "reviewedBy": "MO001",
+    "reviewNote": "Hours approved.",
+    "reviewComment": "Hours approved.",
+    "updatedAt": "2026-04-06T13:05:38.3992328",
+    "hasAnomaly": false
+  },
+  {
+    "id": "TS002",
+    "studentId": "S004",
+    "jobId": "JOB005",
+    "applicationId": "APP002",
+    "date": "2026-04-03",
+    "hours": 3.0,
+    "hoursWorked": 3.0,
+    "description": "Held a debugging help session for project teams.",
+    "status": "pending",
+    "submittedAt": "2026-04-07T13:05:38.4014171",
+    "updatedAt": "2026-04-07T13:05:38.4014171",
+    "hasAnomaly": false
+  },
+  {
+    "id": "TS003",
+    "studentId": "S004",
+    "jobId": "JOB005",
+    "applicationId": "APP002",
+    "date": "2026-04-05",
+    "hours": 5.0,
+    "hoursWorked": 5.0,
+    "description": "Supported office hours and tracked project follow-up items.",
+    "status": "pending",
+    "submittedAt": "2026-04-08T07:05:38.4039294",
+    "updatedAt": "2026-04-08T07:05:38.4039294",
+    "hasAnomaly": false
+  }
+]

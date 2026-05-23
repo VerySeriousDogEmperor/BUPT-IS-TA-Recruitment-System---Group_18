@@ -1,0 +1,23 @@
+[
+  {
+    "userId": "S005",
+    "readIds": [
+      "application-APP005",
+      "announcement-ANN001",
+      "announcement-ANN002"
+    ],
+    "updatedAt": "2026-05-18T21:18:33.0283979"
+  },
+  {
+    "userId": "ADMIN001",
+    "readIds": [
+      "announcement-ann-1"
+    ],
+    "updatedAt": "2026-05-20T15:04:28.3133935"
+  },
+  {
+    "userId": "S004",
+    "readIds": [],
+    "updatedAt": "2026-05-20T15:43:46.5236233"
+  }
+]

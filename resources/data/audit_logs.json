@@ -1,0 +1,22 @@
+[
+  {
+    "id": "AUD1779107694360",
+    "actorId": "ADMIN001",
+    "actorName": "Recruitment Admin",
+    "action": "ARCHIVE_SEMESTER",
+    "targetType": "settings",
+    "targetId": "current",
+    "detail": "Archived 2026 Spring to resources\\data\\archives\\2026-Spring-20260518-203454",
+    "createdAt": "2026-05-18T20:34:54.3663972"
+  },
+  {
+    "id": "AUD1779107694379",
+    "actorId": "ADMIN001",
+    "actorName": "Recruitment Admin",
+    "action": "UPDATE_SETTINGS",
+    "targetType": "settings",
+    "targetId": "current",
+    "detail": "Updated recruitment window or hourly rates",
+    "createdAt": "2026-05-18T20:34:54.3799323"
+  }
+]

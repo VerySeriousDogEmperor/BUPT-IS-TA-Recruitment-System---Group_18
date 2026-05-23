@@ -1,0 +1,10 @@
+[
+  {
+    "userId": "ADMIN001",
+    "readIds": [
+      "announcement-ANN001",
+      "announcement-ANN002"
+    ],
+    "updatedAt": "2026-05-18T20:34:31.2834167"
+  }
+]
