@@ -33,10 +33,8 @@ public abstract class BaseServlet extends HttpServlet {
      */
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Token");
         response.setStatus(HttpServletResponse.SC_OK);
     }
     
@@ -83,6 +81,20 @@ public abstract class BaseServlet extends HttpServlet {
     /**
      * 获取当前用户ID
      */
+    protected boolean requireCsrf(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String method = request.getMethod();
+        if ("GET".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method) || "OPTIONS".equalsIgnoreCase(method)) {
+            return true;
+        }
+        String expected = SessionUtil.getCsrfToken(request);
+        String actual = request.getHeader("X-CSRF-Token");
+        if (expected == null || actual == null || !expected.equals(actual)) {
+            ResponseUtil.sendError(response, 403, "Invalid CSRF token");
+            return false;
+        }
+        return true;
+    }
+
     protected String getCurrentUserId(HttpServletRequest request) {
         return SessionUtil.getCurrentUserId(request);
     }

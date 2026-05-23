@@ -1,6 +1,7 @@
 import com.sun.net.httpserver.*;
 import com.bupt.ta.shared.interfaces.*;
 import com.bupt.ta.student.interfaces.*;
+import com.bupt.ta.admin.interfaces.*;
 import jakarta.servlet.http.*;
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -11,11 +12,13 @@ import java.util.*;
  * 嵌入式服务器 - 集成所有 Servlet
  */
 public class EmbeddedServer {
-    private static final int PORT = 9191;
+    private static final int DEFAULT_PORT = 9191;
     private static final String WEB_ROOT = "web";
     private static Map<String, HttpSession> sessions = new HashMap<>();
     
     public static void main(String[] args) throws Exception {
+        int port = resolvePort(args);
+
         // 初始化数据（直接调用静态块）
         try {
             Class.forName("com.bupt.ta.shared.infrastructure.DataStore");
@@ -23,12 +26,16 @@ public class EmbeddedServer {
             System.out.println("数据初始化失败: " + e.getMessage());
         }
         
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         
         // API 路由 - 使用实际的 Servlet
         // 认证和共享接口
         server.createContext("/api/auth", new ServletAdapter(new AuthServlet(), "/api/auth"));
         server.createContext("/api/jobs", new ServletAdapter(new JobServlet(), "/api/jobs"));
+        server.createContext("/api/announcements", new ServletAdapter(new AnnouncementServlet(), "/api/announcements"));
+        server.createContext("/api/notifications", new ServletAdapter(new NotificationServlet(), "/api/notifications"));
+        server.createContext("/api/ai", new ServletAdapter(new AIServlet(), "/api/ai"));
+        server.createContext("/api/knowledge", new ServletAdapter(new KnowledgeServlet(), "/api/knowledge"));
         
         // 学生端接口
         server.createContext("/api/student/profile", new ServletAdapter(new StudentProfileServlet(), "/api/student/profile"));
@@ -40,6 +47,9 @@ public class EmbeddedServer {
         server.createContext("/api/mo/applicants", new ServletAdapter(new com.bupt.ta.mo.interfaces.MOApplicantServlet(), "/api/mo/applicants"));
         server.createContext("/api/mo/timesheets", new ServletAdapter(new com.bupt.ta.mo.interfaces.MOTimesheetServlet(), "/api/mo/timesheets"));
         server.createContext("/api/mo/modules", new ServletAdapter(new com.bupt.ta.mo.interfaces.MOModuleServlet(), "/api/mo/modules"));
+
+        // Admin 绔帴鍙?
+        server.createContext("/api/admin", new ServletAdapter(new AdminServlet(), "/api/admin"));
         
         // 静态文件（最后注册，优先级最低）
         server.createContext("/", new StaticHandler());
@@ -51,8 +61,8 @@ public class EmbeddedServer {
         System.out.println("✓ 服务器已启动");
         System.out.println("");
         System.out.println("访问地址:");
-        System.out.println("  主页:   http://localhost:" + PORT);
-        System.out.println("  登录:   http://localhost:" + PORT + "/login.html");
+        System.out.println("  主页:   http://localhost:" + port);
+        System.out.println("  登录:   http://localhost:" + port + "/login.html");
         System.out.println("");
         System.out.println("测试账号:");
         System.out.println("  学生:   zhangsan@bupt.edu.cn / 123456");
@@ -64,6 +74,17 @@ public class EmbeddedServer {
     }
     
     // Servlet 适配器 - 将 Servlet 适配到 HttpServer
+    private static int resolvePort(String[] args) {
+        if (args != null && args.length > 0) {
+            try {
+                return Integer.parseInt(args[0]);
+            } catch (NumberFormatException ignored) {
+                System.out.println("Invalid port argument, using default " + DEFAULT_PORT);
+            }
+        }
+        return DEFAULT_PORT;
+    }
+
     static class ServletAdapter implements HttpHandler {
         private jakarta.servlet.http.HttpServlet servlet;
         private String contextPath;

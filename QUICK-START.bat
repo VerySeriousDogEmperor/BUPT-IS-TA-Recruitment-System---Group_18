@@ -96,7 +96,8 @@ javac -encoding UTF-8 --release 17 -cp "%LIB_CP%" -d out ^
     src\com\bupt\ta\shared\interfaces\*.java ^
     src\com\bupt\ta\student\domain\*.java ^
     src\com\bupt\ta\student\interfaces\*.java ^
-    src\com\bupt\ta\mo\interfaces\*.java
+    src\com\bupt\ta\mo\interfaces\*.java ^
+    src\com\bupt\ta\admin\interfaces\*.java
 
 if errorlevel 1 (
     echo.
