@@ -1,254 +1,392 @@
-// Recruitment Status Page Logic
-
-const MOCK_POSTINGS = [
-    { id: 'jp-001', moduleName: 'Java Programming', moduleCode: 'COMP101', requestingMO: 'Prof. Wang Lei', department: 'CS', taSlots: 5, proposedWorkload: '10h/week', budgetStatus: 'within', submittedAt: '2026-03-15' },
-    { id: 'jp-002', moduleName: 'Advanced Calculus', moduleCode: 'MATH301', requestingMO: 'Prof. Zhang Hua', department: 'Math', taSlots: 3, proposedWorkload: '15h/week', budgetStatus: 'warning', submittedAt: '2026-03-14' },
-    { id: 'jp-003', moduleName: 'Data Structures', moduleCode: 'COMP201', requestingMO: 'Prof. Li Ming', department: 'CS', taSlots: 8, proposedWorkload: '12h/week', budgetStatus: 'within', submittedAt: '2026-03-13' },
-    { id: 'jp-004', moduleName: 'Circuit Analysis', moduleCode: 'EE102', requestingMO: 'Prof. Chen Wei', department: 'EE', taSlots: 4, proposedWorkload: '20h/week', budgetStatus: 'exceeded', submittedAt: '2026-03-12' },
-    { id: 'jp-005', moduleName: 'Academic English', moduleCode: 'ENG200', requestingMO: 'Prof. Sarah Liu', department: 'English', taSlots: 2, proposedWorkload: '8h/week', budgetStatus: 'within', submittedAt: '2026-03-11' }
-];
-
 let selectedRows = new Set();
-let viewMode = 'pending';
+let currentJobs = [];
+let recruitmentStatusFilter = 'all';
+let applicationFilters = { job: '', student: '', status: '' };
+let recruitmentActionInProgress = false;
+const reviewingJobs = new Set();
+const closingJobs = new Set();
 
-document.addEventListener('DOMContentLoaded', function() {
-    initSemesterDropdown();
-    loadRecruitmentContent();
+document.addEventListener('DOMContentLoaded', () => {
+  initSemesterDropdown();
+  loadRecruitmentContent();
 });
 
 function initSemesterDropdown() {
-    const button = document.getElementById('semesterButton');
-    const menu = document.getElementById('semesterMenu');
-    
-    if (!button || !menu) return;
-
-    button.addEventListener('click', function(e) {
-        e.stopPropagation();
-        menu.classList.toggle('active');
-    });
-
-    document.addEventListener('click', function() {
-        menu.classList.remove('active');
-    });
-
-    const options = menu.querySelectorAll('.semester-option');
-    options.forEach(option => {
-        option.addEventListener('click', function() {
-            const label = this.textContent.trim();
-            button.querySelector('.semester-label').textContent = `Current Semester: ${label}`;
-            options.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            menu.classList.remove('active');
-        });
-    });
+  const button = document.getElementById('semesterButton');
+  const menu = document.getElementById('semesterMenu');
+  if (!button || !menu) return;
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    menu.classList.toggle('active');
+  });
+  document.addEventListener('click', () => menu.classList.remove('active'));
 }
 
-function loadRecruitmentContent() {
-    const content = document.getElementById('adminContent');
-    if (!content) return;
+async function loadRecruitmentContent() {
+  const content = document.getElementById('adminContent');
+  if (!content) return;
+  content.innerHTML = '<div class="card"><div class="card-content">Loading recruitment and application records...</div></div>';
 
-    if (viewMode === 'pending') {
-        renderPendingView(content);
-    } else {
-        renderEmptyView(content);
+  try {
+    const recruitment = await API.admin.getRecruitment();
+    currentJobs = recruitment.jobs || [];
+    let applications = null;
+    let applicationsError = null;
+    try {
+      applications = await API.admin.getApplications(applicationFilters);
+    } catch (error) {
+      applicationsError = error;
     }
+    renderRecruitment(content, recruitment, applications, applicationsError);
+  } catch (error) {
+    content.innerHTML = `<div class="card"><div class="card-content">Failed to load recruitment data: ${escapeHtml(error.message)}</div></div>`;
+  }
 }
 
-function renderPendingView(content) {
-    const totalSlots = MOCK_POSTINGS.reduce((sum, p) => sum + p.taSlots, 0);
-    const warningCount = MOCK_POSTINGS.filter(p => p.budgetStatus !== 'within').length;
+function renderRecruitment(content, data, applications, applicationsError) {
+  selectedRows = new Set([...selectedRows].filter((id) => currentJobs.some((job) => job.id === id && job.status === 'pending')));
+  const rows = getFilteredJobs();
 
-    content.innerHTML = `
-        <div class="page-header">
-            <div class="page-title-section">
-                <h1>Recruitment & Approvals</h1>
-                <p>Final review pipeline for MO-submitted <span style="font-weight: 500; color: #374151;">job postings</span> — verify TA slots, workload, and budget compliance.</p>
-            </div>
-            <div class="page-actions">
-                <button class="btn btn-secondary" onclick="toggleViewMode()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><polyline points="12 6 12 12 16 14" stroke-width="2"/></svg>
-                    Show Empty State
-                </button>
-                <button class="btn btn-secondary">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><polyline points="12 6 12 12 16 14" stroke-width="2"/></svg>
-                    Post History
-                </button>
-                <button class="btn btn-primary" id="batchApproveBtn" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 11 12 14 22 4" stroke-width="2"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-width="2"/></svg>
-                    Batch Approve
-                </button>
-            </div>
-        </div>
+  content.innerHTML = `
+    <div class="page-header">
+      <div class="page-title-section">
+        <h1>Recruitment & Approvals</h1>
+        <p>Review submitted postings, manage published jobs, and monitor applications.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" id="batchApproveBtn" onclick="batchApprove(this)" disabled>Batch Approve</button>
+      </div>
+    </div>
 
-        <div class="filters-bar">
-            <div class="search-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke-width="2"/></svg>
-                <input type="text" placeholder="Search by course name or code..." id="searchInput">
-            </div>
-            <div class="filter-info">
-                Showing <span class="filter-count">${MOCK_POSTINGS.length}</span> pending posting${MOCK_POSTINGS.length !== 1 ? 's' : ''}
-            </div>
-        </div>
+    <div class="filters-bar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke-width="2"/></svg>
+        <input type="text" placeholder="Search by course, code, MO, or status..." id="searchInput">
+      </div>
+      <select id="statusFilter" class="filter-select" onchange="setRecruitmentStatusFilter(this.value)">
+        ${['all', 'draft', 'pending', 'published', 'closed', 'rejected', 'completed'].map((status) => `
+          <option value="${status}" ${status === recruitmentStatusFilter ? 'selected' : ''}>${formatStatus(status)} (${countJobs(status)})</option>
+        `).join('')}
+      </select>
+      <div class="filter-info">Showing <span class="filter-count">${rows.length}</span> posting(s)</div>
+    </div>
 
-        <div class="card">
-            <div class="recruitment-table-wrapper">
-                <table class="recruitment-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40px;">
-                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
-                            </th>
-                            <th>Module Name</th>
-                            <th>Requesting MO</th>
-                            <th>TA Slots</th>
-                            <th>Proposed Workload</th>
-                            <th>Budget Status</th>
-                            <th>Submitted</th>
-                            <th style="text-align: right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="postingsTableBody">
-                        ${renderPostingsRows()}
-                    </tbody>
-                </table>
-            </div>
-            <div class="table-footer">
-                <span>Total requested TA slots: <strong>${totalSlots}</strong></span>
-                <span>Budget warnings: <strong style="color: #d97706;">${warningCount}</strong></span>
-            </div>
-        </div>
-    `;
+    ${rows.length ? renderTable(rows, data) : renderEmptyView()}
+    ${renderApplicationsPanel(applications, applicationsError)}
+  `;
 
-    attachEventListeners();
+  updateBatchButton();
+  bindSearchFilter();
 }
 
-function renderPostingsRows() {
-    return MOCK_POSTINGS.map(posting => `
-        <tr class="${selectedRows.has(posting.id) ? 'selected' : ''}">
-            <td>
-                <input type="checkbox" ${selectedRows.has(posting.id) ? 'checked' : ''} onchange="toggleRow('${posting.id}', this)">
-            </td>
-            <td>
-                <div class="module-name">${posting.moduleName}</div>
-                <div class="module-code">${posting.moduleCode}</div>
-            </td>
-            <td>
-                <div class="mo-name">${posting.requestingMO}</div>
-                <div class="mo-dept">${posting.department} Dept</div>
-            </td>
-            <td>
-                <span class="ta-slots-badge">${posting.taSlots}</span>
-            </td>
-            <td>
-                <span class="workload-text">${posting.proposedWorkload}</span>
-            </td>
-            <td>
-                ${renderBudgetStatus(posting.budgetStatus)}
-            </td>
-            <td class="submitted-date">${posting.submittedAt}</td>
-            <td style="text-align: right;">
-                <div class="action-buttons">
-                    <button class="icon-btn" title="Review Details">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
-                    </button>
-                    <button class="icon-btn icon-btn-success" title="Approve">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-width="2"/><polyline points="22 4 12 14.01 9 11.01" stroke-width="2"/></svg>
-                    </button>
-                    <button class="icon-btn icon-btn-danger" title="Reject">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><line x1="15" y1="9" x2="9" y2="15" stroke-width="2"/><line x1="9" y1="9" x2="15" y2="15" stroke-width="2"/></svg>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+function getFilteredJobs() {
+  return currentJobs.filter((job) => recruitmentStatusFilter === 'all' || job.status === recruitmentStatusFilter);
+}
+
+function countJobs(status) {
+  if (status === 'all') return currentJobs.length;
+  return currentJobs.filter((job) => job.status === status).length;
+}
+
+function setRecruitmentStatusFilter(status) {
+  recruitmentStatusFilter = status || 'all';
+  selectedRows.clear();
+  const content = document.getElementById('adminContent');
+  if (!content) return;
+  renderRecruitment(content, {
+    totalSlots: currentJobs.reduce((sum, job) => sum + Number(job.taSlots || 0), 0),
+    warningCount: currentJobs.filter((job) => job.budgetStatus !== 'within').length
+  }, window.lastAdminApplications || null, window.lastAdminApplicationsError || null);
+}
+
+function renderTable(rows, data) {
+  return `
+    <div class="card">
+      <div class="recruitment-table-wrapper">
+        <table class="recruitment-table">
+          <thead>
+            <tr>
+              <th style="width: 40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+              <th>Module Name</th>
+              <th>Requesting MO</th>
+              <th>TA Slots</th>
+              <th>Proposed Workload</th>
+              <th>Budget Status</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="postingsTableBody">${rows.map(renderPostingsRow).join('')}</tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <span>Total requested TA slots: <strong>${data.totalSlots || 0}</strong></span>
+        <span>Budget warnings: <strong style="color: #d97706;">${data.warningCount || 0}</strong></span>
+      </div>
+    </div>
+  `;
+}
+
+function renderPostingsRow(posting) {
+  const canReview = posting.status === 'pending';
+  const canClose = posting.status === 'published';
+  return `
+    <tr data-status="${escapeHtml(posting.status)}">
+      <td>${canReview ? `<input type="checkbox" onchange="toggleRow('${escapeHtml(posting.id)}', this)" ${selectedRows.has(posting.id) ? 'checked' : ''}>` : ''}</td>
+      <td><div class="module-name">${escapeHtml(posting.moduleName)}</div><div class="module-code">${escapeHtml(posting.moduleCode || '')}</div></td>
+      <td><div class="mo-name">${escapeHtml(posting.requestingMO)}</div><div class="mo-dept">${escapeHtml(posting.department)}</div></td>
+      <td><span class="ta-slots-badge">${escapeHtml(posting.taSlots)}</span></td>
+      <td><span class="workload-text">${escapeHtml(posting.proposedWorkload)}</span></td>
+      <td>${renderBudgetStatus(posting.budgetStatus)}</td>
+      <td><span class="status-badge">${escapeHtml(formatStatus(posting.status))}</span></td>
+      <td style="text-align: right;">
+        <div class="action-buttons">
+          ${canReview ? `
+            <button class="icon-btn icon-btn-success" title="Approve" onclick="reviewJob('${escapeHtml(posting.id)}', 'approve', this)">OK</button>
+            <button class="icon-btn icon-btn-danger" title="Reject" onclick="reviewJob('${escapeHtml(posting.id)}', 'reject', this)">No</button>
+          ` : ''}
+          ${canClose ? `<button class="icon-btn icon-btn-danger" title="Close published job" onclick="closeAdminJob('${escapeHtml(posting.id)}', this)">Close</button>` : ''}
+          ${!canReview && !canClose ? '<span style="color:#9ca3af;font-size:12px;">No action</span>' : ''}
+        </div>
+      </td>
+    </tr>
+  `;
 }
 
 function renderBudgetStatus(status) {
-    const statusConfig = {
-        'within': { class: 'status-success', icon: 'check-circle', text: 'Within Budget' },
-        'warning': { class: 'status-warning', icon: 'alert', text: 'Budget Warning' },
-        'exceeded': { class: 'status-danger', icon: 'x-circle', text: 'Over Budget' }
-    };
-    
-    const config = statusConfig[status];
-    return `<span class="status-badge ${config.class}">${config.text}</span>`;
+  const config = {
+    within: ['status-success', 'Within Budget'],
+    warning: ['status-warning', 'Budget Warning'],
+    exceeded: ['status-danger', 'Over Budget']
+  }[status] || ['status-success', status || 'Within Budget'];
+  return `<span class="status-badge ${config[0]}">${escapeHtml(config[1])}</span>`;
 }
 
-function renderEmptyView(content) {
-    content.innerHTML = `
-        <div class="page-header">
-            <div class="page-title-section">
-                <h1>Recruitment & Approvals</h1>
-                <p>Final review pipeline for MO-submitted job postings.</p>
-            </div>
-            <div class="page-actions">
-                <button class="btn btn-secondary" onclick="toggleViewMode()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><polyline points="12 6 12 12 16 14" stroke-width="2"/></svg>
-                    Show Pending
-                </button>
-                <button class="btn btn-secondary">Post History</button>
-                <button class="btn btn-primary" disabled>Batch Approve</button>
-            </div>
-        </div>
+function renderEmptyView() {
+  return '<div class="empty-state"><h3>No postings found</h3><p>Try another status filter or search term.</p></div>';
+}
 
-        <div class="empty-state">
-            <div class="empty-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" stroke-width="2"/>
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke-width="2"/>
-                </svg>
-                <div class="empty-check">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <polyline points="9 11 12 14 22 4" stroke-width="2"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-width="2"/></svg>
-                </div>
-            </div>
-            <h3>All caught up!</h3>
-            <p>No pending job postings from MOs. The system is running smoothly — all submitted postings have been reviewed and processed.</p>
-            <div class="empty-actions">
-                <button class="btn btn-primary" disabled>Batch Approve</button>
-                <button class="btn btn-secondary">View Post History</button>
-            </div>
+function renderApplicationsPanel(data, error) {
+  window.lastAdminApplications = data;
+  window.lastAdminApplicationsError = error;
+  if (error) {
+    return `
+      <div class="card" style="margin-top:24px;">
+        <div class="card-content">
+          <h2 style="margin:0 0 8px;">Applications</h2>
+          <p style="color:#dc2626;">Failed to load applications: ${escapeHtml(error.message)}</p>
         </div>
+      </div>
     `;
+  }
+  const items = data?.items || [];
+  return `
+    <div class="card" style="margin-top:24px;">
+      <div class="card-content">
+        <div class="page-title-section" style="margin-bottom:16px;">
+          <h2 style="margin:0;">Applications</h2>
+          <p>All student applications across jobs. Total: ${escapeHtml(data?.total ?? 0)}</p>
+        </div>
+        <div class="filters-bar" style="margin-bottom:16px;">
+          <input id="applicationJobFilter" class="filter-select" placeholder="Filter job/code" value="${escapeHtml(applicationFilters.job)}">
+          <input id="applicationStudentFilter" class="filter-select" placeholder="Filter student/name" value="${escapeHtml(applicationFilters.student)}">
+          <select id="applicationStatusFilter" class="filter-select">
+            ${['', 'pending', 'approved', 'rejected', 'withdrawn'].map((status) => `
+              <option value="${status}" ${status === applicationFilters.status ? 'selected' : ''}>${status ? formatStatus(status) : 'All statuses'}</option>
+            `).join('')}
+          </select>
+          <button class="btn btn-secondary" onclick="applyApplicationFilters(this)">Apply Filters</button>
+        </div>
+        ${items.length ? renderApplicationsTable(items) : '<div class="empty-state"><h3>No applications found</h3><p>No records match the current filters.</p></div>'}
+      </div>
+    </div>
+  `;
 }
 
-function toggleViewMode() {
-    viewMode = viewMode === 'pending' ? 'empty' : 'pending';
-    loadRecruitmentContent();
+function renderApplicationsTable(items) {
+  return `
+    <div class="recruitment-table-wrapper">
+      <table class="recruitment-table">
+        <thead>
+          <tr>
+            <th>Application</th>
+            <th>Student</th>
+            <th>Job</th>
+            <th>MO</th>
+            <th>Status</th>
+            <th>Applied</th>
+            <th>Review Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map((item) => `
+            <tr>
+              <td>${escapeHtml(item.id)}</td>
+              <td><div class="module-name">${escapeHtml(item.studentName)}</div><div class="module-code">${escapeHtml(item.studentEmail || item.studentNumber || '')}</div></td>
+              <td><div class="module-name">${escapeHtml(item.jobTitle)}</div><div class="module-code">${escapeHtml(item.moduleCode || item.jobId)} · ${escapeHtml(formatStatus(item.jobStatus))}</div></td>
+              <td>${escapeHtml(item.moName || '-')}</td>
+              <td><span class="status-badge">${escapeHtml(formatStatus(item.status))}</span></td>
+              <td>${escapeHtml(item.appliedAt || '-')}</td>
+              <td>${escapeHtml(item.reviewNote || '-')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function bindSearchFilter() {
+  const search = document.getElementById('searchInput');
+  if (!search) return;
+  search.addEventListener('input', () => {
+    const term = search.value.toLowerCase();
+    document.querySelectorAll('#postingsTableBody tr').forEach((row) => {
+      row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+    });
+  });
 }
 
 function toggleSelectAll(checkbox) {
-    if (checkbox.checked) {
-        MOCK_POSTINGS.forEach(p => selectedRows.add(p.id));
-    } else {
-        selectedRows.clear();
+  selectedRows.clear();
+  document.querySelectorAll('#postingsTableBody input[type="checkbox"]').forEach((input) => {
+    const row = input.closest('tr');
+    const visible = !row || row.style.display !== 'none';
+    input.checked = checkbox.checked && visible;
+    if (input.checked) {
+      const match = input.getAttribute('onchange')?.match(/'([^']+)'/);
+      if (match) selectedRows.add(match[1]);
     }
-    updateBatchButton();
-    loadRecruitmentContent();
+  });
+  updateBatchButton();
 }
 
 function toggleRow(id, checkbox) {
-    if (checkbox.checked) {
-        selectedRows.add(id);
-    } else {
-        selectedRows.delete(id);
-    }
-    updateBatchButton();
+  if (checkbox.checked) selectedRows.add(id);
+  else selectedRows.delete(id);
+  updateBatchButton();
 }
 
 function updateBatchButton() {
-    const btn = document.getElementById('batchApproveBtn');
-    if (btn) {
-        btn.disabled = selectedRows.size === 0;
-        btn.textContent = selectedRows.size > 0 ? `Batch Approve (${selectedRows.size})` : 'Batch Approve';
-    }
+  const button = document.getElementById('batchApproveBtn');
+  if (!button) return;
+  button.disabled = selectedRows.size === 0;
+  button.textContent = selectedRows.size ? `Batch Approve (${selectedRows.size})` : 'Batch Approve';
 }
 
-function attachEventListeners() {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            // Implement search filtering
-        });
+async function reviewJob(id, action, button) {
+  if (reviewingJobs.has(id)) return;
+  const comment = action === 'reject' ? prompt('Reason for rejection?', '') || '' : '';
+  reviewingJobs.add(id);
+  setAdminButtonBusy(button, true, action === 'approve' ? 'Approving...' : 'Rejecting...');
+  try {
+    await API.admin.reviewJob(id, action, comment);
+    selectedRows.delete(id);
+    showAdminToast(action === 'approve' ? 'Job approved successfully.' : 'Job rejected successfully.', 'success');
+    await loadRecruitmentContent();
+  } catch (error) {
+    showAdminToast(error.message || 'Failed to review job posting.', 'error');
+  } finally {
+    reviewingJobs.delete(id);
+    setAdminButtonBusy(button, false);
+  }
+}
+
+async function closeAdminJob(id, button) {
+  if (closingJobs.has(id)) return;
+  if (!window.confirm('Close this published job? Students will no longer be able to apply.')) return;
+  closingJobs.add(id);
+  setAdminButtonBusy(button, true, 'Closing...');
+  try {
+    await API.admin.closeJob(id);
+    showAdminToast('Job closed successfully.', 'success');
+    await loadRecruitmentContent();
+  } catch (error) {
+    showAdminToast(error.message || 'Failed to close job.', 'error');
+  } finally {
+    closingJobs.delete(id);
+    setAdminButtonBusy(button, false);
+  }
+}
+
+async function batchApprove(button) {
+  if (recruitmentActionInProgress || selectedRows.size === 0) return;
+  const ids = Array.from(selectedRows);
+  recruitmentActionInProgress = true;
+  setAdminButtonBusy(button, true, 'Approving...');
+  try {
+    for (const id of ids) {
+      await API.admin.reviewJob(id, 'approve', '');
     }
+    selectedRows.clear();
+    showAdminToast(`${ids.length} job posting(s) approved successfully.`, 'success');
+    await loadRecruitmentContent();
+  } catch (error) {
+    showAdminToast(error.message || 'Failed to batch approve selected jobs.', 'error');
+    await loadRecruitmentContent();
+  } finally {
+    recruitmentActionInProgress = false;
+    setAdminButtonBusy(button, false);
+  }
+}
+
+async function applyApplicationFilters(button) {
+  applicationFilters = {
+    job: document.getElementById('applicationJobFilter')?.value.trim() || '',
+    student: document.getElementById('applicationStudentFilter')?.value.trim() || '',
+    status: document.getElementById('applicationStatusFilter')?.value || ''
+  };
+  setAdminButtonBusy(button, true, 'Loading...');
+  try {
+    await loadRecruitmentContent();
+  } finally {
+    setAdminButtonBusy(button, false);
+  }
+}
+
+function setAdminButtonBusy(button, busy, label) {
+  if (!button) return;
+  if (busy) {
+    if (!button.dataset.originalHtml) button.dataset.originalHtml = button.innerHTML;
+    button.disabled = true;
+    button.textContent = label || 'Working...';
+    return;
+  }
+  if (button.dataset.originalHtml) {
+    button.innerHTML = button.dataset.originalHtml;
+    delete button.dataset.originalHtml;
+  }
+  button.disabled = false;
+}
+
+function showAdminToast(message, type = 'info') {
+  let toast = document.getElementById('adminActionToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'adminActionToast';
+    toast.style.cssText = 'position:fixed;right:24px;bottom:24px;z-index:10000;max-width:360px;background:#111827;color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 16px 40px rgba(15,23,42,.22);font-size:14px;line-height:1.4;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.borderLeft = type === 'error' ? '4px solid #dc2626' : '4px solid #059669';
+  toast.style.display = 'block';
+  window.clearTimeout(showAdminToast.timer);
+  showAdminToast.timer = window.setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3200);
+}
+
+function formatStatus(status) {
+  if (!status) return 'Unknown';
+  if (status === 'all') return 'All';
+  return String(status).replace(/[-_]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
