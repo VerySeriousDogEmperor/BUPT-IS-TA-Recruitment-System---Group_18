@@ -21,3 +21,4 @@ Thumbs.db
 
 # 用户特定配置
 *.user
+resources/ai-local.properties

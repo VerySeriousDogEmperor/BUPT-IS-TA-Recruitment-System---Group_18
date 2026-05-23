@@ -3,6 +3,8 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.*;
 import java.security.Principal;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class HttpServletRequestAdapter implements HttpServletRequest {
@@ -54,17 +56,8 @@ public class HttpServletRequestAdapter implements HttpServletRequest {
 
     @Override
     public String getParameter(String name) {
-        String query = getQueryString();
-        if (query == null) {
-            return null;
-        }
-        for (String param : query.split("&")) {
-            String[] pair = param.split("=");
-            if (pair.length == 2 && pair[0].equals(name)) {
-                return pair[1];
-            }
-        }
-        return null;
+        String[] values = getParameterMap().get(name);
+        return values == null || values.length == 0 ? null : values[0];
     }
 
     @Override
@@ -164,9 +157,26 @@ public class HttpServletRequestAdapter implements HttpServletRequest {
     @Override public long getContentLengthLong() { return -1; }
     @Override public String getContentType() { return getHeader("Content-Type"); }
     @Override public ServletInputStream getInputStream() { return null; }
-    @Override public Map<String, String[]> getParameterMap() { return Collections.emptyMap(); }
-    @Override public Enumeration<String> getParameterNames() { return Collections.emptyEnumeration(); }
-    @Override public String[] getParameterValues(String name) { return null; }
+    @Override public Map<String, String[]> getParameterMap() {
+        Map<String, List<String>> values = new LinkedHashMap<>();
+        String query = getQueryString();
+        if (query != null && !query.isBlank()) {
+            for (String param : query.split("&")) {
+                if (param.isEmpty()) continue;
+                String[] pair = param.split("=", 2);
+                String key = decode(pair[0]);
+                String value = pair.length > 1 ? decode(pair[1]) : "";
+                values.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+            }
+        }
+        Map<String, String[]> result = new LinkedHashMap<>();
+        for (Map.Entry<String, List<String>> entry : values.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().toArray(new String[0]));
+        }
+        return result;
+    }
+    @Override public Enumeration<String> getParameterNames() { return Collections.enumeration(getParameterMap().keySet()); }
+    @Override public String[] getParameterValues(String name) { return getParameterMap().get(name); }
     @Override public String getProtocol() { return "HTTP/1.1"; }
     @Override public String getScheme() { return "http"; }
     @Override public String getServerName() { return "localhost"; }
@@ -199,5 +209,9 @@ public class HttpServletRequestAdapter implements HttpServletRequest {
         requestedSessionId = session.getId();
         exchange.getResponseHeaders().set("Set-Cookie", buildSessionCookie(requestedSessionId));
         return requestedSessionId;
+    }
+
+    private String decode(String value) {
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 }
