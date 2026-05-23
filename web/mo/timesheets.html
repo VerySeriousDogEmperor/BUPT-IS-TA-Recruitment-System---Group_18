@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Timesheets & Approval - MO Portal</title>
     <link rel="stylesheet" href="/static/css/mo/timesheets.css">
+    <link rel="stylesheet" href="/static/css/mo/theme.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -64,7 +65,7 @@
                     <h1>Timesheets & Approval</h1>
                     <p class="page-subtitle">Week 8 · Sem 1, 2026</p>
                 </div>
-                <button class="btn-secondary">
+                <button class="btn-secondary" id="exportTimesheetsBtn">
                     <i data-lucide="download"></i>
                     Export Timesheets
                 </button>
@@ -116,7 +117,12 @@
                     Pending
                     <span class="tab-badge" id="pendingBadge">0</span>
                 </button>
+                <button class="tab-btn" data-tab="flagged">
+                    Flagged
+                    <span class="tab-badge" id="flaggedBadge">0</span>
+                </button>
                 <button class="tab-btn" data-tab="approved">Approved</button>
+                <button class="tab-btn" data-tab="rejected">Rejected</button>
                 <button class="tab-btn" data-tab="all">All</button>
             </div>
 
@@ -130,6 +136,8 @@
         </div>
     </main>
 
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/pages/mo/common.js"></script>
     <script src="/static/js/pages/mo/timesheets.js"></script>
     <script>
         lucide.createIcons();
