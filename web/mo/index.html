@@ -85,7 +85,7 @@
                     <div class="stat-content">
                         <div class="stat-label">Total Applicants</div>
                         <div class="stat-value" id="totalApplicants">0</div>
-                        <div class="stat-sublabel">Across your published jobs</div>
+                        <div class="stat-sublabel">Across your job posts</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -94,8 +94,8 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-label">Pending Review</div>
-                        <div class="stat-value" id="highMatchCount">0</div>
-                        <div class="stat-sublabel" id="highMatchPercent">Awaiting your decision</div>
+                        <div class="stat-value" id="pendingReviewCount">0</div>
+                        <div class="stat-sublabel" id="pendingReviewHint">Awaiting your decision</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -104,7 +104,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-label">Rejected</div>
-                        <div class="stat-value" id="conflictCount">0</div>
+                        <div class="stat-value" id="rejectedCount">0</div>
                         <div class="stat-sublabel">Closed applications</div>
                     </div>
                 </div>
@@ -123,11 +123,11 @@
             <!-- Filter Bar -->
             <div class="filter-bar">
                 <span class="filter-label">Quick Filter:</span>
-                <button class="filter-btn" id="filterHighMatch">
+                <button class="filter-btn" id="filterPendingOnly">
                     <i data-lucide="sparkles"></i>
                     Pending Only
                 </button>
-                <button class="filter-btn" id="filterNoConflict">
+                <button class="filter-btn" id="filterApprovedOnly">
                     <i data-lucide="check-circle-2"></i>
                     Approved Only
                 </button>

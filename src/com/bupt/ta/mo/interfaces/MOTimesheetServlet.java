@@ -71,6 +71,10 @@ public class MOTimesheetServlet extends BaseServlet {
             return;
         }
 
+        if (!requireCsrf(request, response)) {
+            return;
+        }
+
         String timesheetId = pathInfo.substring(1, pathInfo.indexOf("/review"));
         handleReviewTimesheet(request, response, timesheetId, currentUser);
     }
@@ -157,11 +161,18 @@ public class MOTimesheetServlet extends BaseServlet {
                 result.add(item);
             }
 
-            ResponseUtil.sendSuccess(response, "Success", result);
+            ResponseUtil.sendSuccess(response, "Success", collectionResponse(result));
         } catch (Exception e) {
             e.printStackTrace();
             ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
+    }
+
+    private Map<String, Object> collectionResponse(List<?> items) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("items", items);
+        result.put("total", items.size());
+        return result;
     }
 
     private void handleGetTimesheetDetail(HttpServletResponse response, String timesheetId, User currentUser)
@@ -193,13 +204,27 @@ public class MOTimesheetServlet extends BaseServlet {
             result.put("job", jobOpt.get());
 
             Optional<Student> studentOpt = studentRepo.findById(app.getStudentId());
-            studentOpt.ifPresent(student -> result.put("student", student));
+            studentOpt.ifPresent(student -> result.put("student", safeStudentInfo(student)));
 
             ResponseUtil.sendSuccess(response, "Success", result);
         } catch (Exception e) {
             e.printStackTrace();
             ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
+    }
+
+    private Map<String, Object> safeStudentInfo(Student student) {
+        Map<String, Object> studentInfo = new HashMap<>();
+        studentInfo.put("id", student.getId());
+        studentInfo.put("name", student.getName());
+        studentInfo.put("email", student.getEmail());
+        studentInfo.put("studentId", student.getStudentId());
+        studentInfo.put("phone", student.getPhone());
+        studentInfo.put("major", student.getMajor());
+        studentInfo.put("grade", student.getGrade());
+        studentInfo.put("gpa", student.getGpa());
+        studentInfo.put("avatar", student.getAvatar());
+        return studentInfo;
     }
 
     private void handleReviewTimesheet(HttpServletRequest request, HttpServletResponse response, String timesheetId,
@@ -227,8 +252,12 @@ public class MOTimesheetServlet extends BaseServlet {
             }
 
             Map<String, Object> requestData = readRequestBody(request, Map.class);
+            if (requestData == null) {
+                ResponseUtil.sendError(response, 400, "Request body is required");
+                return;
+            }
             String action = (String) requestData.get("action");
-            String comment = (String) requestData.get("comment");
+            String comment = limitText((String) requestData.get("comment"), 1000);
             Double approvedHours = requestData.get("approvedHours") != null
                     ? ((Number) requestData.get("approvedHours")).doubleValue()
                     : null;
@@ -248,6 +277,10 @@ public class MOTimesheetServlet extends BaseServlet {
                     : (ts.getHours() != null ? ts.getHours() : 0.0);
 
             if ("approve".equals(action) && approvedHours != null) {
+                if (!Double.isFinite(approvedHours)) {
+                    ResponseUtil.sendError(response, 400, "Approved hours must be a finite number");
+                    return;
+                }
                 if (approvedHours < 0) {
                     ResponseUtil.sendError(response, 400, "Approved hours cannot be negative");
                     return;
@@ -269,6 +302,7 @@ public class MOTimesheetServlet extends BaseServlet {
             ts.setReviewedBy(currentUser.getId());
             ts.setReviewedAt(LocalDateTime.now());
             ts.setReviewComment(comment);
+            ts.setReviewNote(comment);
             ts.setUpdatedAt(LocalDateTime.now());
 
             timesheetRepo.save(ts);
@@ -277,5 +311,13 @@ public class MOTimesheetServlet extends BaseServlet {
             e.printStackTrace();
             ResponseUtil.sendError(response, 500, "Server error: " + e.getMessage());
         }
+    }
+
+    private String limitText(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength);
     }
 }
