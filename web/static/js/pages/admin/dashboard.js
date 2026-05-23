@@ -1,213 +1,227 @@
-// Dashboard Page Logic
-
-document.addEventListener('DOMContentLoaded', function() {
-    initSemesterDropdown();
-    loadDashboardContent();
+document.addEventListener('DOMContentLoaded', () => {
+  initSemesterDropdown();
+  loadDashboardContent();
 });
 
+let adminDashboardData = null;
+const reportFilters = {
+  department: '',
+  status: '',
+  from: '',
+  to: ''
+};
+
 function initSemesterDropdown() {
-    const button = document.getElementById('semesterButton');
-    const menu = document.getElementById('semesterMenu');
-    
-    if (!button || !menu) return;
-
-    button.addEventListener('click', function(e) {
-        e.stopPropagation();
-        menu.classList.toggle('active');
+  const button = document.getElementById('semesterButton');
+  const menu = document.getElementById('semesterMenu');
+  if (!button || !menu) return;
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    menu.classList.toggle('active');
+  });
+  document.addEventListener('click', () => menu.classList.remove('active'));
+  menu.querySelectorAll('.semester-option').forEach((option) => {
+    option.addEventListener('click', () => {
+      button.querySelector('.semester-label').textContent = `Current Semester: ${option.textContent.trim().replace('Current', '')}`;
+      menu.querySelectorAll('.semester-option').forEach((item) => item.classList.remove('active'));
+      option.classList.add('active');
+      menu.classList.remove('active');
     });
-
-    document.addEventListener('click', function() {
-        menu.classList.remove('active');
-    });
-
-    const options = menu.querySelectorAll('.semester-option');
-    options.forEach(option => {
-        option.addEventListener('click', function() {
-            const value = this.dataset.value;
-            const label = this.textContent.trim();
-            
-            // Update button text
-            button.querySelector('.semester-label').textContent = `Current Semester: ${label}`;
-            
-            // Update active state
-            options.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            
-            menu.classList.remove('active');
-        });
-    });
+  });
 }
 
-function loadDashboardContent() {
-    const content = document.getElementById('adminContent');
-    if (!content) return;
+async function loadDashboardContent() {
+  const content = document.getElementById('adminContent');
+  if (!content) return;
+  content.innerHTML = renderLoading();
 
+  try {
+    const data = await API.admin.getDashboard();
+    adminDashboardData = data;
     content.innerHTML = `
-        <div class="page-header">
-            <div class="page-title-section">
-                <h1>Global Overview</h1>
-                <p>Real-time monitoring of TA recruitment and workload consumption.</p>
-            </div>
+      <div class="page-header">
+        <div class="page-title-section">
+          <h1>Global Overview</h1>
+          <p>Live overview of recruitment approvals, hiring progress, and workload consumption.</p>
         </div>
+        <button class="btn btn-primary" onclick="exportAdminReport()">Export CSV Report</button>
+      </div>
 
-        <!-- KPI Cards -->
-        <div class="grid grid-cols-3" style="margin-bottom: 24px;">
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <div class="kpi-info">
-                        <p class="kpi-label">Active Job Openings</p>
-                        <h3 class="kpi-value">142<span class="kpi-max">/ 160</span></h3>
-                    </div>
-                    <div class="kpi-icon kpi-icon-blue">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" stroke-width="2"/>
-                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke-width="2"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="kpi-progress">
-                    <div class="kpi-progress-info">
-                        <span>Current Fill Rate</span>
-                        <span class="kpi-progress-value">88.7%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 88.7%; background: #2563eb;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="kpi-card kpi-card-warning">
-                <div class="kpi-header">
-                    <div class="kpi-info">
-                        <p class="kpi-label">Total Workload (Hrs)</p>
-                        <h3 class="kpi-value">2,450<span class="kpi-max">/ 3,000</span></h3>
-                    </div>
-                    <div class="kpi-icon kpi-icon-amber">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="12" cy="12" r="10" stroke-width="2"/>
-                            <polyline points="12 6 12 12 16 14" stroke-width="2"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="kpi-progress">
-                    <div class="kpi-progress-info">
-                        <span>Budget Consumption</span>
-                        <span class="kpi-progress-value" style="color: #d97706;">81.6%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 81.6%; background: #f59e0b;"></div>
-                    </div>
-                </div>
-                <div class="kpi-ai-insight">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z" stroke-width="2"/>
-                    </svg>
-                    <span>AI 预测: 按当前消耗速率，本学期预算池预计将在第 12 周耗尽。</span>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <div class="kpi-info">
-                        <p class="kpi-label">Total TAs Hired</p>
-                        <h3 class="kpi-value">128</h3>
-                    </div>
-                    <div class="kpi-icon kpi-icon-indigo">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="2"/>
-                            <circle cx="9" cy="7" r="4" stroke-width="2"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="2"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="kpi-trend">
-                    <span class="trend-up">↑</span>
-                    <span>12% from last semester</span>
-                </div>
-            </div>
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header"><h3 class="card-title">Report Filters</h3></div>
+        <div class="card-content">
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+            <input id="reportDepartment" class="search-input" style="width: 100%;" placeholder="Department" value="${escapeHtml(reportFilters.department)}">
+            <input id="reportStatus" class="search-input" style="width: 100%;" placeholder="Job status" value="${escapeHtml(reportFilters.status)}">
+            <input id="reportFrom" class="search-input" style="width: 100%;" type="date" value="${escapeHtml(reportFilters.from)}">
+            <input id="reportTo" class="search-input" style="width: 100%;" type="date" value="${escapeHtml(reportFilters.to)}">
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button class="btn btn-secondary" onclick="applyReportFilters()">Apply to Export</button>
+            <button class="btn btn-secondary" onclick="clearReportFilters()">Clear</button>
+          </div>
         </div>
+      </div>
 
-        <!-- Charts -->
-        <div class="grid grid-cols-2" style="margin-bottom: 24px;">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Recruitment Progress Trend</h3>
-                </div>
-                <div class="card-content">
-                    <div class="chart-placeholder" style="height: 288px;">
-                        <canvas id="recruitmentChart"></canvas>
-                    </div>
-                </div>
-            </div>
+      <div class="grid grid-cols-3" style="margin-bottom: 24px;">
+        ${renderKpi('Active Job Openings', `${data.activeJobs}<span class="kpi-max">/ ${data.totalJobs}</span>`, 'Current Fill Rate', data.fillRate, '#2563eb')}
+        ${renderKpi('Total Workload (Hrs)', `${formatNumber(data.workloadHours)}<span class="kpi-max">/ ${formatNumber(data.budgetHours)}</span>`, 'Budget Consumption', data.budgetUsage, '#f59e0b', 'kpi-card-warning')}
+        ${renderKpi('Total TAs Hired', data.hired, 'Pending Admin Reviews', data.pendingJobs, '#4f46e5')}
+      </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Workload Allocation by Dept (Hrs)</h3>
-                </div>
-                <div class="card-content">
-                    <div class="chart-placeholder" style="height: 288px;">
-                        <canvas id="workloadChart"></canvas>
-                    </div>
-                </div>
-            </div>
+      <div class="grid grid-cols-2" style="margin-bottom: 24px;">
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Recruitment Pipeline</h3></div>
+          <div class="card-content">${renderBars([
+            ['Applications', data.totalApplications],
+            ['Approved', data.hired],
+            ['Pending jobs', data.pendingJobs],
+            ['Open jobs', data.activeJobs]
+          ])}</div>
         </div>
-
-        <!-- More Charts -->
-        <div class="grid grid-cols-2" style="margin-bottom: 24px;">
-            <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 class="card-title">Recruitment Fill Rate by Course</h3>
-                    <span class="attention-badge">Needs Attention: PHYS105</span>
-                </div>
-                <div class="card-content">
-                    <div class="chart-placeholder" style="height: 288px;">
-                        <canvas id="fillRateChart"></canvas>
-                    </div>
-                    <div class="chart-legend">
-                        <span class="legend-item"><span class="legend-dot" style="background: #94a3b8;"></span>Target TAs</span>
-                        <span class="legend-item"><span class="legend-dot" style="background: #1e293b;"></span>Current Hired</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Global Workload Distribution</h3>
-                </div>
-                <div class="card-content">
-                    <div class="chart-placeholder" style="height: 288px;">
-                        <canvas id="distributionChart"></canvas>
-                    </div>
-                    <p class="chart-note">Tracks the weekly hour commitments across all active TAs to ensure budget compliance and prevent student burnout.</p>
-                </div>
-            </div>
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Workload Allocation by Dept</h3></div>
+          <div class="card-content">${renderDepartmentRows(data.departmentHours)}</div>
         </div>
+      </div>
     `;
-
-    // Initialize charts (simplified version without actual charting library)
-    initCharts();
+  } catch (error) {
+    content.innerHTML = renderError(error);
+  }
 }
 
-function initCharts() {
-    // In a real implementation, you would use Chart.js or similar
-    // For now, we'll just show placeholder text
-    const charts = ['recruitmentChart', 'workloadChart', 'fillRateChart', 'distributionChart'];
-    
-    charts.forEach(chartId => {
-        const canvas = document.getElementById(chartId);
-        if (canvas) {
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            
-            // Draw placeholder
-            ctx.fillStyle = '#f3f4f6';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#9ca3af';
-            ctx.font = '14px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('Chart Placeholder', canvas.width / 2, canvas.height / 2);
-        }
-    });
+function renderKpi(label, value, progressLabel, percent, color, extraClass = '') {
+  const width = Math.max(0, Math.min(100, Number(percent) || 0));
+  return `
+    <div class="kpi-card ${extraClass}">
+      <div class="kpi-header">
+        <div class="kpi-info">
+          <p class="kpi-label">${label}</p>
+          <h3 class="kpi-value">${value}</h3>
+        </div>
+      </div>
+      <div class="kpi-progress">
+        <div class="kpi-progress-info">
+          <span>${progressLabel}</span>
+          <span class="kpi-progress-value">${percent}${typeof percent === 'number' ? '%' : ''}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: ${width}%; background: ${color};"></div></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderBars(items) {
+  const max = Math.max(1, ...items.map((item) => Number(item[1]) || 0));
+  return `<div class="chart-placeholder" style="height: 288px; padding: 24px;">${items.map(([label, value]) => `
+    <div style="margin-bottom: 18px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #374151; font-size: 13px;">
+        <span>${label}</span><strong>${value}</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width: ${(value / max) * 100}%; background: #1e293b;"></div></div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderDepartmentRows(departments = {}) {
+  const entries = Object.entries(departments);
+  if (!entries.length) return '<p class="chart-note">No workload records yet.</p>';
+  const max = Math.max(1, ...entries.map(([, value]) => Number(value) || 0));
+  return `<div class="chart-placeholder" style="height: 288px; padding: 24px;">${entries.map(([department, hours]) => `
+    <div style="margin-bottom: 18px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #374151; font-size: 13px;">
+        <span>${department}</span><strong>${formatNumber(hours)}h</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width: ${(hours / max) * 100}%; background: #2563eb;"></div></div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderLoading() {
+  return '<div class="card"><div class="card-content">Loading admin dashboard...</div></div>';
+}
+
+function renderError(error) {
+  return `<div class="card"><div class="card-content">Failed to load admin data: ${error.message}</div></div>`;
+}
+
+function formatNumber(value) {
+  return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 1 });
+}
+
+async function exportAdminReport() {
+  collectReportFilters();
+  const [dashboard, recruitment, workload, users, auditLogs, report] = await Promise.all([
+    adminDashboardData || API.admin.getDashboard(),
+    API.admin.getRecruitment(),
+    API.admin.getWorkload(),
+    API.admin.getUsers({}),
+    API.admin.getAuditLogs(),
+    API.admin.getReport(reportFilters)
+  ]);
+
+  const rows = [
+    ['Section', 'Metric', 'Value', 'Extra'],
+    ['Overview', 'Active Job Openings', dashboard.activeJobs, `Total jobs: ${dashboard.totalJobs}`],
+    ['Overview', 'Fill Rate', `${dashboard.fillRate}%`, ''],
+    ['Overview', 'Total Workload Hours', dashboard.workloadHours, `Budget hours: ${dashboard.budgetHours}`],
+    ['Overview', 'Budget Usage', `${dashboard.budgetUsage}%`, ''],
+    ['Overview', 'Total TAs Hired', dashboard.hired, ''],
+    ['Overview', 'Pending Admin Reviews', dashboard.pendingJobs, ''],
+    ['Filtered Report', 'Jobs', report.summary.jobs, JSON.stringify(report.filters)],
+    ['Filtered Report', 'Applications', report.summary.applications, ''],
+    ['Filtered Report', 'Approved Applications', report.summary.approved, ''],
+    ['Filtered Report', 'Timesheet Hours', report.summary.hours, ''],
+    ...((report.rows || []).map(row => ['Filtered Job', row.title, `${row.hours || 0}h`, `${row.department} / ${row.status} / applicants ${row.applicants}`])),
+    ...Object.entries(dashboard.departmentHours || {}).map(([department, hours]) => ['Department Hours', department, hours, '']),
+    ...((recruitment.jobs || []).map(job => ['Recruitment', job.moduleName || job.title, job.status, `Slots: ${job.taSlots || 0}`])),
+    ...((workload.rows || []).map(row => ['Workload', row.name, `${row.weeklyHours || 0}h`, row.status || ''])),
+    ...((workload.exceptions || []).map(item => ['Workload Exception', item.studentName || item.name || item.id, item.aiRecommendation || item.reason || '', item.status || ''])),
+    ...((users.mos || []).map(user => ['User', user.name, 'mo', user.status])),
+    ...((users.tas || []).map(user => ['User', user.name, 'student', user.status])),
+    ...((auditLogs || []).slice(0, 20).map(log => ['Audit', log.action, log.actorName, log.detail || '']))
+  ];
+
+  downloadCsv(rows, `admin-report-${new Date().toISOString().slice(0, 10)}.csv`);
+}
+
+function collectReportFilters() {
+  reportFilters.department = document.getElementById('reportDepartment')?.value.trim() || reportFilters.department || '';
+  reportFilters.status = document.getElementById('reportStatus')?.value.trim() || reportFilters.status || '';
+  reportFilters.from = document.getElementById('reportFrom')?.value || reportFilters.from || '';
+  reportFilters.to = document.getElementById('reportTo')?.value || reportFilters.to || '';
+}
+
+function applyReportFilters() {
+  collectReportFilters();
+  loadDashboardContent();
+}
+
+function clearReportFilters() {
+  reportFilters.department = '';
+  reportFilters.status = '';
+  reportFilters.from = '';
+  reportFilters.to = '';
+  loadDashboardContent();
+}
+
+function downloadCsv(rows, filename) {
+  const csv = rows.map(row => row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
