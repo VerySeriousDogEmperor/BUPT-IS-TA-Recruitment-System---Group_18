@@ -24,6 +24,7 @@ public class Job {
     private Schedule schedule;
     private String startDate;
     private String endDate;
+    private String applicationDeadline;
     private Integer slots;
     private String status; // draft | pending | published | completed
     private String createdBy; // MO ID who created this job
@@ -93,6 +94,9 @@ public class Job {
     
     public String getEndDate() { return endDate; }
     public void setEndDate(String endDate) { this.endDate = endDate; }
+
+    public String getApplicationDeadline() { return applicationDeadline; }
+    public void setApplicationDeadline(String applicationDeadline) { this.applicationDeadline = applicationDeadline; }
     
     public Integer getSlots() { return slots; }
     public void setSlots(Integer slots) { this.slots = slots; }

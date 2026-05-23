@@ -331,7 +331,7 @@ async function handleSubmit(event) {
       localStorage.setItem('user', JSON.stringify(userData));
       showToast('Registration successful!', 'success');
       setTimeout(() => {
-        window.location.href = '/index.html';
+        window.location.href = getRedirectUrl('/index.html');
       }, 800);
       return;
     }
@@ -342,7 +342,7 @@ async function handleSubmit(event) {
     localStorage.setItem('user', JSON.stringify(userData));
     showToast('Login successful!', 'success');
     setTimeout(() => {
-      window.location.href = '/index.html';
+      window.location.href = getRedirectUrl('/index.html');
     }, 800);
   } catch (error) {
     showToast(error.message || 'Authentication failed', 'error');
@@ -351,11 +351,22 @@ async function handleSubmit(event) {
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /**
  * 初始化
  */
 =======
 =======
+>>>>>>> Stashed changes
+=======
+function getRedirectUrl(fallback) {
+  const redirect = new URLSearchParams(window.location.search).get('redirect');
+  if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) {
+    return fallback;
+  }
+  return redirect;
+}
+
 >>>>>>> Stashed changes
 function bindEvents() {
   document.querySelectorAll('.role-btn').forEach((btn) => {

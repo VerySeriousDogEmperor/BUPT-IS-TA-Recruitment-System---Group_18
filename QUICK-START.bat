@@ -21,7 +21,20 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+<<<<<<< Updated upstream
 javac -encoding UTF-8 -source 17 -target 17 -cp "lib\gson-2.13.2.jar;lib\jakarta.servlet-api-6.0.0.jar;out" -d out src\HttpSessionAdapter.java src\HttpServletRequestAdapter.java src\HttpServletResponseAdapter.java src\EmbeddedServer.java >nul 2>&1
+=======
+echo [INFO] Compiling domain, repository, utility and servlet classes...
+javac -encoding UTF-8 --release 17 -cp "%LIB_CP%" -d out ^
+    src\com\bupt\ta\shared\domain\*.java ^
+    src\com\bupt\ta\shared\infrastructure\*.java ^
+    src\com\bupt\ta\shared\util\*.java ^
+    src\com\bupt\ta\shared\interfaces\*.java ^
+    src\com\bupt\ta\student\domain\*.java ^
+    src\com\bupt\ta\student\interfaces\*.java ^
+    src\com\bupt\ta\mo\interfaces\*.java ^
+    src\com\bupt\ta\admin\interfaces\*.java
+>>>>>>> Stashed changes
 
 if %errorlevel% neq 0 (
     echo ✗ 服务器编译失败，请检查代码

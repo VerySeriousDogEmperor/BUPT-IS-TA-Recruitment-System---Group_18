@@ -46,6 +46,15 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.remove(), 2800);
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function syncUserToLocalStorage(user) {
     currentUserProfile = user;
     localStorage.setItem('user', JSON.stringify(user));
@@ -100,20 +109,38 @@ function normalizeDay(value) {
 
 function hasResumeContent(user) {
     const resume = user?.resume;
+    const hasEducation = Array.isArray(resume?.education) && resume.education.some((item) => (
+        String(item?.major || '').trim() ||
+        item?.gpa !== null && item?.gpa !== undefined
+    ));
+    const hasExperience = Array.isArray(resume?.experience) && resume.experience.some((item) => String(item?.description || '').trim());
+    const hasAward = Array.isArray(resume?.awards) && resume.awards.some((item) => (
+        String(item?.name || '').trim() ||
+        String(item?.description || '').trim()
+    ));
     return Boolean(
         user?.resumePdfData ||
-        (resume?.education && resume.education.length) ||
-        (resume?.experience && resume.experience.length) ||
-        (resume?.awards && resume.awards.length)
+        hasEducation ||
+        hasExperience ||
+        hasAward
     );
 }
 
 function hasStandardResume(user) {
     const resume = user?.resume;
+    const hasEducation = Array.isArray(resume?.education) && resume.education.some((item) => (
+        String(item?.major || '').trim() ||
+        item?.gpa !== null && item?.gpa !== undefined
+    ));
+    const hasExperience = Array.isArray(resume?.experience) && resume.experience.some((item) => String(item?.description || '').trim());
+    const hasAward = Array.isArray(resume?.awards) && resume.awards.some((item) => (
+        String(item?.name || '').trim() ||
+        String(item?.description || '').trim()
+    ));
     return Boolean(
-        (resume?.education && resume.education.length) ||
-        (resume?.experience && resume.experience.length) ||
-        (resume?.awards && resume.awards.length)
+        hasEducation ||
+        hasExperience ||
+        hasAward
     );
 }
 
@@ -260,8 +287,8 @@ function renderTimeline() {
             <div class="timeline-item">
                 <div class="timeline-content">
                     <div class="timeline-info">
-                        <h4 class="timeline-title">${app.jobTitle || 'Unknown Position'}</h4>
-                        <p class="timeline-dept">${app.department || 'N/A'}</p>
+                        <h4 class="timeline-title">${escapeHtml(app.jobTitle || 'Unknown Position')}</h4>
+                        <p class="timeline-dept">${escapeHtml(app.department || 'N/A')}</p>
                         <p class="timeline-date">Applied on ${appliedDate}</p>
                     </div>
                     <span class="badge badge-${config.color}">${config.label}</span>
@@ -286,13 +313,13 @@ function renderApplicationsList() {
             <div class="application-card">
                 <div class="application-header">
                     <div>
-                        <h4 class="application-title">${app.jobTitle || 'Unknown Position'}</h4>
-                        <p class="application-dept">${app.department || 'N/A'}</p>
+                        <h4 class="application-title">${escapeHtml(app.jobTitle || 'Unknown Position')}</h4>
+                        <p class="application-dept">${escapeHtml(app.department || 'N/A')}</p>
                     </div>
                     <span class="badge badge-${config.color}">${config.label}</span>
                 </div>
                 <p class="application-date">Applied on ${appliedDate}</p>
-                ${app.reviewNote ? `<p style="margin:.75rem 0 0;color:#6b7280;">Review note: ${app.reviewNote}</p>` : ''}
+                ${app.reviewNote ? `<p style="margin:.75rem 0 0;color:#6b7280;">Review note: ${escapeHtml(app.reviewNote)}</p>` : ''}
                 <div class="favorite-card-actions" style="margin-top:1rem;">
                     <a href="/job-detail.html?id=${app.jobId}" class="btn btn-outline btn-sm">View Details</a>
                     ${canWithdraw ? `<button class="btn btn-outline btn-sm" onclick="withdrawApplication('${app.id}')">Withdraw</button>` : ''}
@@ -328,12 +355,26 @@ window.withdrawApplication = async function withdrawApplication(applicationId) {
 function initTabs() {
     document.querySelectorAll('.tab-btn').forEach((button) => {
         button.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach((item) => item.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach((item) => item.classList.remove('active'));
-            button.classList.add('active');
-            document.getElementById(`tab-${button.dataset.tab}`).classList.add('active');
+            activateTab(button.dataset.tab);
         });
     });
+}
+
+function activateTab(tabName) {
+    const button = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    const content = document.getElementById(`tab-${tabName}`);
+    if (!button || !content) return;
+    document.querySelectorAll('.tab-btn').forEach((item) => item.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach((item) => item.classList.remove('active'));
+    button.classList.add('active');
+    content.classList.add('active');
+}
+
+function activateInitialTabFromHash() {
+    const tabName = window.location.hash ? window.location.hash.slice(1) : '';
+    if (tabName) {
+        activateTab(tabName);
+    }
 }
 
 function populateTimesheetJobOptions() {
@@ -374,14 +415,14 @@ function renderTimesheetList() {
             <div class="application-card">
                 <div class="application-header">
                     <div>
-                        <h4 class="application-title">${item.jobTitle || 'Unknown Position'}</h4>
-                        <p class="application-dept">${item.date || 'No date provided'}</p>
+                        <h4 class="application-title">${escapeHtml(item.jobTitle || 'Unknown Position')}</h4>
+                        <p class="application-dept">${escapeHtml(item.date || 'No date provided')}</p>
                     </div>
                     <span class="badge ${status.badge}">${status.label}</span>
                 </div>
-                <p class="application-date">${item.hours ?? 0} hours submitted</p>
-                <p style="margin:.75rem 0 0;color:#374151;white-space:pre-wrap;">${item.description || 'No description provided.'}</p>
-                ${item.reviewNote ? `<p style="margin:.75rem 0 0;color:#6b7280;">Review note: ${item.reviewNote}</p>` : ''}
+                <p class="application-date">${item.hours ?? 0} hours submitted${item.status === 'approved' && item.approvedHours != null ? ` · ${item.approvedHours} hours approved` : ''}</p>
+                <p style="margin:.75rem 0 0;color:#374151;white-space:pre-wrap;">${escapeHtml(item.description || 'No description provided.')}</p>
+                ${item.reviewNote ? `<p style="margin:.75rem 0 0;color:#6b7280;">Review note: ${escapeHtml(item.reviewNote)}</p>` : ''}
             </div>
         `;
     }).join('');
@@ -399,7 +440,7 @@ function initTimesheetForm() {
         const hours = Number(form.elements.hours.value);
         const description = form.elements.description.value.trim();
 
-        if (!jobId || !date || !Number.isFinite(hours) || hours <= 0 || !description) {
+        if (!jobId || !date || !Number.isFinite(hours) || hours <= 0 || hours > 24 || !description) {
             showToast('Please complete all timesheet fields', 'error');
             return;
         }
@@ -523,16 +564,43 @@ function buildResumePreviewHtml() {
     return `
         <div class="card">
             <div class="card-body">
-                <h3 style="margin-bottom:.5rem;">${form.elements.resumeName.value || 'Unnamed Student'}</h3>
+                <h3 style="margin-bottom:.5rem;">${escapeHtml(form.elements.resumeName.value || 'Unnamed Student')}</h3>
                 <p style="color:#6b7280;margin:0 0 1rem;">${form.elements.resumeStudentId.value} · ${form.elements.resumeEmail.value}</p>
-                <p><strong>Major:</strong> ${form.elements.resumeMajor.value || 'N/A'}</p>
-                <p><strong>GPA:</strong> ${form.elements.resumeGpa.value || 'N/A'}</p>
-                <p><strong>Skills:</strong> ${skills.length ? skills.join(', ') : 'N/A'}</p>
+                <p><strong>Major:</strong> ${escapeHtml(form.elements.resumeMajor.value || 'N/A')}</p>
+                <p><strong>GPA:</strong> ${escapeHtml(form.elements.resumeGpa.value || 'N/A')}</p>
+                <p><strong>Skills:</strong> ${escapeHtml(skills.length ? skills.join(', ') : 'N/A')}</p>
                 <p><strong>Experience:</strong></p>
-                <p style="white-space:pre-wrap;">${form.elements.resumeExperience.value || 'N/A'}</p>
+                <p style="white-space:pre-wrap;">${escapeHtml(form.elements.resumeExperience.value || 'N/A')}</p>
             </div>
         </div>
     `;
+}
+
+function polishResumeText(input) {
+    const text = String(input || '').trim();
+    if (!text) {
+        return 'Add a concrete experience first, then polish it into a concise resume bullet.';
+    }
+
+    const cleaned = text
+        .replace(/\s+/g, ' ')
+        .replace(/\bi\b/g, 'I')
+        .trim()
+        .replace(/[.!?]+$/, '');
+
+    const lower = cleaned.toLowerCase();
+    let action = 'Supported';
+    if (lower.includes('teach') || lower.includes('tutor') || lower.includes('explain')) action = 'Delivered';
+    if (lower.includes('organize') || lower.includes('coordinate') || lower.includes('manage')) action = 'Coordinated';
+    if (lower.includes('grade') || lower.includes('mark') || lower.includes('feedback')) action = 'Assessed';
+    if (lower.includes('code') || lower.includes('program') || lower.includes('debug')) action = 'Developed';
+
+    const withoutFirstPerson = cleaned
+        .replace(/^i\s+(was\s+)?/i, '')
+        .replace(/^worked on\s+/i, '')
+        .replace(/^helped\s+/i, 'helped ');
+
+    return `${action} ${withoutFirstPerson}, strengthening student learning outcomes through clear communication, structured follow-up, and reliable academic support.`;
 }
 
 function initResumeTabs() {
@@ -646,7 +714,20 @@ function initResumeTabs() {
     });
 
     document.getElementById('polishBtn').addEventListener('click', () => {
-        showToast('AI polish is not included in this round', 'info');
+        const original = document.getElementById('originalText').value
+            || document.getElementById('standardResumeForm').elements.resumeExperience.value;
+        document.getElementById('polishedText').textContent = polishResumeText(original);
+        showToast('Resume text polished', 'success');
+    });
+
+    document.getElementById('usePolishedBtn').addEventListener('click', () => {
+        const polished = document.getElementById('polishedText').textContent.trim();
+        if (!polished || polished === 'Your polished version will appear here.') {
+            showToast('Polish a paragraph first', 'error');
+            return;
+        }
+        document.getElementById('standardResumeForm').elements.resumeExperience.value = polished;
+        showToast('Polished text copied into the standard resume form', 'success');
     });
 }
 
@@ -726,20 +807,20 @@ function renderFavoritesList() {
     list.innerHTML = favoriteJobs.map((job) => `
         <div class="favorite-card">
             <div class="favorite-card-grid">
-                <div class="favorite-card-image"><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400" alt="${job.title}"></div>
+                <div class="favorite-card-image"><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400" alt="${escapeHtml(job.title || 'Position')}"></div>
                 <div class="favorite-card-content">
                     <div class="favorite-card-header">
                         <div>
-                            <h4 class="favorite-card-title">${job.title}</h4>
-                            <p class="favorite-card-dept">${job.department || 'N/A'}</p>
+                            <h4 class="favorite-card-title">${escapeHtml(job.title || 'Untitled Position')}</h4>
+                            <p class="favorite-card-dept">${escapeHtml(job.department || 'N/A')}</p>
                         </div>
                         <button class="favorite-delete-btn" onclick="removeFavorite('${job.id}')">Remove</button>
                     </div>
-                    <div class="favorite-card-tags">${(job.requiredSkills || []).map((tag) => `<span class="badge badge-secondary">${tag}</span>`).join('')}</div>
+                    <div class="favorite-card-tags">${(job.requiredSkills || []).map((tag) => `<span class="badge badge-secondary">${escapeHtml(tag)}</span>`).join('')}</div>
                     <div class="favorite-card-meta">
-                        <div class="favorite-card-meta-item">${job.location || 'BUPT Campus'}</div>
-                        <div class="favorite-card-meta-item">${job.hoursPerWeek || 'N/A'} hours/week</div>
-                        <div class="favorite-card-meta-item favorite-card-salary">${job.hourlyRate ? `CNY ${job.hourlyRate}/hour` : 'Salary negotiable'}</div>
+                        <div class="favorite-card-meta-item">${escapeHtml(job.location || 'BUPT Campus')}</div>
+                        <div class="favorite-card-meta-item">${escapeHtml(job.hoursPerWeek || 'N/A')} hours/week</div>
+                        <div class="favorite-card-meta-item favorite-card-salary">${escapeHtml(job.hourlyRate ? `CNY ${job.hourlyRate}/hour` : 'Salary negotiable')}</div>
                     </div>
                     <div class="favorite-card-actions">
                         <a href="/job-detail.html?id=${job.id}" class="btn btn-primary btn-sm">View Details</a>
@@ -761,6 +842,10 @@ window.removeFavorite = function removeFavorite(jobId) {
 
 window.applyFromFavorites = async function applyFromFavorites(jobId) {
     try {
+        if (!hasResumeContent(currentUserProfile)) {
+            showResumeRequiredModal();
+            return;
+        }
         await API.student.applyJob(jobId);
         showToast('Application submitted successfully', 'success');
         await refreshApplicationViews();
@@ -768,6 +853,40 @@ window.applyFromFavorites = async function applyFromFavorites(jobId) {
         showToast(error.message || 'Failed to apply for this job', 'error');
     }
 };
+
+function showResumeRequiredModal() {
+    let modal = document.getElementById('resumeRequiredModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'resumeRequiredModal';
+        modal.style.cssText = 'position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.45);padding:24px;';
+        modal.innerHTML = `
+            <div style="width:min(440px,100%);background:#fff;border-radius:8px;box-shadow:0 24px 70px rgba(15,23,42,.25);padding:26px;">
+                <h3 style="margin:0 0 10px;color:#111827;font-size:22px;">Resume required before applying</h3>
+                <p style="margin:0 0 18px;color:#4b5563;line-height:1.6;">Please upload a PDF resume or complete the standard resume form before submitting a TA application.</p>
+                <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;">
+                    <button type="button" id="resumeRequiredCancel" class="btn btn-outline">Not Now</button>
+                    <button type="button" id="resumeRequiredGo" class="btn btn-primary">Prepare Resume</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('resumeRequiredCancel').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        document.getElementById('resumeRequiredGo').addEventListener('click', () => {
+            modal.style.display = 'none';
+            activateTab('resume');
+            window.location.hash = 'resume';
+        });
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+    modal.style.display = 'flex';
+}
 
 function initAvatarUpload() {
     const input = document.getElementById('avatarUpload');
@@ -837,6 +956,7 @@ function initLogout() {
         API.auth.logout().catch(() => null).finally(() => {
             localStorage.removeItem('user');
             localStorage.removeItem('token');
+            localStorage.removeItem('csrfToken');
             localStorage.removeItem('isAuthenticated');
             localStorage.removeItem('userRole');
             window.location.href = '/login.html';
@@ -887,6 +1007,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initScheduleUpload();
     initSecurityForm();
     initTimesheetForm();
+    activateInitialTabFromHash();
     renderProfileCompletion();
     await refreshApplicationViews();
     await refreshTimesheetViews();

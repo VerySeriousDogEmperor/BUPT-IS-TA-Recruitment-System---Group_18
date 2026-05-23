@@ -5,6 +5,7 @@ let postJobState = {
     activeTab: 'all',
     editingJobId: null
 };
+const postJobActions = new Set();
 
 document.addEventListener('DOMContentLoaded', async () => {
     postJobState.currentUser = await ensureMOAuth();
@@ -36,8 +37,10 @@ function setupPostJobEvents() {
     document.getElementById('btnHoursDown').addEventListener('click', () => changeCounter('hoursValue', -1, 1, 'h'));
     document.getElementById('btnHoursUp').addEventListener('click', () => changeCounter('hoursValue', 1, 1, 'h'));
 
-    document.getElementById('btnSaveDraft').addEventListener('click', () => savePostJob(false));
-    document.getElementById('btnSubmitForm').addEventListener('click', () => savePostJob(true));
+    const saveDraftButton = document.getElementById('btnSaveDraft');
+    const submitButton = document.getElementById('btnSubmitForm');
+    saveDraftButton.addEventListener('click', () => savePostJob(false, saveDraftButton));
+    submitButton.addEventListener('click', () => savePostJob(true, submitButton));
     document.getElementById('toastClose').addEventListener('click', () => {
         document.getElementById('toast').style.display = 'none';
     });
@@ -88,8 +91,9 @@ function renderPostJobStats() {
     const stats = [
         { label: 'Total Posts', value: postJobState.jobs.length, icon: 'briefcase-business' },
         { label: 'Drafts', value: postJobState.jobs.filter((job) => job.status === 'draft').length, icon: 'file-text' },
+        { label: 'Admin Review', value: postJobState.jobs.filter((job) => job.status === 'pending').length, icon: 'clock-3' },
         { label: 'Published', value: postJobState.jobs.filter((job) => job.status === 'published').length, icon: 'badge-check' },
-        { label: 'Completed', value: postJobState.jobs.filter((job) => job.status === 'completed').length, icon: 'archive' }
+        { label: 'Closed', value: postJobState.jobs.filter((job) => job.status === 'closed').length, icon: 'archive' }
     ];
 
     statsGrid.innerHTML = stats.map((stat) => `
@@ -134,7 +138,7 @@ function renderPostings() {
                     <div class="posting-content">
                         <div class="posting-badges">
                             <span class="posting-badge code">${moEscapeHtml(job.moduleCode || '-')}</span>
-                            <span class="posting-status ${moEscapeHtml(job.status || 'draft')}">${moEscapeHtml(moStatusLabel(job.status))}</span>
+                            <span class="posting-status ${moEscapeHtml(job.status || 'draft')}">${moEscapeHtml(getPostingStatusLabel(job))}</span>
                         </div>
                         <div class="posting-title">${moEscapeHtml(job.title || 'Untitled job')}</div>
                         <div class="posting-meta">${moEscapeHtml(job.moduleName || 'Unknown module')} · ${moEscapeHtml(job.positions || job.slots || 0)} positions · ${moEscapeHtml(moFormatHours(job.hoursPerWeek || 0))}/week</div>
@@ -142,18 +146,16 @@ function renderPostings() {
                     <div class="posting-right">
                         <div class="deadline-info ${job.status === 'draft' ? 'normal' : 'urgent'}">
                             ${moIcon('calendar-range')}
-                            <span>${moEscapeHtml(job.endDate ? `Ends ${moFormatDate(job.endDate)}` : 'End date not set')}</span>
+                            <span>${moEscapeHtml(getJobDeadline(job) ? `Apply by ${moFormatDate(getJobDeadline(job))}` : 'Deadline not set')}</span>
                         </div>
                     </div>
                 </div>
                 <div class="posting-dates">
                     <span>Created ${moEscapeHtml(moFormatDate(job.createdAt))}</span>
                     <span>Updated ${moEscapeHtml(moFormatDate(job.updatedAt || job.createdAt))}</span>
-                    <button class="btn-details" onclick="${job.status === 'draft'
-                        ? `editJobPosting('${job.id}')`
-                        : `window.location.href='/mo/applicants.html?module=${encodeURIComponent(job.moduleCode || '')}'`}">
-                        ${moIcon(job.status === 'draft' ? 'square-pen' : 'users')}
-                        <span class="details-text">${job.status === 'draft' ? 'Edit Draft' : 'View Applicants'}</span>
+                    <button class="btn-details" onclick="${getPostingDetailAction(job)}">
+                        ${moIcon(getPostingDetailIcon(job))}
+                        <span class="details-text">${moEscapeHtml(getPostingDetailLabel(job))}</span>
                         <i class="chevron" data-lucide="chevron-right"></i>
                     </button>
                 </div>
@@ -180,19 +182,27 @@ function renderPostings() {
                         ${moIcon('square-pen')}
                         <span>Edit Draft</span>
                     </button>
-                    <button class="btn-submit" onclick="publishDraftJob('${job.id}')">
+                    <button class="btn-submit" onclick="publishDraftJob('${job.id}', this)">
                         ${moIcon('send')}
-                        <span>Publish</span>
+                        <span>Submit for Review</span>
                     </button>
                 ` : `
                     <div class="posting-status-text published">
-                        ${moIcon(job.status === 'published' ? 'badge-check' : 'archive')}
-                        <span>${job.status === 'published' ? 'Visible to students now' : 'Recruitment cycle completed'}</span>
+                        ${moIcon(getPostingStatusIcon(job))}
+                        <span>${moEscapeHtml(getPostingStatusText(job))}</span>
                     </div>
-                    <button class="btn-view-applicants" onclick="window.location.href='/mo/applicants.html?module=${encodeURIComponent(job.moduleCode || '')}'">
-                        ${moIcon('users')}
-                        <span>View Applicants</span>
-                    </button>
+                    ${job.status === 'published' ? `
+                        <button class="btn-view-applicants" onclick="closePublishedJob('${job.id}', this)">
+                            ${moIcon('archive')}
+                            <span>Close Posting</span>
+                        </button>
+                    ` : ''}
+                    ${job.status === 'pending' ? '' : `
+                        <button class="btn-view-applicants" onclick="window.location.href='/mo/applicants.html?module=${encodeURIComponent(job.moduleCode || '')}'">
+                            ${moIcon('users')}
+                            <span>View Applicants</span>
+                        </button>
+                    `}
                 `}
             </div>
         </div>
@@ -206,8 +216,54 @@ function renderPostings() {
 function updatePostJobCounts() {
     document.getElementById('draftCount').textContent = postJobState.jobs.filter((job) => job.status === 'draft').length;
     document.getElementById('pendingCount').textContent = postJobState.jobs.length;
+    document.getElementById('adminReviewCount').textContent = postJobState.jobs.filter((job) => job.status === 'pending').length;
     document.getElementById('publishedCount').textContent = postJobState.jobs.filter((job) => job.status === 'published').length;
-    document.getElementById('completedCount').textContent = postJobState.jobs.filter((job) => job.status === 'completed').length;
+    document.getElementById('closedCount').textContent = postJobState.jobs.filter((job) => job.status === 'closed').length;
+}
+
+function getPostingDetailAction(job) {
+    if (job.status === 'draft') {
+        return `editJobPosting('${job.id}')`;
+    }
+    if (job.status === 'pending') {
+        return `showPostJobToast('This job is waiting for Admin review.')`;
+    }
+    return `window.location.href='/mo/applicants.html?module=${encodeURIComponent(job.moduleCode || '')}'`;
+}
+
+function getPostingDetailIcon(job) {
+    if (job.status === 'draft') return 'square-pen';
+    if (job.status === 'pending') return 'clock-3';
+    return 'users';
+}
+
+function getPostingDetailLabel(job) {
+    if (job.status === 'draft') return 'Edit Draft';
+    if (job.status === 'pending') return 'Awaiting Review';
+    return 'View Applicants';
+}
+
+function getPostingStatusIcon(job) {
+    if (job.status === 'pending') return 'clock-3';
+    if (job.status === 'published') return 'badge-check';
+    if (job.status === 'closed') return 'archive';
+    return 'archive';
+}
+
+function getPostingStatusLabel(job) {
+    if (job.status === 'pending') return 'Pending Admin Review';
+    return moStatusLabel(job.status);
+}
+
+function getPostingStatusText(job) {
+    if (job.status === 'pending') return 'Waiting for Admin review before students can see it';
+    if (job.status === 'published') return 'Visible to students now';
+    if (job.status === 'closed') return 'Closed to new applications';
+    return 'Recruitment cycle completed';
+}
+
+function getJobDeadline(job) {
+    return job.applicationDeadline || job.endDate || '';
 }
 
 function switchPostJobTab(tab) {
@@ -253,7 +309,12 @@ async function openExistingJob(jobId) {
     }
 
     if (job.status !== 'draft') {
-        showPostJobToast('Only draft jobs can be edited. Redirecting to applicants instead.');
+        if (job.status === 'pending') {
+            switchPostJobTab('pending');
+            showPostJobToast('This job is waiting for Admin review.');
+            return;
+        }
+        showPostJobToast('This job is not editable. Opening applicant review.');
         window.location.href = `/mo/applicants.html?module=${encodeURIComponent(job.moduleCode || '')}`;
         return;
     }
@@ -277,7 +338,7 @@ async function editJobPosting(jobId) {
     document.getElementById('inputRole').value = job.title || 'Teaching Assistant';
     document.getElementById('positionsValue').textContent = String(job.positions || job.slots || 1);
     document.getElementById('hoursValue').textContent = `${Number(job.hoursPerWeek || 6)}h`;
-    document.getElementById('inputDeadline').value = moParseDateInput(job.endDate);
+    document.getElementById('inputDeadline').value = moParseDateInput(getJobDeadline(job));
     document.getElementById('inputDescription').value = job.description || '';
     document.getElementById('inputRequirements').value = (job.requirements || []).join('\n');
     openPostJobDrawer();
@@ -296,6 +357,9 @@ function buildJobPayload() {
     if (!moduleCode || !title || !deadline || !description) {
         throw new Error('Please complete module, role, deadline, and description.');
     }
+    if (!isValidPostJobDate(deadline)) {
+        throw new Error('Please choose a valid application deadline.');
+    }
 
     const moduleName = module?.name || module?.moduleName || '';
 
@@ -310,15 +374,28 @@ function buildJobPayload() {
         hoursPerWeek,
         positions,
         slots: positions,
-        startDate: deadline,
-        endDate: deadline,
-        duration: `Until ${deadline}`,
+        applicationDeadline: deadline,
+        duration: `Apply by ${deadline}`,
         type: 'TA',
         department: module?.department || 'International School'
     };
 }
 
-async function savePostJob(publishAfterSave) {
+function isValidPostJobDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) {
+        return false;
+    }
+    const date = new Date(`${value}T00:00:00`);
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+async function savePostJob(publishAfterSave, button) {
+    const actionKey = publishAfterSave ? 'save-submit' : 'save-draft';
+    if (postJobActions.has(actionKey)) {
+        return;
+    }
+    postJobActions.add(actionKey);
+    setPostJobButtonBusy(button, true, publishAfterSave ? 'Submitting...' : 'Saving...');
     try {
         const payload = buildJobPayload();
         let savedJob;
@@ -332,32 +409,83 @@ async function savePostJob(publishAfterSave) {
 
         if (publishAfterSave) {
             await API.mo.submitJob(savedJob.id || postJobState.editingJobId);
-            showPostJobToast('Job published to the student site.');
+            showPostJobToast('Job submitted for Admin review.');
         } else {
             showPostJobToast('Draft saved successfully.');
         }
 
         closePostJobDrawer();
         await loadPostJobData();
-        switchPostJobTab(publishAfterSave ? 'published' : 'draft');
+        switchPostJobTab(publishAfterSave ? 'pending' : 'draft');
     } catch (error) {
-        alert(error.message || 'Failed to save job post.');
+        showPostJobToast(error.message || 'Failed to save job post.', 'error');
+    } finally {
+        postJobActions.delete(actionKey);
+        setPostJobButtonBusy(button, false);
     }
 }
 
-async function publishDraftJob(jobId) {
+async function publishDraftJob(jobId, button) {
+    const actionKey = `publish:${jobId}`;
+    if (postJobActions.has(actionKey)) {
+        return;
+    }
+    postJobActions.add(actionKey);
+    setPostJobButtonBusy(button, true, 'Submitting...');
     try {
         await API.mo.submitJob(jobId);
-        showPostJobToast('Draft published successfully.');
+        showPostJobToast('Draft submitted for Admin review.');
         await loadPostJobData();
-        switchPostJobTab('published');
+        switchPostJobTab('pending');
     } catch (error) {
-        alert(error.message || 'Failed to publish draft.');
+        showPostJobToast(error.message || 'Failed to publish draft.', 'error');
+    } finally {
+        postJobActions.delete(actionKey);
+        setPostJobButtonBusy(button, false);
     }
 }
 
-function showPostJobToast(message) {
+async function closePublishedJob(jobId, button) {
+    if (!window.confirm('Close this published job? Students will no longer be able to apply.')) {
+        return;
+    }
+    const actionKey = `close:${jobId}`;
+    if (postJobActions.has(actionKey)) {
+        return;
+    }
+    postJobActions.add(actionKey);
+    setPostJobButtonBusy(button, true, 'Closing...');
+    try {
+        await API.mo.closeJob(jobId);
+        showPostJobToast('Job closed to new applications.');
+        await loadPostJobData();
+        switchPostJobTab('closed');
+    } catch (error) {
+        showPostJobToast(error.message || 'Failed to close job post.', 'error');
+    } finally {
+        postJobActions.delete(actionKey);
+        setPostJobButtonBusy(button, false);
+    }
+}
+
+function setPostJobButtonBusy(button, busy, label) {
+    if (!button) return;
+    if (busy) {
+        if (!button.dataset.originalHtml) button.dataset.originalHtml = button.innerHTML;
+        button.disabled = true;
+        button.textContent = label || 'Working...';
+        return;
+    }
+    if (button.dataset.originalHtml) {
+        button.innerHTML = button.dataset.originalHtml;
+        delete button.dataset.originalHtml;
+    }
+    button.disabled = false;
+}
+
+function showPostJobToast(message, type = 'success') {
     document.getElementById('toastMessage').textContent = message;
+    document.getElementById('toast').style.borderLeft = type === 'error' ? '4px solid #dc2626' : '4px solid #059669';
     document.getElementById('toast').style.display = 'flex';
     setTimeout(() => {
         document.getElementById('toast').style.display = 'none';

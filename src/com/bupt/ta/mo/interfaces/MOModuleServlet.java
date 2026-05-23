@@ -11,7 +11,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,11 +59,18 @@ public class MOModuleServlet extends BaseServlet {
                             || currentUser.getId().equals(module.getMoId()))
                     .collect(Collectors.toList());
             
-            ResponseUtil.sendSuccess(response, "获取成功", modules);
+            ResponseUtil.sendSuccess(response, "获取成功", collectionResponse(modules));
         } catch (Exception e) {
             e.printStackTrace();
             ResponseUtil.sendError(response, 500, "服务器错误: " + e.getMessage());
         }
+    }
+
+    private Map<String, Object> collectionResponse(List<?> items) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("items", items);
+        result.put("total", items.size());
+        return result;
     }
     
     /**
