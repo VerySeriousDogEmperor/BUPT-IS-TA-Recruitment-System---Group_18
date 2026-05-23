@@ -5,6 +5,7 @@
 function clearAuthState() {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('csrfToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('isAuthenticated');
 }
