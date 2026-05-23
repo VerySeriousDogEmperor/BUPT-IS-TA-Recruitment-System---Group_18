@@ -24,9 +24,9 @@
     "appliedAt": "2026-04-05T13:05:38.386237",
     "updatedAt": "2026-04-07T13:05:38.386237",
     "reviewNote": "Strong fit for the project support role.",
-    "reviewComment": "Strong fit for the project support role.",
     "reviewedBy": "MO001",
     "reviewedAt": "2026-04-07T13:05:38.386237",
+    "reviewComment": "Strong fit for the project support role.",
     "timeline": [
       {
         "status": "submitted",
@@ -70,9 +70,9 @@
     "appliedAt": "2026-04-04T13:05:38.3914984",
     "updatedAt": "2026-04-06T13:05:38.3914984",
     "reviewNote": "Need stronger networking lab background.",
-    "reviewComment": "Need stronger networking lab background.",
     "reviewedBy": "MO001",
     "reviewedAt": "2026-04-06T13:05:38.3914984",
+    "reviewComment": "Need stronger networking lab background.",
     "timeline": [
       {
         "status": "submitted",
@@ -83,6 +83,26 @@
         "status": "rejected",
         "time": "2026-04-06T13:05:38.3914984",
         "note": "Application rejected by MO"
+      }
+    ]
+  },
+  {
+    "id": "APP005",
+    "studentId": "S005",
+    "jobId": "JOB001",
+    "status": "withdrawn",
+    "appliedAt": "2026-05-18T21:00:44.406861",
+    "updatedAt": "2026-05-18T21:09:48.9558105",
+    "timeline": [
+      {
+        "status": "submitted",
+        "time": "2026-05-18T21:00:44.406861",
+        "note": "申请已提交"
+      },
+      {
+        "status": "withdrawn",
+        "time": "2026-05-18T21:09:48.9558105",
+        "note": "申请已撤回"
       }
     ]
   }
