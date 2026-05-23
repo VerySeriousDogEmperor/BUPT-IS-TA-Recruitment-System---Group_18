@@ -39,6 +39,42 @@
         <servlet-name>JobServlet</servlet-name>
         <url-pattern>/api/jobs/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AnnouncementServlet</servlet-name>
+        <servlet-class>com.bupt.ta.shared.interfaces.AnnouncementServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AnnouncementServlet</servlet-name>
+        <url-pattern>/api/announcements</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>NotificationServlet</servlet-name>
+        <servlet-class>com.bupt.ta.shared.interfaces.NotificationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NotificationServlet</servlet-name>
+        <url-pattern>/api/notifications/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AIServlet</servlet-name>
+        <servlet-class>com.bupt.ta.shared.interfaces.AIServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AIServlet</servlet-name>
+        <url-pattern>/api/ai/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>KnowledgeServlet</servlet-name>
+        <servlet-class>com.bupt.ta.shared.interfaces.KnowledgeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>KnowledgeServlet</servlet-name>
+        <url-pattern>/api/knowledge/*</url-pattern>
+    </servlet-mapping>
     
     <!-- 学生个人信息 Servlet -->
     <servlet>
@@ -68,6 +104,51 @@
     <servlet-mapping>
         <servlet-name>StudentTimesheetServlet</servlet-name>
         <url-pattern>/api/student/timesheets</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MOModuleServlet</servlet-name>
+        <servlet-class>com.bupt.ta.mo.interfaces.MOModuleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MOModuleServlet</servlet-name>
+        <url-pattern>/api/mo/modules/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MOJobServlet</servlet-name>
+        <servlet-class>com.bupt.ta.mo.interfaces.MOJobServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MOJobServlet</servlet-name>
+        <url-pattern>/api/mo/jobs/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MOApplicantServlet</servlet-name>
+        <servlet-class>com.bupt.ta.mo.interfaces.MOApplicantServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MOApplicantServlet</servlet-name>
+        <url-pattern>/api/mo/applicants/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MOTimesheetServlet</servlet-name>
+        <servlet-class>com.bupt.ta.mo.interfaces.MOTimesheetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MOTimesheetServlet</servlet-name>
+        <url-pattern>/api/mo/timesheets/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>com.bupt.ta.admin.interfaces.AdminServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/api/admin/*</url-pattern>
     </servlet-mapping>
     
     <!-- 字符编码过滤器已移除，使用 Servlet 内置处理 -->

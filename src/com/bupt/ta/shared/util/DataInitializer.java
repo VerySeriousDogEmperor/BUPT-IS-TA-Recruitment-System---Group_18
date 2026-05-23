@@ -42,7 +42,7 @@ public class DataInitializer {
         s1.setId("S001");
         s1.setName("张三");
         s1.setEmail("zhangsan@bupt.edu.cn");
-        s1.setPassword("123456");
+        s1.setPassword(PasswordUtil.hash("123456"));
         s1.setStudentId("2021211001");
         s1.setPhone("13800138001");
         s1.setMajor("计算机科学与技术");
@@ -78,7 +78,7 @@ public class DataInitializer {
         s2.setId("S002");
         s2.setName("李四");
         s2.setEmail("lisi@bupt.edu.cn");
-        s2.setPassword("123456");
+        s2.setPassword(PasswordUtil.hash("123456"));
         s2.setStudentId("2021211002");
         s2.setPhone("13800138002");
         s2.setMajor("软件工程");
@@ -114,7 +114,7 @@ public class DataInitializer {
         s3.setId("S003");
         s3.setName("王五");
         s3.setEmail("wangwu@bupt.edu.cn");
-        s3.setPassword("123456");
+        s3.setPassword(PasswordUtil.hash("123456"));
         s3.setStudentId("2021211003");
         s3.setPhone("13800138003");
         s3.setMajor("数据科学与大数据技术");
@@ -151,7 +151,7 @@ public class DataInitializer {
         mo1.setId("MO001");
         mo1.setName("李老师");
         mo1.setEmail("mo1@bupt.edu.cn");
-        mo1.setPassword("123456");
+        mo1.setPassword(PasswordUtil.hash("123456"));
         mo1.setRole("mo");
         repo.save(mo1);
         
@@ -160,7 +160,7 @@ public class DataInitializer {
         mo2.setId("MO002");
         mo2.setName("王老师");
         mo2.setEmail("mo2@bupt.edu.cn");
-        mo2.setPassword("123456");
+        mo2.setPassword(PasswordUtil.hash("123456"));
         mo2.setRole("mo");
         repo.save(mo2);
         
@@ -169,7 +169,7 @@ public class DataInitializer {
         admin.setId("ADMIN001");
         admin.setName("管理员");
         admin.setEmail("admin@bupt.edu.cn");
-        admin.setPassword("123456");
+        admin.setPassword(PasswordUtil.hash("123456"));
         admin.setRole("admin");
         repo.save(admin);
         

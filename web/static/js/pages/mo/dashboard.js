@@ -1,539 +1,437 @@
-// Mock Data
-const stageLabels = {
-    new: "New Applicants",
-    shortlisted: "Shortlisted",
-    interviewing: "Interviewing",
-    final_review: "Pending Admin"
+const dashboardStageLabels = {
+    pending: 'Pending Review',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    withdrawn: 'Withdrawn'
 };
 
-const stageOrder = ["new", "shortlisted", "interviewing", "final_review"];
+const dashboardStageOrder = ['pending', 'approved', 'rejected', 'withdrawn'];
 
-const stageColors = {
-    new: { bg: "#EFF6FF", badge: "#3B82F6", dot: "#BFDBFE" },
-    shortlisted: { bg: "#FFF7ED", badge: "#F97316", dot: "#FED7AA" },
-    interviewing: { bg: "#F0FDF4", badge: "#22C55E", dot: "#BBF7D0" },
-    final_review: { bg: "#FAF5FF", badge: "#8B5CF6", dot: "#DDD6FE" }
+const dashboardStageColors = {
+    pending: { bg: '#fef3c7', badge: '#b45309' },
+    approved: { bg: '#dcfce7', badge: '#15803d' },
+    rejected: { bg: '#fee2e2', badge: '#b91c1c' },
+    withdrawn: { bg: '#e2e8f0', badge: '#475569' }
 };
 
-const mockCandidates = [
-    {
-        id: "c1",
-        name: "Zhang Wei",
-        studentId: "S1023045",
-        avatar: "ZW",
-        gpa: 3.92,
-        aiMatchScore: 94,
-        hasConflict: false,
-        skillsMatched: true,
-        stage: "new",
-        moduleCode: "COMP101",
-        skills: ["Python", "Data Structures"],
-        aiInsights: {
-            topSkills: [
-                { label: "Python Programming", score: 96 },
-                { label: "Algorithm Design", score: 91 }
-            ]
-        }
-    },
-    {
-        id: "c2",
-        name: "Priya Sharma",
-        studentId: "S1034512",
-        avatar: "PS",
-        gpa: 3.87,
-        aiMatchScore: 88,
-        hasConflict: true,
-        skillsMatched: true,
-        stage: "new",
-        moduleCode: "COMP101",
-        skills: ["Java", "OOP"],
-        aiInsights: {
-            topSkills: [
-                { label: "Java & OOP", score: 93 }
-            ]
-        }
-    },
-    {
-        id: "c3",
-        name: "Marcus Tan",
-        studentId: "S1019876",
-        avatar: "MT",
-        gpa: 3.78,
-        aiMatchScore: 82,
-        hasConflict: false,
-        skillsMatched: true,
-        stage: "new",
-        moduleCode: "DATA201",
-        skills: ["R", "Statistics"],
-        aiInsights: {
-            topSkills: [
-                { label: "Statistical Analysis", score: 90 }
-            ]
-        }
-    },
-    {
-        id: "c4",
-        name: "Aisha Rahman",
-        studentId: "S1028734",
-        avatar: "AR",
-        gpa: 3.95,
-        aiMatchScore: 96,
-        hasConflict: false,
-        skillsMatched: true,
-        stage: "shortlisted",
-        moduleCode: "COMP101",
-        skills: ["Python", "C++"],
-        aiInsights: {
-            topSkills: [
-                { label: "Python & C++", score: 97 }
-            ]
-        }
-    },
-    {
-        id: "c5",
-        name: "James Liu",
-        studentId: "S1041023",
-        avatar: "JL",
-        gpa: 3.71,
-        aiMatchScore: 76,
-        hasConflict: true,
-        skillsMatched: false,
-        stage: "shortlisted",
-        moduleCode: "DATA201",
-        skills: ["Python", "SQL"],
-        aiInsights: {
-            topSkills: [
-                { label: "SQL & Databases", score: 85 }
-            ]
-        }
-    },
-    {
-        id: "c6",
-        name: "Sofia Chen",
-        studentId: "S1033287",
-        avatar: "SC",
-        gpa: 3.88,
-        aiMatchScore: 91,
-        hasConflict: false,
-        skillsMatched: true,
-        stage: "interviewing",
-        moduleCode: "MATH201",
-        skills: ["Calculus", "Linear Algebra"],
-        aiInsights: {
-            topSkills: [
-                { label: "Advanced Calculus", score: 94 }
-            ]
-        }
-    },
-    {
-        id: "c7",
-        name: "David Kim",
-        studentId: "S1026541",
-        avatar: "DK",
-        gpa: 3.83,
-        aiMatchScore: 89,
-        hasConflict: false,
-        skillsMatched: true,
-        stage: "interviewing",
-        moduleCode: "COMP101",
-        skills: ["Python", "Algorithms"],
-        aiInsights: {
-            topSkills: [
-                { label: "Algorithm Design", score: 92 }
-            ]
-        }
-    },
-    {
-        id: "c8",
-        name: "Lily Nguyen",
-        studentId: "S1039012",
-        avatar: "LN",
-        gpa: 3.96,
-        aiMatchScore: 97,
-        hasConflict: false,
-        skillsMatched: true,
-        stage: "final_review",
-        moduleCode: "COMP101",
-        skills: ["Python", "C"],
-        aiInsights: {
-            topSkills: [
-                { label: "Python & C", score: 98 }
-            ]
-        }
+let dashboardState = {
+    currentUser: null,
+    applicants: [],
+    modules: [],
+    jobs: [],
+    filterPendingOnly: false,
+    filterApprovedOnly: false,
+    filterModule: 'all',
+    selectedApplicantId: null
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    dashboardState.currentUser = await ensureMOAuth();
+    if (!dashboardState.currentUser) {
+        return;
     }
-];
 
-// State
-let candidates = [...mockCandidates];
-let selectedCandidate = null;
-let filterHighMatch = false;
-let filterNoConflict = false;
-let filterModule = "all";
-let newColumnRanked = false;
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    setupEventListeners();
-    populateModuleFilter();
-    updateStats();
-    renderKanban();
+    setupDashboardEvents();
+    await loadDashboardData();
 });
 
-// Setup Event Listeners
-function setupEventListeners() {
+function setupDashboardEvents() {
+    const focusFiltersBtn = document.getElementById('focusFiltersBtn');
+    if (focusFiltersBtn) {
+        focusFiltersBtn.addEventListener('click', () => {
+            const filterBar = document.querySelector('.filter-bar');
+            if (filterBar) {
+                filterBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                filterBar.classList.add('focused');
+                window.setTimeout(() => filterBar.classList.remove('focused'), 1200);
+            }
+        });
+    }
+
+    const exportDashboardBtn = document.getElementById('exportDashboardBtn');
+    if (exportDashboardBtn) {
+        exportDashboardBtn.addEventListener('click', exportDashboardReport);
+    }
+
     document.getElementById('filterHighMatch').addEventListener('click', () => {
-        filterHighMatch = !filterHighMatch;
-        document.getElementById('filterHighMatch').classList.toggle('active');
-        updateFilters();
+        dashboardState.filterPendingOnly = !dashboardState.filterPendingOnly;
+        document.getElementById('filterHighMatch').classList.toggle('active', dashboardState.filterPendingOnly);
+        if (dashboardState.filterPendingOnly) {
+            dashboardState.filterApprovedOnly = false;
+            document.getElementById('filterNoConflict').classList.remove('active', 'green');
+        }
+        renderDashboardBoard();
     });
 
     document.getElementById('filterNoConflict').addEventListener('click', () => {
-        filterNoConflict = !filterNoConflict;
-        const btn = document.getElementById('filterNoConflict');
-        btn.classList.toggle('active');
-        btn.classList.toggle('green');
-        updateFilters();
+        dashboardState.filterApprovedOnly = !dashboardState.filterApprovedOnly;
+        const button = document.getElementById('filterNoConflict');
+        button.classList.toggle('active', dashboardState.filterApprovedOnly);
+        button.classList.toggle('green', dashboardState.filterApprovedOnly);
+        if (dashboardState.filterApprovedOnly) {
+            dashboardState.filterPendingOnly = false;
+            document.getElementById('filterHighMatch').classList.remove('active');
+        }
+        renderDashboardBoard();
     });
 
-    document.getElementById('filterModule').addEventListener('change', (e) => {
-        filterModule = e.target.value;
-        updateFilters();
+    document.getElementById('filterModule').addEventListener('change', (event) => {
+        dashboardState.filterModule = event.target.value;
+        renderDashboardBoard();
     });
 
     document.getElementById('clearFilters').addEventListener('click', () => {
-        filterHighMatch = false;
-        filterNoConflict = false;
-        filterModule = "all";
+        dashboardState.filterPendingOnly = false;
+        dashboardState.filterApprovedOnly = false;
+        dashboardState.filterModule = 'all';
         document.getElementById('filterHighMatch').classList.remove('active');
         document.getElementById('filterNoConflict').classList.remove('active', 'green');
-        document.getElementById('filterModule').value = "all";
-        updateFilters();
+        document.getElementById('filterModule').value = 'all';
+        renderDashboardBoard();
     });
 }
 
-// Populate Module Filter
-function populateModuleFilter() {
-    const modules = [...new Set(candidates.map(c => c.moduleCode))];
+async function loadDashboardData() {
+    try {
+        const [modules, jobs, applicants] = await Promise.all([
+            API.mo.getModules(),
+            API.mo.getJobs(),
+            API.mo.getApplicants()
+        ]);
+
+        dashboardState.modules = modules || [];
+        dashboardState.jobs = jobs || [];
+        dashboardState.applicants = (applicants || []).map(normalizeDashboardApplicant);
+
+        populateDashboardModuleFilter();
+        updateDashboardStats();
+        renderDashboardBoard();
+    } catch (error) {
+        console.error('Failed to load MO dashboard:', error);
+        document.getElementById('kanbanBoard').innerHTML = `
+            <div class="column-empty">
+                <i data-lucide="triangle-alert"></i>
+                <p>${moEscapeHtml(error.message || 'Failed to load dashboard data.')}</p>
+            </div>
+        `;
+        lucide.createIcons();
+    }
+}
+
+function normalizeDashboardApplicant(item) {
+    const application = item.application || {};
+    const student = item.student || {};
+    const job = item.job || {};
+
+    return {
+        id: application.id,
+        status: application.status || 'pending',
+        appliedAt: application.appliedAt,
+        reviewComment: application.reviewComment || application.reviewNote || '',
+        timeline: application.timeline || [],
+        student,
+        job,
+        name: student.name || 'Unknown Student',
+        studentId: student.studentId || student.id || '-',
+        email: student.email || '-',
+        gpa: student.gpa ?? 'N/A',
+        moduleCode: job.moduleCode || '-',
+        moduleName: job.moduleName || job.title || 'Untitled job',
+        avatar: moInitials(student.name),
+        major: student.major || 'Not provided'
+    };
+}
+
+function populateDashboardModuleFilter() {
     const select = document.getElementById('filterModule');
-    modules.forEach(m => {
-        const option = document.createElement('option');
-        option.value = m;
-        option.textContent = m;
-        select.appendChild(option);
+    const options = dashboardState.modules.map((module) => {
+        const code = module.code || module.moduleCode || module.id;
+        const name = module.name || module.moduleName || '';
+        return `<option value="${moEscapeHtml(code)}">${moEscapeHtml(code)}${name ? ` - ${moEscapeHtml(name)}` : ''}</option>`;
     });
+
+    select.innerHTML = '<option value="all">All Modules</option>' + options.join('');
 }
 
-// Update Stats
-function updateStats() {
-    const total = candidates.length;
-    const highMatch = candidates.filter(c => c.aiMatchScore >= 80).length;
-    const conflicts = candidates.filter(c => c.hasConflict).length;
-    const finalReview = candidates.filter(c => c.stage === 'final_review').length;
-
-    document.getElementById('totalApplicants').textContent = total;
-    document.getElementById('highMatchCount').textContent = highMatch;
-    document.getElementById('highMatchPercent').textContent = `${Math.round((highMatch / total) * 100)}% of pool`;
-    document.getElementById('conflictCount').textContent = conflicts;
-    document.getElementById('finalCount').textContent = finalReview;
-}
-
-// Update Filters
-function updateFilters() {
-    const hasFilters = filterHighMatch || filterNoConflict || filterModule !== 'all';
-    document.getElementById('clearFilters').style.display = hasFilters ? 'flex' : 'none';
-    renderKanban();
-}
-
-// Get Filtered Candidates
-function getFilteredCandidates() {
-    return candidates.filter(c => {
-        if (filterHighMatch && c.aiMatchScore < 80) return false;
-        if (filterNoConflict && c.hasConflict) return false;
-        if (filterModule !== 'all' && c.moduleCode !== filterModule) return false;
+function getFilteredDashboardApplicants() {
+    return dashboardState.applicants.filter((applicant) => {
+        if (dashboardState.filterPendingOnly && applicant.status !== 'pending') return false;
+        if (dashboardState.filterApprovedOnly && applicant.status !== 'approved') return false;
+        if (dashboardState.filterModule !== 'all' && applicant.moduleCode !== dashboardState.filterModule) return false;
         return true;
     });
 }
 
-// Render Kanban Board
-function renderKanban() {
-    const filtered = getFilteredCandidates();
+function updateDashboardStats() {
+    const total = dashboardState.applicants.length;
+    const pending = dashboardState.applicants.filter((item) => item.status === 'pending').length;
+    const rejected = dashboardState.applicants.filter((item) => item.status === 'rejected').length;
+    const approved = dashboardState.applicants.filter((item) => item.status === 'approved').length;
+
+    document.getElementById('totalApplicants').textContent = total;
+    document.getElementById('highMatchCount').textContent = pending;
+    document.getElementById('highMatchPercent').textContent = pending ? `${pending} awaiting your decision` : 'No pending reviews';
+    document.getElementById('conflictCount').textContent = rejected;
+    document.getElementById('finalCount').textContent = approved;
+}
+
+function renderDashboardBoard() {
+    const filtered = getFilteredDashboardApplicants();
     const board = document.getElementById('kanbanBoard');
-    
-    // Update filter count
-    document.getElementById('filterCount').textContent = 
-        `Showing ${filtered.length} of ${candidates.length} candidates`;
-    
-    // Group by stage
+    const clearVisible = dashboardState.filterPendingOnly || dashboardState.filterApprovedOnly || dashboardState.filterModule !== 'all';
+
+    document.getElementById('clearFilters').style.display = clearVisible ? 'flex' : 'none';
+    document.getElementById('filterCount').textContent = `Showing ${filtered.length} of ${dashboardState.applicants.length} applications`;
+
+    if (!filtered.length) {
+        board.innerHTML = `
+            <div class="column-empty">
+                <i data-lucide="inbox"></i>
+                <p>No applications match the selected filters.</p>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
     const grouped = {};
-    stageOrder.forEach(stage => {
-        grouped[stage] = filtered.filter(c => c.stage === stage);
-        // Sort new column by AI score if ranked
-        if (stage === 'new' && newColumnRanked) {
-            grouped[stage].sort((a, b) => b.aiMatchScore - a.aiMatchScore);
-        }
+    dashboardStageOrder.forEach((status) => {
+        grouped[status] = filtered.filter((applicant) => applicant.status === status);
     });
-    
-    // Render columns
-    board.innerHTML = stageOrder.map(stage => renderColumn(stage, grouped[stage])).join('');
-    
+
+    board.innerHTML = dashboardStageOrder.map((status) => renderDashboardColumn(status, grouped[status])).join('');
     lucide.createIcons();
 }
 
-// Render Column
-function renderColumn(stage, candidates) {
-    const colors = stageColors[stage];
-    const isNewColumn = stage === 'new';
-    
+function exportDashboardReport() {
+    const filtered = getFilteredDashboardApplicants();
+    const rows = [
+        ['Student', 'Student ID', 'Email', 'Module Code', 'Module Name', 'Status', 'Applied At', 'Review Comment'],
+        ...filtered.map((item) => [
+            item.name,
+            item.studentId,
+            item.email,
+            item.moduleCode,
+            item.moduleName,
+            item.status,
+            item.appliedAt || '',
+            item.reviewComment || ''
+        ])
+    ];
+
+    const csv = rows
+        .map((row) => row.map((cell) => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'mo-dashboard-report.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+function renderDashboardColumn(status, applicants) {
+    const colors = dashboardStageColors[status];
     return `
         <div class="kanban-column">
             <div class="column-header" style="background: ${colors.bg};">
                 <div class="column-header-left">
                     <div class="column-dot" style="background: ${colors.badge};"></div>
-                    <span class="column-title">${stageLabels[stage]}</span>
+                    <span class="column-title">${dashboardStageLabels[status]}</span>
                 </div>
                 <div class="column-header-right">
-                    ${isNewColumn ? `
-                        <button class="ai-rank-btn ${newColumnRanked ? 'active' : 'inactive'}" 
-                                onclick="toggleAIRank()" 
-                                title="Sort by AI Match Score">
-                            <i data-lucide="${newColumnRanked ? 'sparkles' : 'arrow-up-down'}"></i>
-                            ${newColumnRanked ? 'AI Ranked ✓' : '✨ AI Rank All'}
-                        </button>
-                    ` : ''}
-                    <span class="column-count" style="background: ${colors.badge};">
-                        ${candidates.length}
-                    </span>
+                    <span class="column-count">${applicants.length}</span>
                 </div>
             </div>
             <div class="column-cards">
-                ${candidates.length === 0 ? `
+                ${applicants.length ? applicants.map(renderDashboardCard).join('') : `
                     <div class="column-empty">
                         <i data-lucide="users"></i>
-                        <p>No candidates in this stage</p>
+                        <p>No applications in this stage</p>
                     </div>
-                ` : candidates.map((c, idx) => renderCandidateCard(c, isNewColumn && newColumnRanked ? idx + 1 : null)).join('')}
-            </div>
-        </div>
-    `;
-}
-
-// Render Candidate Card
-function renderCandidateCard(candidate, rank) {
-    const currentIdx = stageOrder.indexOf(candidate.stage);
-    const nextStage = currentIdx < stageOrder.length - 1 ? stageOrder[currentIdx + 1] : null;
-    const isFinal = candidate.stage === 'final_review';
-    
-    return `
-        <div class="candidate-card" onclick="openDrawer('${candidate.id}')">
-            ${rank ? `<div class="rank-badge">${rank}</div>` : ''}
-            
-            <div class="card-top">
-                <div class="card-avatar-section">
-                    <div class="card-avatar">${candidate.avatar}</div>
-                    <div>
-                        <div class="card-name">${candidate.name}</div>
-                        <div class="card-id">${candidate.studentId}</div>
-                    </div>
-                </div>
-                <div class="card-ai-score">
-                    <span class="card-ai-label">AI</span>
-                    <span class="card-ai-value">${candidate.aiMatchScore}%</span>
-                </div>
-            </div>
-            
-            <div class="card-module-row">
-                <span class="card-module-badge">${candidate.moduleCode}</span>
-                <span class="card-gpa">GPA ${candidate.gpa}</span>
-            </div>
-            
-            <div class="card-tags">
-                ${candidate.hasConflict ? `
-                    <span class="card-tag conflict">
-                        <i data-lucide="alert-triangle"></i>
-                        Conflict
-                    </span>
-                ` : ''}
-                ${candidate.skillsMatched && !candidate.hasConflict ? `
-                    <span class="card-tag matched">
-                        <i data-lucide="check-circle-2"></i>
-                        Full Match
-                    </span>
-                ` : ''}
-                ${candidate.aiInsights.topSkills[0] ? `
-                    <span class="card-tag skill">
-                        <i data-lucide="sparkles"></i>
-                        ${candidate.aiInsights.topSkills[0].label.split(' ')[0]}
-                    </span>
-                ` : ''}
-            </div>
-            
-            <div class="card-actions" onclick="event.stopPropagation()">
-                <button class="card-btn-reject" onclick="rejectCandidate('${candidate.id}')">
-                    <i data-lucide="x"></i>
-                    Reject
-                </button>
-                ${nextStage ? `
-                    <button class="card-btn-move" onclick="moveCandidate('${candidate.id}', 'forward')">
-                        Move to ${stageLabels[nextStage]}
-                        <i data-lucide="chevron-right"></i>
-                    </button>
-                ` : `
-                    <button class="card-btn-move final" onclick="moveCandidate('${candidate.id}', 'forward')">
-                        <i data-lucide="check-circle-2"></i>
-                        Send Offer
-                    </button>
                 `}
             </div>
         </div>
     `;
 }
 
-// Toggle AI Rank
-function toggleAIRank() {
-    newColumnRanked = !newColumnRanked;
-    renderKanban();
-}
+function renderDashboardCard(applicant) {
+    const reviewNote = applicant.reviewComment
+        ? `<div class="card-tags"><span class="card-tag skill">${moEscapeHtml(applicant.reviewComment)}</span></div>`
+        : '';
 
-// Move Candidate
-function moveCandidate(id, direction) {
-    const candidate = candidates.find(c => c.id === id);
-    if (!candidate) return;
-    
-    if (direction === 'forward') {
-        const currentIdx = stageOrder.indexOf(candidate.stage);
-        if (currentIdx < stageOrder.length - 1) {
-            candidate.stage = stageOrder[currentIdx + 1];
-        }
-    }
-    
-    renderKanban();
-    updateStats();
-}
-
-// Reject Candidate
-function rejectCandidate(id) {
-    if (confirm('Are you sure you want to reject this candidate?')) {
-        candidates = candidates.filter(c => c.id !== id);
-        renderKanban();
-        updateStats();
-    }
-}
-
-// Open Drawer
-function openDrawer(id) {
-    const candidate = candidates.find(c => c.id === id);
-    if (!candidate) return;
-    
-    selectedCandidate = candidate;
-    
-    // Render drawer content
-    document.getElementById('drawerHeaderContent').innerHTML = `
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div class="card-avatar" style="width: 48px; height: 48px; font-size: 16px;">
-                ${candidate.avatar}
+    const actionButtons = applicant.status === 'pending'
+        ? `
+            <div class="card-actions" onclick="event.stopPropagation()">
+                <button class="card-btn-reject" onclick="handleDashboardDecision('${applicant.id}', 'reject')">
+                    <i data-lucide="x"></i>
+                    Reject
+                </button>
+                <button class="card-btn-move" onclick="handleDashboardDecision('${applicant.id}', 'accept')">
+                    Approve
+                    <i data-lucide="check-circle-2"></i>
+                </button>
             </div>
-            <div>
-                <div style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">
-                    ${candidate.name}
+        `
+        : '';
+
+    return `
+        <div class="candidate-card" onclick="openDashboardDrawer('${applicant.id}')">
+            <div class="card-top">
+                <div class="card-avatar-section">
+                    <div class="card-avatar">${moEscapeHtml(applicant.avatar)}</div>
+                    <div>
+                        <div class="card-name">${moEscapeHtml(applicant.name)}</div>
+                        <div class="card-id">${moEscapeHtml(applicant.studentId)}</div>
+                    </div>
                 </div>
-                <div style="font-size: 14px; opacity: 0.8;">
-                    ${candidate.studentId} · ${candidate.moduleCode} · GPA ${candidate.gpa}
+                <div class="card-ai-score">
+                    <span class="card-ai-label">GPA</span>
+                    <span class="card-ai-value">${moEscapeHtml(applicant.gpa)}</span>
                 </div>
             </div>
+            <div class="card-module-row">
+                <span class="card-module-badge">${moEscapeHtml(applicant.moduleCode)}</span>
+                <span class="card-gpa">${moEscapeHtml(moFormatDate(applicant.appliedAt))}</span>
+            </div>
+            <div class="card-tags">
+                <span class="card-tag matched">
+                    <i data-lucide="book-open"></i>
+                    ${moEscapeHtml(applicant.moduleName)}
+                </span>
+            </div>
+            ${reviewNote}
+            ${actionButtons}
         </div>
     `;
-    
-    document.getElementById('drawerBody').innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-            <div>
-                <h3 style="font-size: 14px; color: #64748B; margin-bottom: 12px;">AI Match Score</h3>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="flex: 1; height: 8px; background: #F1F5F9; border-radius: 999px; overflow: hidden;">
-                        <div style="width: ${candidate.aiMatchScore}%; height: 100%; background: linear-gradient(90deg, #8B5CF6, #6D28D9);"></div>
-                    </div>
-                    <span style="font-size: 18px; font-weight: 700; color: #7C3AED;">${candidate.aiMatchScore}%</span>
+}
+
+async function openDashboardDrawer(applicationId) {
+    dashboardState.selectedApplicantId = applicationId;
+
+    try {
+        const detail = await request(`/mo/applicants/${applicationId}`);
+        const application = detail.application || {};
+        const student = detail.student || {};
+        const job = detail.job || {};
+        const reviewComment = application.reviewComment || application.reviewNote || 'No review comment yet';
+        const timeline = Array.isArray(application.timeline) ? application.timeline : [];
+
+        document.getElementById('drawerHeaderContent').innerHTML = `
+            <div style="display:flex;align-items:center;gap:16px;">
+                <div class="card-avatar" style="width:48px;height:48px;font-size:16px;">${moEscapeHtml(moInitials(student.name))}</div>
+                <div>
+                    <div style="font-size:18px;font-weight:600;margin-bottom:4px;">${moEscapeHtml(student.name || 'Unknown Student')}</div>
+                    <div style="font-size:14px;opacity:0.8;">${moEscapeHtml(student.studentId || '-')} · ${moEscapeHtml(student.email || '-')}</div>
                 </div>
             </div>
-            
-            <div>
-                <h3 style="font-size: 14px; color: #64748B; margin-bottom: 12px;">Top Skills</h3>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    ${candidate.aiInsights.topSkills.map(skill => `
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 13px; color: #475569;">${skill.label}</span>
-                            <span style="font-size: 13px; font-weight: 600; color: #8B5CF6;">${skill.score}%</span>
+        `;
+
+        document.getElementById('drawerBody').innerHTML = `
+            <div style="display:flex;flex-direction:column;gap:20px;">
+                <div>
+                    <h3 style="font-size:14px;color:#64748B;margin-bottom:10px;">Application Overview</h3>
+                    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+                        <div style="background:#F8FAFC;border-radius:12px;padding:14px;">
+                            <div style="font-size:12px;color:#64748B;">Module</div>
+                            <div style="font-size:14px;font-weight:600;color:#17312f;">${moEscapeHtml(job.moduleCode || '-')}</div>
+                            <div style="font-size:13px;color:#5e7a74;">${moEscapeHtml(job.moduleName || job.title || 'Untitled job')}</div>
                         </div>
-                    `).join('')}
-                </div>
-            </div>
-            
-            <div>
-                <h3 style="font-size: 14px; color: #64748B; margin-bottom: 12px;">Skills</h3>
-                <div style="display: flex; flex-wrap: gap: 8px;">
-                    ${candidate.skills.map(skill => `
-                        <span style="padding: 6px 12px; background: #F5F3FF; color: #7C3AED; border-radius: 8px; font-size: 12px;">
-                            ${skill}
-                        </span>
-                    `).join('')}
-                </div>
-            </div>
-            
-            ${candidate.hasConflict ? `
-                <div style="padding: 12px; background: #FEE2E2; border: 1px solid #FCA5A5; border-radius: 12px;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                        <i data-lucide="alert-triangle" style="width: 16px; height: 16px; color: #DC2626;"></i>
-                        <span style="font-size: 14px; font-weight: 600; color: #DC2626;">Schedule Conflict Detected</span>
+                        <div style="background:#F8FAFC;border-radius:12px;padding:14px;">
+                            <div style="font-size:12px;color:#64748B;">Status</div>
+                            <div style="font-size:14px;font-weight:600;color:#17312f;">${moEscapeHtml(moStatusLabel(application.status))}</div>
+                            <div style="font-size:13px;color:#5e7a74;">Applied ${moEscapeHtml(moFormatDateTime(application.appliedAt))}</div>
+                        </div>
+                        <div style="background:#F8FAFC;border-radius:12px;padding:14px;">
+                            <div style="font-size:12px;color:#64748B;">Major</div>
+                            <div style="font-size:14px;font-weight:600;color:#17312f;">${moEscapeHtml(student.major || 'Not provided')}</div>
+                        </div>
+                        <div style="background:#F8FAFC;border-radius:12px;padding:14px;">
+                            <div style="font-size:12px;color:#64748B;">GPA</div>
+                            <div style="font-size:14px;font-weight:600;color:#17312f;">${moEscapeHtml(student.gpa ?? 'N/A')}</div>
+                        </div>
                     </div>
-                    <p style="font-size: 13px; color: #991B1B;">This candidate has scheduling conflicts that need to be resolved.</p>
                 </div>
-            ` : ''}
-        </div>
-    `;
-    
-    const currentIdx = stageOrder.indexOf(candidate.stage);
-    const nextStage = currentIdx < stageOrder.length - 1 ? stageOrder[currentIdx + 1] : null;
-    
-    document.getElementById('drawerFooter').innerHTML = `
-        <button class="drawer-btn drawer-btn-reject" onclick="rejectCandidate('${candidate.id}'); closeDrawer();">
-            <i data-lucide="x"></i>
-            Reject
-        </button>
-        ${nextStage ? `
-            <button class="drawer-btn drawer-btn-move" onclick="moveCandidate('${candidate.id}', 'forward'); closeDrawer();">
-                Move to ${stageLabels[nextStage]}
-                <i data-lucide="chevron-right"></i>
-            </button>
-        ` : `
-            <button class="drawer-btn drawer-btn-move" onclick="moveCandidate('${candidate.id}', 'forward'); closeDrawer();">
-                <i data-lucide="check-circle-2"></i>
-                Send Offer
-            </button>
-        `}
-    `;
-    
-    document.getElementById('drawerOverlay').classList.add('open');
-    document.getElementById('drawer').classList.add('open');
-    
-    lucide.createIcons();
+                <div>
+                    <h3 style="font-size:14px;color:#64748B;margin-bottom:10px;">Skills</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                        ${(Array.isArray(student.skills) && student.skills.length ? student.skills : ['No skills recorded']).map((skill) => `
+                            <span style="padding:6px 12px;background:#d7f2ee;color:#0f766e;border-radius:999px;font-size:12px;">${moEscapeHtml(skill)}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                <div>
+                    <h3 style="font-size:14px;color:#64748B;margin-bottom:10px;">Review Comment</h3>
+                    <div style="background:#F8FAFC;border-radius:12px;padding:14px;font-size:13px;color:#334155;">${moEscapeHtml(reviewComment)}</div>
+                </div>
+                <div>
+                    <h3 style="font-size:14px;color:#64748B;margin-bottom:10px;">Application Timeline</h3>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        ${timeline.length ? timeline.map((item) => `
+                            <div style="background:#F8FAFC;border-radius:12px;padding:12px;">
+                                <div style="font-size:13px;font-weight:600;color:#17312f;">${moEscapeHtml(moStatusLabel(item.status))}</div>
+                                <div style="font-size:12px;color:#5e7a74;margin:4px 0;">${moEscapeHtml(moFormatDateTime(item.time))}</div>
+                                <div style="font-size:13px;color:#334155;">${moEscapeHtml(item.note || 'No note')}</div>
+                            </div>
+                        `).join('') : '<div style="font-size:13px;color:#5e7a74;">No timeline available.</div>'}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('drawerFooter').innerHTML = application.status === 'pending'
+            ? `
+                <button class="drawer-btn drawer-btn-reject" onclick="handleDashboardDecision('${application.id}', 'reject', true)">
+                    <i data-lucide="x"></i>
+                    Reject
+                </button>
+                <button class="drawer-btn drawer-btn-move" onclick="handleDashboardDecision('${application.id}', 'accept', true)">
+                    <i data-lucide="check-circle-2"></i>
+                    Approve
+                </button>
+            `
+            : `
+                <button class="drawer-btn drawer-btn-move" onclick="closeDrawer()">
+                    <i data-lucide="arrow-left"></i>
+                    Close
+                </button>
+            `;
+
+        document.getElementById('drawerOverlay').classList.add('open');
+        document.getElementById('drawer').classList.add('open');
+        lucide.createIcons();
+    } catch (error) {
+        alert(error.message || 'Failed to load application detail.');
+    }
 }
 
-// Close Drawer
+async function handleDashboardDecision(applicationId, action, closeAfter = false) {
+    const comment = window.prompt(
+        action === 'accept' ? 'Optional approval note:' : 'Optional rejection note:',
+        ''
+    );
+
+    if (comment === null) {
+        return;
+    }
+
+    try {
+        await API.mo.updateApplicationStatus(applicationId, {
+            action,
+            comment
+        });
+        await loadDashboardData();
+        if (closeAfter) {
+            closeDrawer();
+        }
+    } catch (error) {
+        alert(error.message || 'Failed to update application.');
+    }
+}
+
 function closeDrawer() {
     document.getElementById('drawerOverlay').classList.remove('open');
     document.getElementById('drawer').classList.remove('open');
-    selectedCandidate = null;
-}
-
-
-// Logout function
-function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        // Clear any stored auth data
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userInfo');
-        sessionStorage.clear();
-        
-        // Redirect to login page
-        window.location.href = '/login.html';
-    }
+    dashboardState.selectedApplicantId = null;
 }

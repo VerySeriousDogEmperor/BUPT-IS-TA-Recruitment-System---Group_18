@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recruitment Pipeline - MO Portal</title>
     <link rel="stylesheet" href="/static/css/mo/dashboard.css">
+    <link rel="stylesheet" href="/static/css/mo/theme.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -65,11 +66,11 @@
                     <p class="page-subtitle">Sem 1, 2026 · All Modules</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-secondary">
+                    <button class="btn-secondary" id="focusFiltersBtn">
                         <i data-lucide="sliders-horizontal"></i>
                         Filters
                     </button>
-                    <button class="btn-primary">
+                    <button class="btn-primary" id="exportDashboardBtn">
                         Export Report
                     </button>
                 </div>
@@ -84,7 +85,7 @@
                     <div class="stat-content">
                         <div class="stat-label">Total Applicants</div>
                         <div class="stat-value" id="totalApplicants">0</div>
-                        <div class="stat-sublabel">This semester</div>
+                        <div class="stat-sublabel">Across your published jobs</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -92,9 +93,9 @@
                         <i data-lucide="sparkles" style="color: #8B5CF6;"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">AI Match ≥ 80%</div>
+                        <div class="stat-label">Pending Review</div>
                         <div class="stat-value" id="highMatchCount">0</div>
-                        <div class="stat-sublabel" id="highMatchPercent">0% of pool</div>
+                        <div class="stat-sublabel" id="highMatchPercent">Awaiting your decision</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -102,9 +103,9 @@
                         <i data-lucide="alert-triangle" style="color: #EF4444;"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">Schedule Conflicts</div>
+                        <div class="stat-label">Rejected</div>
                         <div class="stat-value" id="conflictCount">0</div>
-                        <div class="stat-sublabel">Require review</div>
+                        <div class="stat-sublabel">Closed applications</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -112,9 +113,9 @@
                         <i data-lucide="trending-up" style="color: #22C55E;"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">Pending Admin Review</div>
+                        <div class="stat-label">Approved</div>
                         <div class="stat-value" id="finalCount">0</div>
-                        <div class="stat-sublabel">Ready for offer</div>
+                        <div class="stat-sublabel">Students selected</div>
                     </div>
                 </div>
             </div>
@@ -124,11 +125,11 @@
                 <span class="filter-label">Quick Filter:</span>
                 <button class="filter-btn" id="filterHighMatch">
                     <i data-lucide="sparkles"></i>
-                    AI Match > 80%
+                    Pending Only
                 </button>
                 <button class="filter-btn" id="filterNoConflict">
                     <i data-lucide="check-circle-2"></i>
-                    No Conflict
+                    Approved Only
                 </button>
                 <select class="filter-select" id="filterModule">
                     <option value="all">All Modules</option>
@@ -137,7 +138,7 @@
                     <i data-lucide="x"></i>
                     Clear
                 </button>
-                <span class="filter-count" id="filterCount">Showing 0 of 0 candidates</span>
+                <span class="filter-count" id="filterCount">Showing 0 of 0 applications</span>
             </div>
 
             <!-- Kanban Board -->
@@ -158,6 +159,8 @@
         <div class="drawer-footer" id="drawerFooter"></div>
     </div>
 
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/pages/mo/common.js"></script>
     <script src="/static/js/pages/mo/dashboard.js"></script>
     <script>
         lucide.createIcons();

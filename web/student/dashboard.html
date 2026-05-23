@@ -9,24 +9,17 @@
     <link rel="stylesheet" href="/static/css/dashboard.css">
 </head>
 <body class="dashboard-body">
-    <!-- Profile Header -->
     <section class="dashboard-header">
         <div class="header-container">
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatarContainer">
-                    <img id="profileAvatarImg" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    <img id="profileAvatarImg" src="" alt="Avatar" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">
                     <svg id="profileAvatarIcon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    <div class="avatar-upload-overlay" id="avatarUploadOverlay">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                            <circle cx="12" cy="13" r="4"></circle>
-                        </svg>
-                        <span>Upload</span>
-                    </div>
-                    <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                    <div class="avatar-upload-overlay" id="avatarUploadOverlay"><span>Upload</span></div>
+                    <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
                 </div>
                 <div class="profile-info">
                     <h1 class="profile-name" id="userName">Loading...</h1>
@@ -38,66 +31,28 @@
                 </div>
             </div>
             <div class="header-actions">
+                <a class="btn btn-outline" href="/index.html">Back to Student Site</a>
                 <button class="btn btn-outline" id="editProfileBtn">Edit Profile</button>
-                <button class="btn btn-danger" id="logoutBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    Logout
-                </button>
+                <button class="btn btn-danger" id="logoutBtn">Logout</button>
             </div>
         </div>
     </section>
 
-    <!-- Main Content -->
     <div class="dashboard-main">
-        <!-- Tabs -->
         <div class="tabs-container">
             <div class="tabs-list">
                 <button class="tab-btn active" data-tab="overview">Overview</button>
-                <button class="tab-btn" data-tab="info">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 11l3 3L22 4"></path>
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                    </svg>
-                    Basic Info
-                </button>
-                <button class="tab-btn" data-tab="resume">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                    Resume
-                </button>
-                <button class="tab-btn" data-tab="applications">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    Applications
-                </button>
+                <button class="tab-btn" data-tab="info">Basic Info</button>
+                <button class="tab-btn" data-tab="resume">Resume</button>
+                <button class="tab-btn" data-tab="applications">Applications</button>
+                <button class="tab-btn" data-tab="timesheets">Timesheets</button>
                 <button class="tab-btn" data-tab="schedule">Schedule</button>
-                <button class="tab-btn" data-tab="ai-assistant">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    AI Assistant
-                </button>
+                <button class="tab-btn" data-tab="ai-assistant">AI Assistant</button>
                 <button class="tab-btn" data-tab="favorites">Favorites</button>
-                <button class="tab-btn" data-tab="security">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                    Security
-                </button>
+                <button class="tab-btn" data-tab="security">Security</button>
             </div>
 
-            <!-- Tab Contents -->
             <div class="tabs-content">
-                <!-- Overview Tab -->
                 <div class="tab-content active" id="tab-overview">
                     <div class="overview-grid">
                         <div class="card">
@@ -106,52 +61,29 @@
                                 <p class="card-description">Complete your profile to improve job matching</p>
                             </div>
                             <div class="card-body">
-                                <div class="completion-item">
-                                    <span>Basic Information</span>
-                                    <span class="badge badge-success">Complete</span>
-                                </div>
-                                <div class="completion-item">
-                                    <span>Resume Uploaded</span>
-                                    <span class="badge badge-secondary">Pending</span>
-                                </div>
-                                <div class="completion-item">
-                                    <span>Academic Records</span>
-                                    <span class="badge badge-success">Complete</span>
-                                </div>
+                                <div class="completion-item"><span>Basic Information</span><span class="badge badge-success">Complete</span></div>
+                                <div class="completion-item"><span id="resumeCompletionLabel">Resume Ready</span><span class="badge badge-secondary">Pending</span></div>
+                                <div class="completion-item"><span>Academic Records</span><span class="badge badge-success">Complete</span></div>
                             </div>
                         </div>
-
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Quick Stats</h3>
                                 <p class="card-description">Your application overview</p>
                             </div>
                             <div class="card-body">
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Applications</span>
-                                    <span class="stat-value">3</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Under Review</span>
-                                    <span class="stat-value stat-warning">2</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Interviews Scheduled</span>
-                                    <span class="stat-value stat-success">1</span>
-                                </div>
+                                <div class="stat-item"><span class="stat-label">Total Applications</span><span class="stat-value">0</span></div>
+                                <div class="stat-item"><span class="stat-label">Under Review</span><span class="stat-value stat-warning">0</span></div>
+                                <div class="stat-item"><span class="stat-label">Approved Offers</span><span class="stat-value stat-success">0</span></div>
                             </div>
                         </div>
                     </div>
-
                     <div class="overview-section">
                         <h3 class="section-title">Application Timeline</h3>
-                        <div class="timeline" id="applicationTimeline">
-                            <!-- Dynamic content -->
-                        </div>
+                        <div class="timeline" id="applicationTimeline"></div>
                     </div>
                 </div>
 
-                <!-- Basic Info Tab -->
                 <div class="tab-content" id="tab-info">
                     <div class="card">
                         <div class="card-header">
@@ -161,40 +93,19 @@
                         <div class="card-body">
                             <form id="profileForm" class="profile-form">
                                 <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label">Full Name</label>
-                                        <input type="text" name="name" class="form-input" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" name="email" class="form-input" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Phone Number</label>
-                                        <input type="tel" name="phone" class="form-input" placeholder="138xxxxxxxx" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Student ID</label>
-                                        <input type="text" name="studentId" class="form-input" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Major</label>
-                                        <input type="text" name="major" class="form-input" placeholder="Computer Science" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Academic Year</label>
-                                        <input type="text" name="year" class="form-input" placeholder="2023" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">GPA</label>
-                                        <input type="text" name="gpa" class="form-input" placeholder="3.8" disabled>
-                                    </div>
+                                    <div class="form-group"><label class="form-label">Full Name</label><input type="text" name="name" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" name="phone" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Student ID</label><input type="text" name="studentId" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Major</label><input type="text" name="major" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">Academic Year</label><input type="text" name="year" class="form-input" disabled></div>
+                                    <div class="form-group"><label class="form-label">GPA</label><input type="text" name="gpa" class="form-input" disabled></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Bio / Personal Statement</label>
-                                    <textarea name="bio" class="form-textarea" rows="4" placeholder="Tell us about yourself..." disabled></textarea>
+                                    <textarea name="bio" class="form-textarea" rows="4" disabled></textarea>
                                 </div>
-                                <div class="form-actions" id="formActions" style="display: none;">
+                                <div class="form-actions" id="formActions" style="display:none;">
                                     <button type="button" class="btn btn-outline" id="cancelEditBtn">Cancel</button>
                                     <button type="submit" class="btn btn-primary">Save Changes</button>
                                 </div>
@@ -203,131 +114,79 @@
                     </div>
                 </div>
 
-                <!-- Resume Tab -->
                 <div class="tab-content" id="tab-resume">
                     <div class="resume-tabs">
                         <div class="resume-tabs-list">
-                            <button class="resume-tab-btn active" data-resume-tab="upload">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                                Upload PDF
-                            </button>
-                            <button class="resume-tab-btn" data-resume-tab="standard">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14 2 14 8 20 8"></polyline>
-                                </svg>
-                                Standard Form
-                            </button>
-                            <button class="resume-tab-btn" data-resume-tab="ai-polish">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                                AI Polish
-                            </button>
+                            <button class="resume-tab-btn active" data-resume-tab="upload">Upload PDF</button>
+                            <button class="resume-tab-btn" data-resume-tab="standard">Standard Form</button>
+                            <button class="resume-tab-btn" data-resume-tab="ai-polish">AI Polish</button>
                         </div>
-
-                        <!-- Upload PDF Tab -->
                         <div class="resume-tab-content active" id="resume-tab-upload">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Upload Resume PDF</h3>
-                                    <p class="card-description">Upload your resume in PDF format for MO review</p>
+                                    <p class="card-description">Upload your resume in PDF format and it will be saved to your profile immediately</p>
                                 </div>
                                 <div class="card-body">
                                     <div class="upload-area" id="pdfUploadArea">
-                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                        </svg>
-                                        <h4>Click to upload or drag and drop</h4>
+                                        <h4>Click to upload</h4>
                                         <p>PDF (max 5MB)</p>
-                                        <input type="file" id="resumeUpload" accept=".pdf" style="display: none;">
+                                        <input type="file" id="resumeUpload" accept=".pdf" style="display:none;">
                                     </div>
-                                    <div id="uploadedFileInfo" style="display: none;"></div>
+                                    <p class="schedule-hint" style="margin-top:1rem;">Uploaded resumes appear here right away. No approval is required.</p>
+                                    <div id="resumeStorageInfo" class="schedule-info" style="margin-top:1rem;">
+                                        <div>
+                                            <p class="schedule-info-title">Current Resume Status</p>
+                                            <p class="schedule-info-text">No resume saved yet.</p>
+                                        </div>
+                                    </div>
+                                    <div id="uploadedFileInfo" style="display:none;"></div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Standard Form Tab -->
                         <div class="resume-tab-content" id="resume-tab-standard">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Standard Resume Form</h3>
-                                    <p class="card-description">Fill out this form to generate a BUPT-standard web resume</p>
+                                    <p class="card-description">Generate a web resume from structured fields</p>
                                 </div>
                                 <div class="card-body">
                                     <form id="standardResumeForm" class="resume-form">
                                         <div class="form-grid">
-                                            <div class="form-group">
-                                                <label class="form-label">Full Name</label>
-                                                <input type="text" class="form-input" placeholder="Zhang Wei">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Student ID</label>
-                                                <input type="text" class="form-input" placeholder="2021211000">
-                                            </div>
+                                            <div class="form-group"><label class="form-label">Full Name</label><input type="text" name="resumeName" class="form-input" readonly></div>
+                                            <div class="form-group"><label class="form-label">Student ID</label><input type="text" name="resumeStudentId" class="form-input" readonly></div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Email</label>
-                                            <input type="email" class="form-input" placeholder="your.email@bupt.edu.cn">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Major</label>
-                                            <input type="text" class="form-input" placeholder="Computer Science">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">GPA</label>
-                                            <input type="number" step="0.01" class="form-input" placeholder="3.75">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Technical Skills</label>
-                                            <textarea class="form-textarea" rows="3" placeholder="Java, Python, React, SQL, etc."></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Relevant Experience</label>
-                                            <textarea class="form-textarea" rows="5" placeholder="Describe your teaching or tutoring experience..."></textarea>
-                                        </div>
+                                        <div class="form-group"><label class="form-label">Email</label><input type="email" name="resumeEmail" class="form-input" readonly></div>
+                                        <div class="form-group"><label class="form-label">Major</label><input type="text" name="resumeMajor" class="form-input"></div>
+                                        <div class="form-group"><label class="form-label">GPA</label><input type="number" step="0.01" name="resumeGpa" class="form-input"></div>
+                                        <div class="form-group"><label class="form-label">Technical Skills</label><textarea name="resumeSkills" class="form-textarea" rows="3"></textarea></div>
+                                        <div class="form-group"><label class="form-label">Relevant Experience</label><textarea name="resumeExperience" class="form-textarea" rows="5"></textarea></div>
                                         <div class="form-actions">
                                             <button type="submit" class="btn btn-primary">Generate Resume</button>
-                                            <button type="button" class="btn btn-outline">Preview</button>
+                                            <button type="button" class="btn btn-outline" id="previewResumeBtn">Preview</button>
                                         </div>
                                     </form>
+                                    <div id="standardResumeStatus" class="schedule-info" style="margin-top:1rem;">
+                                        <div>
+                                            <p class="schedule-info-title">Standard Resume</p>
+                                            <p class="schedule-info-text">Not generated yet.</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- AI Polish Tab -->
                         <div class="resume-tab-content" id="resume-tab-ai-polish">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">AI Resume Polish</h3>
-                                    <p class="card-description">Use AI to optimize your experience descriptions with professional language</p>
+                                    <p class="card-description">Feature placeholder</p>
                                 </div>
                                 <div class="card-body">
-                                    <div class="form-group">
-                                        <label class="form-label">Your Original Experience</label>
-                                        <textarea id="originalText" class="form-textarea" rows="5" placeholder="I helped students with their homework and answered questions..."></textarea>
-                                    </div>
-                                    <button type="button" class="btn btn-primary" id="polishBtn">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                        </svg>
-                                        Polish with AI
-                                    </button>
-                                    <div class="form-group" style="margin-top: 1.5rem;">
+                                    <textarea id="originalText" class="form-textarea" rows="5"></textarea>
+                                    <button type="button" class="btn btn-primary" id="polishBtn">Polish with AI</button>
+                                    <div class="form-group" style="margin-top:1.5rem;">
                                         <label class="form-label">AI-Polished Version</label>
-                                        <div class="polished-result">
-                                            <p>Provided comprehensive academic support to undergraduate students through one-on-one tutoring sessions and office hours. Facilitated student understanding of complex concepts through clear explanations and practical examples, resulting in improved academic performance and positive student feedback.</p>
-                                        </div>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="button" class="btn btn-outline">Copy to Clipboard</button>
-                                        <button type="button" class="btn btn-outline">Regenerate</button>
+                                        <div class="polished-result"><p>Provided comprehensive academic support to undergraduate students through one-on-one tutoring sessions and office hours.</p></div>
                                     </div>
                                 </div>
                             </div>
@@ -335,7 +194,6 @@
                     </div>
                 </div>
 
-                <!-- Applications Tab -->
                 <div class="tab-content" id="tab-applications">
                     <div class="card">
                         <div class="card-header">
@@ -343,52 +201,76 @@
                             <p class="card-description">Track your application status</p>
                         </div>
                         <div class="card-body">
-                            <div id="applicationsList">
-                                <!-- Dynamic content -->
-                            </div>
+                            <div id="applicationsList"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Schedule Tab -->
+                <div class="tab-content" id="tab-timesheets">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Submit Weekly Hours</h3>
+                            <p class="card-description">Log hours for approved positions so your MO can review them</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="timesheetForm" class="profile-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Approved Position</label>
+                                        <select id="timesheetJobId" name="jobId" class="form-input" required></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Work Date</label>
+                                        <input type="date" id="timesheetDate" name="date" class="form-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Hours Worked</label>
+                                        <input type="number" id="timesheetHours" name="hours" class="form-input" min="0.5" step="0.5" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Task Summary</label>
+                                    <textarea id="timesheetDescription" name="description" class="form-textarea" rows="4" placeholder="What did you work on this week?" required></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Submit Timesheet</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:1.5rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Submitted Timesheets</h3>
+                            <p class="card-description">Track pending, approved, and rejected hour logs</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="timesheetsList"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="tab-content" id="tab-schedule">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Course Schedule Management</h3>
-                            <p class="card-description">Import your course schedule to automatically detect conflicts with TA positions</p>
+                            <p class="card-description">Import your course schedule to detect time conflicts</p>
                         </div>
                         <div class="card-body">
                             <div class="schedule-import">
-                                <input type="file" id="scheduleUpload" accept=".csv,.txt" style="display: none;">
-                                <button class="btn btn-primary" onclick="document.getElementById('scheduleUpload').click()">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="17 8 12 3 7 8"></polyline>
-                                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                                    </svg>
-                                    Import Schedule (.csv)
-                                </button>
-                                <p class="schedule-hint">Upload your course schedule in CSV format</p>
+                                <input type="file" id="scheduleUpload" accept=".csv,.txt" style="display:none;">
+                                <button class="btn btn-primary" onclick="document.getElementById('scheduleUpload').click()">Import Schedule (.csv)</button>
+                                <p class="schedule-hint">Use CSV columns: day,start,end,course</p>
                             </div>
                             <div class="schedule-info">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
                                 <div>
                                     <p class="schedule-info-title">Auto Conflict Detection</p>
-                                    <p class="schedule-info-text">When browsing jobs, positions with time conflicts will be automatically marked with a warning</p>
+                                    <p class="schedule-info-text">Conflicting TA jobs can be highlighted against your class timetable.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="card" style="margin-top: 1.5rem;">
-                        <div class="card-header">
-                            <h3 class="card-title">Your Weekly Schedule</h3>
-                        </div>
+                    <div class="card" style="margin-top:1.5rem;">
+                        <div class="card-header"><h3 class="card-title">Your Weekly Schedule</h3></div>
                         <div class="card-body">
                             <div class="schedule-table-wrapper">
                                 <table class="schedule-table">
@@ -402,37 +284,13 @@
                                             <th>Friday</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="scheduleTableBody">
-                                        <!-- Dynamic content -->
-                                    </tbody>
+                                    <tbody id="scheduleTableBody"></tbody>
                                 </table>
-                            </div>
-                            <div class="schedule-legend">
-                                <div class="legend-item">
-                                    <div class="legend-box legend-class"></div>
-                                    <span>Your Classes</span>
-                                </div>
-                                <div class="legend-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
-                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                                    </svg>
-                                    <span>Conflict Warning</span>
-                                </div>
-                                <div class="legend-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
-                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                    </svg>
-                                    <span>Available</span>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- AI Assistant Tab -->
                 <div class="tab-content" id="tab-ai-assistant">
                     <div class="card">
                         <div class="card-header">
@@ -445,7 +303,6 @@
                     </div>
                 </div>
 
-                <!-- Favorites Tab -->
                 <div class="tab-content" id="tab-favorites">
                     <div class="card">
                         <div class="card-header">
@@ -453,14 +310,11 @@
                             <p class="card-description">Jobs you've bookmarked for later review</p>
                         </div>
                         <div class="card-body">
-                            <div id="favoritesList">
-                                <!-- Dynamic content -->
-                            </div>
+                            <div id="favoritesList"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Security Tab -->
                 <div class="tab-content" id="tab-security">
                     <div class="card">
                         <div class="card-header">
@@ -468,26 +322,16 @@
                             <p class="card-description">Manage your password and account security</p>
                         </div>
                         <div class="card-body">
-                            <form class="security-form">
-                                <div class="form-group">
-                                    <label class="form-label">Current Password</label>
-                                    <input type="password" class="form-input" placeholder="••••••••">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">New Password</label>
-                                    <input type="password" class="form-input" placeholder="••••••••">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Confirm New Password</label>
-                                    <input type="password" class="form-input" placeholder="••••••••">
-                                </div>
+                            <form class="security-form" id="securityForm">
+                                <div class="form-group"><label class="form-label">Current Password</label><input type="password" name="currentPassword" class="form-input" placeholder="Enter current password"></div>
+                                <div class="form-group"><label class="form-label">New Password</label><input type="password" name="newPassword" class="form-input" placeholder="Enter new password"></div>
+                                <div class="form-group"><label class="form-label">Confirm New Password</label><input type="password" name="confirmPassword" class="form-input" placeholder="Confirm new password"></div>
                                 <button type="submit" class="btn btn-primary">Update Password</button>
                             </form>
-
                             <div class="security-actions">
                                 <h4>Account Actions</h4>
                                 <button class="btn btn-outline btn-danger-outline" id="signOutBtn">Sign Out</button>
-                                <button class="btn btn-outline btn-danger-outline">Delete Account</button>
+                                <button class="btn btn-outline btn-danger-outline" id="deleteAccountBtn">Delete Account</button>
                             </div>
                         </div>
                     </div>
@@ -496,8 +340,7 @@
         </div>
     </div>
 
-    <!-- GPA Modal -->
-    <div id="gpaModal" class="modal" style="display: none;">
+    <div id="gpaModal" class="modal" style="display:none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Complete Your Profile</h3>
@@ -513,6 +356,21 @@
                         <button type="submit" class="btn btn-primary">Save GPA</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="resumePreviewModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:720px;">
+            <div class="modal-header">
+                <h3>Resume Preview</h3>
+                <p>Preview your standard-form resume before saving</p>
+            </div>
+            <div class="modal-body">
+                <div id="resumePreviewContent"></div>
+                <div class="form-actions" style="margin-top:1.5rem;">
+                    <button type="button" class="btn btn-outline" id="closeResumePreviewBtn">Close</button>
+                </div>
             </div>
         </div>
     </div>

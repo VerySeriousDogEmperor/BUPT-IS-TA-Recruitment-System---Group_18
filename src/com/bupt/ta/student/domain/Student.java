@@ -4,6 +4,7 @@ import com.bupt.ta.shared.domain.Resume;
 import com.bupt.ta.shared.domain.Schedule;
 import com.bupt.ta.shared.domain.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,10 +16,14 @@ public class Student extends User {
     private String phone;
     private String major;
     private String grade;
+    private String bio;
     private Double gpa;
-    private String avatar; // 头像 URL 或 Base64
+    private String avatar;
     private List<String> skills;
     private Resume resume;
+    private String resumePdfName;
+    private String resumePdfData;
+    private LocalDateTime resumePdfUploadedAt;
     private Schedule schedule;
 
     public Student() {
@@ -29,7 +34,6 @@ public class Student extends User {
         this.schedule = new Schedule();
     }
 
-    // Getters and Setters
     public String getStudentId() {
         return studentId;
     }
@@ -62,6 +66,14 @@ public class Student extends User {
         this.grade = grade;
     }
 
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
     public Double getGpa() {
         return gpa;
     }
@@ -92,6 +104,30 @@ public class Student extends User {
 
     public void setResume(Resume resume) {
         this.resume = resume;
+    }
+
+    public String getResumePdfName() {
+        return resumePdfName;
+    }
+
+    public void setResumePdfName(String resumePdfName) {
+        this.resumePdfName = resumePdfName;
+    }
+
+    public String getResumePdfData() {
+        return resumePdfData;
+    }
+
+    public void setResumePdfData(String resumePdfData) {
+        this.resumePdfData = resumePdfData;
+    }
+
+    public LocalDateTime getResumePdfUploadedAt() {
+        return resumePdfUploadedAt;
+    }
+
+    public void setResumePdfUploadedAt(LocalDateTime resumePdfUploadedAt) {
+        this.resumePdfUploadedAt = resumePdfUploadedAt;
     }
 
     public Schedule getSchedule() {

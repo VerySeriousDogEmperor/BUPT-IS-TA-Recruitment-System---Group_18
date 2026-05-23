@@ -14,6 +14,7 @@ public class User {
     private String status; // active | inactive
     private LocalDateTime createdAt;
     private LocalDateTime lastLoginAt;
+    private String csrfToken;
 
     public User() {
         this.createdAt = LocalDateTime.now();
@@ -83,5 +84,13 @@ public class User {
 
     public void setLastLoginAt(LocalDateTime lastLoginAt) {
         this.lastLoginAt = lastLoginAt;
+    }
+
+    public String getCsrfToken() {
+        return csrfToken;
+    }
+
+    public void setCsrfToken(String csrfToken) {
+        this.csrfToken = csrfToken;
     }
 }

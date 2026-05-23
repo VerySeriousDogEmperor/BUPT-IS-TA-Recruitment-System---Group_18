@@ -50,12 +50,11 @@ public class ResponseUtil {
      * 发送响应
      */
     private static void sendResponse(HttpServletResponse response, int code, String message, Object data) throws IOException {
+        response.setStatus(code);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Token");
         
         Map<String, Object> result = new HashMap<>();
         result.put("code", code);
